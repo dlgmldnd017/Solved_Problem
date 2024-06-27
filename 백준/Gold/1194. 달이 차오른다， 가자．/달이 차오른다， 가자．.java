@@ -18,10 +18,9 @@ class Node{
 public class Main {
 	static int N, M, ans;
 	static char map[][];
-	static boolean visited[][][];
 	
-	static int dy[] = {-1, 0, 1, 0};
-	static int dx[] = {0, 1, 0, -1};
+	static int dy[] = {-1, 0, 0, 1};
+	static int dx[] = {0, -1, 1, 0};
 
 	public static void main(String[] args) throws Exception {
 		BufferedReader sc = new BufferedReader(new InputStreamReader(System.in));
@@ -31,10 +30,9 @@ public class Main {
 		N = Integer.parseInt(st.nextToken());
 		M = Integer.parseInt(st.nextToken());
 		
-		map = new char[N][M];
-		
 		int y=0, x=0;
-
+		
+		map = new char[N][M];
 		for(int i=0; i<N; i++) {
 			String str = sc.readLine();
 			
@@ -42,13 +40,11 @@ public class Main {
 				map[i][j] = str.charAt(j);
 				
 				if(map[i][j]=='0') {
-					y=i;
-					x=j;
-					map[i][j]='.';
+					y=i; x=j;
 				}
 			}
 		}
-		
+
 		ans = solve(y, x);
 		System.out.println(ans);
 	}
@@ -57,7 +53,7 @@ public class Main {
 		Queue<Node> q = new LinkedList<Node>();
 		q.add(new Node(y, x, 0, 0));
 		
-		visited = new boolean[64][N][M];
+		boolean visited[][][] = new boolean[64][N][M];
 		visited[0][y][x]=true;
 		
 		while(!q.isEmpty()) {
@@ -71,26 +67,21 @@ public class Main {
 				
 				if(map[ny][nx]=='1') return cur.t+1;
 				
-				// 일반 통로일 때
-				if(map[ny][nx]=='.' || map[ny][nx]=='0') {
+				else if(map[ny][nx]=='.' || map[ny][nx]=='0') {
 					visited[cur.key][ny][nx]=true;
 					q.add(new Node(ny, nx, cur.t+1, cur.key));
 				}
 				
-				// 열쇠를 만났을 때
-				else if(map[ny][nx]>='a' && map[ny][nx]<='z') {
-					int newKey = 1 << (map[ny][nx]-'a');
-					newKey |= cur.key;
+				else if(map[ny][nx]>='a' && map[ny][nx]<='f') {
+					int key = 1 << (map[ny][nx]-'a');
+					key |= cur.key;
 					
-					if(!visited[newKey][ny][nx]) {
-						visited[cur.key][ny][nx]=true;
-						visited[newKey][ny][nx]=true;
-						q.add(new Node(ny, nx, cur.t+1, newKey));
-					}
+					visited[cur.key][ny][nx]=true;
+					visited[key][ny][nx]=true;
+					q.add(new Node(ny, nx, cur.t+1, key));
 				}
 				
-				// 문을 만났을 때
-				else if(map[ny][nx]>='A' && map[ny][nx]<='Z') {
+				else if(map[ny][nx]>='A' && map[ny][nx]<='F') {
 					int door = 1 << (map[ny][nx]-'A');
 					
 					if((door&cur.key)>0) {
