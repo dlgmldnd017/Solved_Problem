@@ -1,81 +1,72 @@
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.StringTokenizer;
+import java.util.*;
+import java.io.*;
 
 public class Main {
-	static int N, M, V, ans;
-	static boolean[] visited;
-	static boolean[][] map;
-	static ArrayList<Integer> arr;
+    static StringBuilder sb = new StringBuilder();
 
-	static StringBuilder sb = new StringBuilder();
+    static int N, M, V;
+    static int map[][];
 
-	public static void main(String[] args) throws Exception {
-		long cur = System.currentTimeMillis();
-		BufferedReader sc = new BufferedReader(new InputStreamReader(System.in));
-		StringTokenizer st;
+    static boolean visited[];
 
-		st = new StringTokenizer(sc.readLine());
-		N = Integer.parseInt(st.nextToken());
-		M = Integer.parseInt(st.nextToken());
-		V = Integer.parseInt(st.nextToken());
+    public static void main(String[] args) throws Exception {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st;
 
-		
-		map = new boolean[N+1][N+1];
-		for(int i=0; i<M; i++) {
-			st = new StringTokenizer(sc.readLine());
-			int y = Integer.parseInt(st.nextToken());
-			int x = Integer.parseInt(st.nextToken());
+        st = new StringTokenizer(br.readLine());
+        N = Integer.parseInt(st.nextToken())+1;
+        M = Integer.parseInt(st.nextToken());
+        V = Integer.parseInt(st.nextToken());
+        map = new int[N][N];
 
-			map[y][x]=true;
-			map[x][y]=true;			
-		}
-		
-		visited = new boolean[N+1];
-		arr = new ArrayList<>();
-		visited[V]=true;
-		solveDFS(V);
-		
-		sb.append("\n");
-		
-		visited = new boolean[N+1];
-		solveBFS(V);
-		
-		System.out.println(sb);
-	}
-	
-	public static void solveDFS(int start) {
-		sb.append(start+" ");
-		
-		for(int next=1; next<N+1; next++) {
-			if(!visited[next] && map[start][next]) {
-				visited[next]=true;
-				arr.add(next);
-				solveDFS(next);
-			}
-		}
-	}
+        for(int i=0; i<M; i++){
+            st = new StringTokenizer(br.readLine());
+            int y = Integer.parseInt(st.nextToken());
+            int x = Integer.parseInt(st.nextToken());
 
-	public static void solveBFS(int start) {
-		Queue<Integer> q = new LinkedList<>();
-		q.add(start);
-		visited[start]=true;
+            map[y][x] = 1;
+            map[x][y] = 1;
+        }
 
-		while(!q.isEmpty()) {
-			start = q.poll();
+        visited = new boolean[N];
+        dfs(V);
 
-			sb.append(start + " ");
+        sb.append("\n");
 
-			for(int next=1; next<N+1; next++) {
-				if(!visited[next] && map[start][next]) {
-					visited[next]=true;
-					q.add(next);
-				}
-			}
-		}
-	}
+        visited = new boolean[N];
+        bfs();
+
+        System.out.println(sb);
+    }
+
+    static void dfs(int start){
+        visited[start] = true;
+        sb.append(start+" ");
+
+        for(int i=1; i<N; i++){
+            if(visited[i] || map[start][i]!=1) continue;
+            dfs(i);
+        }
+    }
+
+    static void bfs() {
+        Queue<Integer> q = new LinkedList<>();
+        q.add(V);
+
+        visited[V] = true;
+        sb.append(V + " ");
+
+        while(!q.isEmpty()){
+            int start = q.poll();
+
+            for(int i=1; i<N; i++){
+                if(visited[i] || map[start][i]!=1) continue;
+
+                q.add(i);
+
+                visited[i] = true;
+                sb.append(i+" ");
+            }
+        }
+    }
 }
