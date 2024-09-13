@@ -9,7 +9,7 @@ class Node implements Comparable<Node>{
         this.p = p;
     }
 
-    public int compareTo(Node n){
+    public int compareTo(Node n) {
         return n.p - this.p;
     }
 }
