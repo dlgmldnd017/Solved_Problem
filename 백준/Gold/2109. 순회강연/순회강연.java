@@ -9,17 +9,15 @@ class Node implements Comparable<Node>{
         this.p = p;
     }
 
-    @Override
     public int compareTo(Node n){
-        if(this.d == n.d) return n.p - this.p;
-        return this.d - n.d;
+        return n.p - this.p;
     }
 }
 
 public class Main{
-    static int N, ans;
+    static int N, maxDay, ans;
     static List<Node> list = new ArrayList<>();
-    static boolean[] usedDays; // 날짜 사용 여부 확인
+    static boolean[] usedDays;
 
     public static void main(String[] args) throws Exception{
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -27,7 +25,6 @@ public class Main{
 
         N = Integer.parseInt(br.readLine());
 
-        int maxDay = 0;
         for(int i=0; i<N; i++){
             st = new StringTokenizer(br.readLine());
             int p = Integer.parseInt(st.nextToken());
@@ -37,7 +34,7 @@ public class Main{
             maxDay = Math.max(maxDay, d);
         }
 
-        Collections.sort(list, (a, b) -> b.p - a.p);
+        Collections.sort(list);
 
         usedDays = new boolean[maxDay + 1];
 
@@ -48,10 +45,10 @@ public class Main{
 
     static void solve(){
         for(Node n : list){
-            for(int day = n.d; day >= 1; day--){
-                if(!usedDays[day]){
+            for(int i=n.d; i >= 1; i--){
+                if(!usedDays[i]){
                     ans += n.p;
-                    usedDays[day] = true;
+                    usedDays[i] = true;
                     break;
                 }
             }
