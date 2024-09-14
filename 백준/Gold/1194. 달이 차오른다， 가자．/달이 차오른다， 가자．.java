@@ -1,101 +1,111 @@
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.StringTokenizer;
+import java.util.*;
+import java.io.*;
 
-class Node{
-	int y, x, t, key;
+class Node implements Comparable<Node>{
+    int y, x, key, cnt;
 
-	public Node(int y, int x, int t, int key) {
-		this.y = y;
-		this.x = x;
-		this.t = t;
-		this.key = key;
-	}
+    public Node(int y, int x, int key, int cnt){
+        this.y = y;
+        this.x = x;
+        this.key = key;
+        this.cnt = cnt;
+    }
+
+    public int compareTo(Node n){
+        return this.cnt - n.cnt;
+    }
 }
 
-public class Main {
-	static int N, M, ans;
-	static char map[][];
-	
-	static int dy[] = {-1, 0, 0, 1};
-	static int dx[] = {0, -1, 1, 0};
+public class Main{
+    static int N, M, startY, startX, ans;
+    static char map[][];
+    static boolean visited[][][];
 
-	public static void main(String[] args) throws Exception {
-		BufferedReader sc = new BufferedReader(new InputStreamReader(System.in));
-		StringTokenizer st;
+    static int dy[] = {0, 0, -1, 1};
+    static int dx[] = {-1, 1, 0, 0};
 
-		st = new StringTokenizer(sc.readLine());
-		N = Integer.parseInt(st.nextToken());
-		M = Integer.parseInt(st.nextToken());
-		
-		int y=0, x=0;
-		
-		map = new char[N][M];
-		for(int i=0; i<N; i++) {
-			String str = sc.readLine();
-			
-			for(int j=0; j<M; j++) {
-				map[i][j] = str.charAt(j);
-				
-				if(map[i][j]=='0') {
-					y=i; x=j;
-				}
-			}
-		}
+    public static void main(String args[]) throws Exception{
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st;
 
-		ans = solve(y, x);
-		System.out.println(ans);
-	}
+        st = new StringTokenizer(br.readLine());
+        N = Integer.parseInt(st.nextToken());
+        M = Integer.parseInt(st.nextToken());
 
-	static int solve(int y, int x) {
-		Queue<Node> q = new LinkedList<Node>();
-		q.add(new Node(y, x, 0, 0));
-		
-		boolean visited[][][] = new boolean[64][N][M];
-		visited[0][y][x]=true;
-		
-		while(!q.isEmpty()) {
-			Node cur = q.poll();
-			
-			for(int k=0; k<4; k++) {
-				int ny = cur.y+dy[k];
-				int nx = cur.x+dx[k];
-				
-				if(!inRange(ny, nx) || map[ny][nx]=='#' || visited[cur.key][ny][nx]) continue;
-				
-				if(map[ny][nx]=='1') return cur.t+1;
-				
-				else if(map[ny][nx]=='.' || map[ny][nx]=='0') {
-					visited[cur.key][ny][nx]=true;
-					q.add(new Node(ny, nx, cur.t+1, cur.key));
-				}
-				
-				else if(map[ny][nx]>='a' && map[ny][nx]<='f') {
-					int key = 1 << (map[ny][nx]-'a');
-					key |= cur.key;
-					
-					visited[cur.key][ny][nx]=true;
-					visited[key][ny][nx]=true;
-					q.add(new Node(ny, nx, cur.t+1, key));
-				}
-				
-				else if(map[ny][nx]>='A' && map[ny][nx]<='F') {
-					int door = 1 << (map[ny][nx]-'A');
-					
-					if((door&cur.key)>0) {
-						visited[cur.key][ny][nx]=true;
-						q.add(new Node(ny, nx, cur.t+1, cur.key));
-					}
-				}
-			}
-		}
-		
-		return -1;
-	}
-	
-	static boolean inRange(int y, int x) {
-		return (y>=0&&y<N) && (x>=0&&x<M);
-	}
+        map = new char[N][M];
+
+        visited = new boolean[64][N][M];
+
+        for(int i=0; i<N; i++){
+            String str = br.readLine();
+
+            for(int j=0; j<M; j++){
+                map[i][j] = str.charAt(j);
+
+                if(map[i][j] == '0'){
+                    startY = i;
+                    startX = j;
+                }
+            }
+        }
+
+        ans = Integer.MAX_VALUE;
+
+        solve();
+
+        if(ans == Integer.MAX_VALUE) ans = -1;
+
+        System.out.println(ans);
+    }
+
+    static void solve(){
+        PriorityQueue<Node> pq = new PriorityQueue<>();
+        pq.add(new Node(startY, startX, 0, 0));
+        visited[0][startY][startX] = true;
+
+        while(!pq.isEmpty()){
+            Node cur = pq.poll();
+
+            for(int k=0; k<4; k++){
+                int ny = dy[k] + cur.y;
+                int nx = dx[k] + cur.x;
+
+                // 범위를 벗어나거나, 해당 키를 들고 방문했거나, 벽인 경우
+                if(!inRange(ny, nx) || visited[cur.key][ny][nx] || map[ny][nx] == '#') continue;
+
+                // (1) 출구 일 경우
+                if(map[ny][nx] == '1'){
+                    ans = cur.cnt+1;
+                    return;
+                }
+
+                // (2) 열쇠일 경우
+                if('a' <= map[ny][nx] && map[ny][nx] <= 'f'){
+                    int key = cur.key | (1 << (map[ny][nx] - 'a'));
+                    
+                    visited[key][ny][nx] = true;
+                    pq.add(new Node(ny, nx, key, cur.cnt+1));
+                }
+
+                // (3) 문 일 경우
+                else if('A' <= map[ny][nx] && map[ny][nx] <= 'F'){
+                    // 지나갈 수 있다면
+                    if((cur.key & (1 << (map[ny][nx] - 'A'))) > 0){
+                        pq.add(new Node(ny, nx, cur.key, cur.cnt+1));
+                    }
+                }
+
+                // (4) 빈칸일 경우
+                else{
+                    pq.add(new Node(ny, nx, cur.key, cur.cnt+1));
+                }
+
+                visited[cur.key][ny][nx] = true;
+            }
+        }
+    }
+
+    static boolean inRange(int y, int x){
+        return (y>=0&&y<N) && (x>=0&&x<M);
+    }
 }
