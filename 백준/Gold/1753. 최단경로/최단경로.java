@@ -1,84 +1,83 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.PriorityQueue;
-import java.util.StringTokenizer;
+import java.util.*;
+import java.io.*;
 
 class Node implements Comparable<Node>{
-	int end, w;
+    int E, W;
 
-	public Node(int end, int w) {
-		this.end = end;
-		this.w = w;
-	}
+    public Node(int E, int W){
+        this.E = E;
+        this.W = W;
+    }
 
-	@Override
-	public int compareTo(Node o) {
-		return w-o.w;
-	}
+    public int compareTo(Node n){
+        return this.W - n.W;
+    }
 }
 
-public class Main {
-	static int V, E, K;
-	static int dist[];
-	static ArrayList<Node> list[];
+public class Main{
+    static int V, E, K, dist[];
+    static List<Node> list[];
 
-	static StringBuilder sb = new StringBuilder();
+    public static void main(String args[]) throws Exception{
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st;
 
-	public static void main(String[] args) throws NumberFormatException, IOException {
-		BufferedReader sc = new BufferedReader(new InputStreamReader(System.in));
-		StringTokenizer st;
+        st = new StringTokenizer(br.readLine());
+        V = Integer.parseInt(st.nextToken());
+        E = Integer.parseInt(st.nextToken());
 
-		st = new StringTokenizer(sc.readLine());
-		V = Integer.parseInt(st.nextToken());
-		E = Integer.parseInt(st.nextToken());
-		
-		K = Integer.parseInt(sc.readLine());
-		
-		dist = new int[V];
-		list = new ArrayList[V];
-		for(int i=0; i<V; i++) {
-			dist[i] = Integer.MAX_VALUE;
-			list[i] = new ArrayList<>();
-		}
-		
-		for(int i=0; i<E; i++) {
-			st = new StringTokenizer(sc.readLine());
-			int y = Integer.parseInt(st.nextToken())-1;
-			int x = Integer.parseInt(st.nextToken())-1;
-			int w = Integer.parseInt(st.nextToken());
-			
-			list[y].add(new Node(x, w));
-		}
+        list = new ArrayList[V+1];
 
-		K-=1;
-		solve();
-		for(int i:dist) {
-			if(i==Integer.MAX_VALUE) System.out.println("INF");
-			else System.out.println(i);
-		}
-	}
+        for(int i=1; i<=V; i++){
+            list[i] = new ArrayList<>();
+        }
 
-	static void solve() {
-		PriorityQueue<Node> pq = new PriorityQueue<>();
-		pq.add(new Node(K, 0));
-		
-		boolean visited[] = new boolean[V];
-		dist[K] = 0;
-		
-		while(!pq.isEmpty()) {
-			Node start = pq.poll();
-			
-			if(visited[start.end]) continue;
-			visited[start.end]=true;
-			
-			for(Node next : list[start.end]) {
-				if(dist[next.end]>dist[start.end]+next.w) {
-					dist[next.end]=dist[start.end]+next.w;
-					pq.add(new Node(next.end, dist[next.end]));
-				}
-			}
-		}
-	}
+        K = Integer.parseInt(br.readLine());
+
+        for(int i=0; i<E; i++){
+            st = new StringTokenizer(br.readLine());
+            int u = Integer.parseInt(st.nextToken());
+            int v = Integer.parseInt(st.nextToken());
+            int w = Integer.parseInt(st.nextToken());
+
+            list[u].add(new Node(v, w));
+        }
+
+        solve();
+
+        printDist();
+    }
+
+    static void solve(){
+        dist = new int[V+1];
+
+        Arrays.fill(dist, Integer.MAX_VALUE);
+        dist[K] = 0;
+
+        PriorityQueue<Node> pq = new PriorityQueue<>();
+        pq.add(new Node(K, 0));
+
+        boolean visited[] = new boolean[V+1];
+
+        while(!pq.isEmpty()){
+            Node cur = pq.poll();
+
+            if(visited[cur.E]) continue;
+            visited[cur.E] = true;
+
+            for(Node next : list[cur.E]){
+                if(!visited[next.E] && dist[next.E] > next.W + dist[cur.E]){
+                    dist[next.E] = next.W + dist[cur.E];
+                    pq.add(new Node(next.E, dist[next.E]));
+                }
+            }
+        }
+    }
+
+    static void printDist(){
+        for(int i=1; i<=V; i++){
+            if(dist[i] == Integer.MAX_VALUE) System.out.println("INF");
+            else System.out.println(dist[i]);
+        }
+    }
 }
