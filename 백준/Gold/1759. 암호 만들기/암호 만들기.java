@@ -1,60 +1,60 @@
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.util.Arrays;
-import java.util.StringTokenizer;
+import java.util.*;
+import java.io.*;
 
-public class Main {
-	static int L, C, ans;
-	static char[] str;
-	static char[] code;
+public class Main{
+    static int L, C;
+    static char map[], code[];
+    static TreeSet<Character> set = new TreeSet<>();
 
-	public static void main(String[] args) throws Exception {
-		BufferedReader sc = new BufferedReader(new InputStreamReader(System.in));
-		StringTokenizer st;
+    static StringBuilder sb = new StringBuilder();
 
-		st = new StringTokenizer(sc.readLine());
-		L = Integer.parseInt(st.nextToken());
-		C = Integer.parseInt(st.nextToken());
+    public static void main(String args[]) throws Exception{
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st;
 
-		str = new char[C];
-		code = new char[L];
+        st = new StringTokenizer(br.readLine());
+        L = Integer.parseInt(st.nextToken());
+        C = Integer.parseInt(st.nextToken());
 
-		st = new StringTokenizer(sc.readLine());
-		for (int i = 0; i<C; i++) {
-			str[i] = st.nextToken().charAt(0);
-		}
+        st = new StringTokenizer(br.readLine());
+        for(int i=0; i<C; i++){
+            String c = st.nextToken();
+            set.add(c.charAt(0));
+        }
 
-		Arrays.sort(str);
-		solve(0, 0);
-	}
+        map = new char[C];
 
-	static void solve(int k, int idx) {
-		if(idx==L) {
-			if(isValid()) System.out.println(code);
-			return;
-		}
+        for(int i=0; i<C; i++){
+            map[i] = set.pollFirst();
+        }
 
-		for(int i=k; i<C; i++) {
-			code[idx] = str[i];
-			solve(i+1, idx+1);
-		}
-	}
+        code = new char[L];
 
-	static boolean isValid() {
-		int mo = 0;
-		int ja = 0;
+        solve(0, 0);
+    }
 
-		for(char c:code) {
-			if (c == 'a' || c == 'e' || c == 'i'  || c == 'o' || c == 'u') {
-				mo++;
-			} else {
-				ja++;
-			}
-		}
+    static void solve(int depth, int idx){
+        if(depth == L){
+            if(isValid()) System.out.println(code);
+            return;
+        }
 
-		if (mo >= 1 && ja >= 2) {
-			return true;
-		}
-		return false;
-	}
+        for(int i=idx; i<C; i++){
+            code[depth] = map[i];
+            solve(depth+1, i+1);
+        }
+    }
+
+    static boolean isValid(){
+        int mo=0, ja=0;
+
+        for(int i=0; i<L; i++){
+            if(code[i]=='a' || code[i]=='e' || code[i]=='i' || code[i]=='o' || code[i]=='u') mo++;
+            else ja++;
+        }
+
+        if(mo>=1 && ja>=2) return true;
+
+        return false;
+    }
 }
