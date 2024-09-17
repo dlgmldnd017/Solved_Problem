@@ -1,106 +1,115 @@
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.ArrayDeque;
 import java.util.Queue;
 import java.util.StringTokenizer;
 
-class Node{
-	int y, x;
-
-	public Node(int y, int x) {
-		this.y = y;
-		this.x = x;
-	}
-}
-
 public class Main {
-	static int N=5, ans;
-	static int comb[], combX[], combY[];
-	
-	static String map[][];
+    static int N=5, ans;
+    static int comb[], combX[], combY[];
 
-	static boolean visited[][];
-	
-	static List<Node> list = new ArrayList<Node>();
-	
-	static int dy[] = {0, 1, 0, -1};
-	static int dx[] = {1, 0, -1, 0};
-	
-	public static void main(String[] args) throws Exception {
-		BufferedReader sc = new BufferedReader(new InputStreamReader(System.in));
-		StringTokenizer st;
-		
-		comb = new int[7];
-		combX = new int[25];
-		combY = new int[25];
-		
-		map = new String[N][N];
-		
-		visited = new boolean[N][N];
-		
-		for(int i=0; i<25; i++) {
-            combX[i] = i % 5;
-            combY[i] = i / 5;
+    static char map[][];
+
+    static int dy[] = {-1, 1, 0, 0};
+    static int dx[] = {0, 0, -1, 1};
+
+    public static void main(String[] args) throws NumberFormatException, IOException {
+        BufferedReader sc = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st;
+
+        comb = new int[7];
+        combY = new int[N*N];
+        combX = new int[N*N];
+
+        for(int i=0; i<N*N; i++) {
+            combY[i] = i/N;
+            combX[i] = i%N;
         }
-		
-		for(int i=0; i<N; i++) {
-			String str = sc.readLine();
-			
-			for(int j=0; j<N; j++) {
-				map[i][j] = str.charAt(j)+"";
-			}
-		}
-		
-		makeComb(0, 0, 7);
-		System.out.println(ans);
-	}
 
-	static void makeComb(int depth, int start, int end) {
-		if(end==0) {
-			solve();
-			return;
-		}
-		
-		if(depth==25) return;
-		
-		comb[start] = depth;
-		makeComb(depth+1, start+1, end-1);
-		makeComb(depth+1, start, end);
-	}
-	
-	static void solve() {
-		Queue<Integer> q = new LinkedList<>();
-        boolean visited[] = new boolean[7];
-        
-        visited[0] = true;
+        map = new char[N][N];
+
+        for(int i=0; i<N; i++) {
+            String str = sc.readLine();
+
+            for(int j=0; j<N; j++) {
+                map[i][j] = str.charAt(j);
+            }
+        }
+
+        solve();
+        System.out.println(ans);
+    }
+
+    static void solve() {
+        // 조합을 만든다.
+        makeComb(0, 0, 0);
+    }
+
+    static void makeComb(int depth, int i, int j) {
+        if(j==7) {
+            isConnect();
+            return;
+        }
+
+        if(depth==25) return;
+
+        comb[i] = depth;
+        makeComb(depth+1, i+1, j+1);
+        makeComb(depth+1, i, j);
+    }
+
+    static void isConnect() {
+        Queue<Integer> q = new ArrayDeque<>();
         q.add(comb[0]);
-        int cnt = 1, sCnt = 0;
-        
+
+        boolean visited[] = new boolean[7];
+        visited[0] = true;
+
+        int cnt=1, cntS=0, cntY=0;
         while(!q.isEmpty()) {
-            int cur = q.poll();
-            if(map[combY[cur]][combX[cur]].equals("S")) sCnt++;
-            
-            for(int i=0; i<4; i++) {
+            int start = q.poll();
+            int y = combY[start];
+            int x = combX[start];
+
+            if(map[y][x]=='S') cntS++;
+            else cntY++;
+
+            if(cntY>=4) return;
+
+            for(int k=0; k<4; k++) {
+                int ny = y+dy[k];
+                int nx = x+dx[k];
+
+                if(!inRange(ny, nx)) continue;
+
                 for(int next=1; next<7; next++) {
-                    if(!visited[next] && combX[cur]+dx[i] == combX[comb[next]] && combY[cur]+dy[i] == combY[comb[next]]) {
-                        visited[next] = true;
-                        q.add(comb[next]);
-                        cnt++;
-                    }
+                    if(visited[next]) continue;
+
+                    int cy = combY[comb[next]];
+                    int cx = combX[comb[next]];
+
+                    if(ny!=cy || nx!=cx) continue;
+
+                    cnt++;
+                    q.add(comb[next]);
+                    visited[next]=true;
                 }
             }
         }
-        
-        if(cnt == 7) {
-            if(sCnt >=4) {
-                ans++;
-            }
-        }
-	}
-	
-	static boolean inRange(int y, int x) {
-		return (y>=0&&y<N) && (x>=0&&x<N);
-	}
+        if(cnt==7&&cntS>=4) ans++;
+    }
+
+    static boolean inRange(int y, int x) {
+        return (y>=0&&y<5) && (x>=0&&x<5);
+    }
+}
+
+class Node{
+    int y, x;
+
+    public Node(int y, int x) {
+        this.y = y;
+        this.x = x;
+    }
 }
