@@ -1,6 +1,5 @@
 -- 코드를 입력하세요
 SELECT
-COUNT(*) COUNT
-
-FROM
-ANIMAL_INS
+    COUNT(ANIMAL_ID)
+    
+FROM ANIMAL_INS
