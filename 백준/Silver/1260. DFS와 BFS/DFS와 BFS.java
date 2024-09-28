@@ -1,72 +1,87 @@
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.util.*;
-import java.io.*;
+
+class Node {
+    int E;
+
+    Node(int E) {
+        this.E = E;
+    }
+}
 
 public class Main {
-    static StringBuilder sb = new StringBuilder();
-
-    static int N, M, V;
-    static int map[][];
-
+    static int N, M, V, map[][];
     static boolean visited[];
 
-    public static void main(String[] args) throws Exception {
+    static StringBuilder sb = new StringBuilder();
+
+    public static void main(String args[]) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st;
 
         st = new StringTokenizer(br.readLine());
-        N = Integer.parseInt(st.nextToken())+1;
+        N = Integer.parseInt(st.nextToken());
         M = Integer.parseInt(st.nextToken());
         V = Integer.parseInt(st.nextToken());
-        map = new int[N][N];
 
-        for(int i=0; i<M; i++){
+        map = new int[N + 1][N + 1];
+        
+        for (int i = 0; i < M; i++) {
             st = new StringTokenizer(br.readLine());
-            int y = Integer.parseInt(st.nextToken());
-            int x = Integer.parseInt(st.nextToken());
+            int A = Integer.parseInt(st.nextToken());
+            int B = Integer.parseInt(st.nextToken());
 
-            map[y][x] = 1;
-            map[x][y] = 1;
+            map[A][B] = 1;
+            map[B][A] = 1;
         }
 
-        visited = new boolean[N];
-        dfs(V);
-
-        sb.append("\n");
-
-        visited = new boolean[N];
-        bfs();
+        solve();
 
         System.out.println(sb);
     }
 
-    static void dfs(int start){
-        visited[start] = true;
-        sb.append(start+" ");
+    static void solve() {
+        visited = new boolean[N + 1];
+        dfs(0, V);
 
-        for(int i=1; i<N; i++){
-            if(visited[i] || map[start][i]!=1) continue;
-            dfs(i);
+        sb.append("\n");
+
+        visited = new boolean[N + 1];
+        bfs();
+    }
+
+    static void dfs(int depth, int curV) {
+        if (depth == N) return;
+
+        if (visited[curV]) return;
+        visited[curV] = true;
+
+        sb.append(curV + " ");
+
+        for (int i = 1; i <= N; i++) {
+            if (visited[i] || map[curV][i] == 0) continue;
+            dfs(depth + 1, i);
         }
     }
 
     static void bfs() {
-        Queue<Integer> q = new LinkedList<>();
-        q.add(V);
+        Queue<Node> q = new ArrayDeque<>();
+        q.add(new Node(V));
 
-        visited[V] = true;
-        sb.append(V + " ");
+        while (!q.isEmpty()) {
+            Node curNode = q.poll();
 
-        while(!q.isEmpty()){
-            int start = q.poll();
+            if (visited[curNode.E]) continue;
+            visited[curNode.E] = true;
 
-            for(int i=1; i<N; i++){
-                if(visited[i] || map[start][i]!=1) continue;
+            sb.append(curNode.E + " ");
 
-                q.add(i);
-
-                visited[i] = true;
-                sb.append(i+" ");
+            for (int i = 1; i <= N; i++) {
+                if (visited[i] || map[curNode.E][i] == 0) continue;
+                q.add(new Node(i));
             }
         }
     }
 }
+
