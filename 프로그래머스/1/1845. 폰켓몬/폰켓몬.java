@@ -1,19 +1,25 @@
 import java.util.*;
 
 class Solution {
+    static int N, ans;
+    static Set<Integer> set = new HashSet<>();
+    
     public int solution(int[] nums) {
-        int answer = 0;
-        int size = nums.length/2;
+        N = nums.length / 2;
         
-        Set set = new HashSet();
-        for(int i:nums){
-            set.add(i);
+        solve(nums);
+        
+        return ans;
+    }
+    
+    static void solve(int[] nums) {
+        
+        for(int i = 0; i < nums.length; i++) {
+            set.add(nums[i]);
         }
-        if(size > set.size()){
-            answer = set.size();
-        }else{
-            answer = size;
-        }
-        return answer;
+        
+        ans = set.size();
+        
+        if(ans>N) ans = N;
     }
 }
