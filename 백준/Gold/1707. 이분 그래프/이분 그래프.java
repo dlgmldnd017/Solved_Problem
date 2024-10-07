@@ -1,91 +1,94 @@
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.util.*;
-import java.io.*;
 
-class Node{
+class Node {
     int E, C;
 
-    public Node(int E, int C){
+    Node(int E, int C) {
         this.E = E;
         this.C = C;
     }
 }
 
-public class Main{
-    static int K, V, E, C[];
-    static boolean visited[];
+public class Main {
+    static int K, V, E, color[], ans;
     static List<Node> list[];
+    static boolean visited[];
 
     static StringBuilder sb = new StringBuilder();
 
-    public static void main(String args[]) throws Exception{
+    public static void main(String args[]) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st;
 
         K = Integer.parseInt(br.readLine());
 
-        for(int k=1; k<=K; k++){
+        for (int k = 1; k <= K; k++) {
             st = new StringTokenizer(br.readLine());
             V = Integer.parseInt(st.nextToken());
             E = Integer.parseInt(st.nextToken());
 
-            list = new ArrayList[V+1];
+            list = new ArrayList[V + 1];
 
-            for(int i=1; i<=V; i++){
+            for (int i = 0; i < V + 1; i++) {
                 list[i] = new ArrayList<>();
             }
 
-            for(int i=0; i<E; i++){
+            for (int i = 0; i < E; i++) {
                 st = new StringTokenizer(br.readLine());
-                int A = Integer.parseInt(st.nextToken());
-                int B = Integer.parseInt(st.nextToken());
+                int u = Integer.parseInt(st.nextToken());
+                int v = Integer.parseInt(st.nextToken());
 
-                list[A].add(new Node(B, -1));
-                list[B].add(new Node(A, -1));
+                list[u].add(new Node(v, -1));
+                list[v].add(new Node(u, -1));
             }
 
-            C = new int[V+1];
-            visited = new boolean[V+1];
+            color = new int[V + 1];
 
-            int ans = 0;
+            visited = new boolean[V + 1];
 
-            for(int i=1; i<=V; i++){
-                if(!visited[i]) solve(i);
+            ans = 0;
 
-                for(Node n : list[i]){
-                    if(C[i] == C[n.E]){
+            for (int i = 1; i < V + 1; i++) {
+                if (!visited[i]) solve(i);
+
+                for (Node n : list[i]) {
+                    if (color[n.E] == color[i]) {
                         ans = 1;
                         break;
                     }
                 }
 
-                if(ans == 1) break;
+                if (ans == 1) break;
             }
 
-            if(ans == 1) sb.append("NO\n");
-            else sb.append("YES\n");
+            if (ans == 1) sb.append("NO");
+            else sb.append("YES");
+
+            sb.append("\n");
         }
 
         System.out.println(sb);
     }
 
-    static void solve(int startV){
+    static void solve(int start) {
         Queue<Node> q = new ArrayDeque<>();
-        q.add(new Node(startV, 0));
+        q.add(new Node(start, 1));
 
-        while(!q.isEmpty()){
+        while (!q.isEmpty()) {
             Node cur = q.poll();
-            C[cur.E] = cur.C;
 
-            if(visited[cur.E]) continue;
+            color[cur.E] = cur.C;
+
+            if (visited[cur.E]) continue;
             visited[cur.E] = true;
 
-            int nextC;
-            if(cur.C == 0) nextC = 1;
-            else nextC = 0;
+            for (Node n : list[cur.E]) {
+                if (visited[n.E]) continue;
 
-            for(Node n : list[cur.E]){
-                if(visited[n.E]) continue;
-                q.add(new Node(n.E, nextC));
+                if (cur.C == 1) q.add(new Node(n.E, 2));
+                else q.add(new Node(n.E, 1));
             }
         }
     }
