@@ -50,6 +50,9 @@ public class Main {
 
         ans = Math.min(ans, cnt);
 
+        cnt = 0;
+        check = false;
+
         for (int i = 0; i < N; i++) {
             if (check && balls.charAt(i) == 'B') {
                 cnt++;
