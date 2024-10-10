@@ -1,27 +1,20 @@
-import java.util.Arrays;
-
 class Solution {
     public long solution(int n, int[] times) {
-        long ans = -1;
+        long answer = 0;
         
-        Arrays.sort(times);
+        long low = 1, high = (long) n * times[times.length-1];
         
-        long left = 0, right = (long)n * times[times.length-1];
-        
-        while(left <= right) {
-            long mid = (left + right) / 2;
+        while(low <= high) {
+            long mid = (low + high) / 2, cnt = 0;
             
-            long complete = 0;
+            for(int i = 0; i < times.length; i++) cnt += mid / times[i];
             
-            for(int i = 0; i < times.length; i++) complete += mid / times[i];
-            
-            if(complete < n) left = mid + 1;
+            if(cnt < n) low = mid + 1;
             else {
-                right = mid - 1;
-                ans = mid;
+                high = mid - 1;
+                answer = mid;
             }
         }
-
-        return ans;
+        return answer;
     }
 }
