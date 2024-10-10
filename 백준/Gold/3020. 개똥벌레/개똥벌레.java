@@ -40,7 +40,9 @@ public class Main {
             if (min > start + end) {
                 min = start + end;
                 cnt = 1;
-            } else if (min == start + end) cnt++;
+            } else if (min == start + end) {
+                cnt++;
+            }
         }
     }
 
