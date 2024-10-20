@@ -1,6 +1,9 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.StringTokenizer;
 
 class Node {
     int idx;
@@ -13,13 +16,12 @@ class Node {
 }
 
 public class Main {
-    static int N, M;
+    static int N, M, arr[], pos[];
     static Node n[];
     static List<Integer> list = new ArrayList<>();
     static List<Integer> lis = new ArrayList<>();
 
     static StringBuilder sb = new StringBuilder();
-    static int[] pos;  // 각 값이 LIS에서 들어간 위치 저장
 
     public static void main(String args[]) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -63,13 +65,13 @@ public class Main {
             head = head.next;
         }
 
-        int[] arr = list.stream().mapToInt(i -> i).toArray();
+        arr = list.stream().mapToInt(i -> i).toArray();
+        pos = new int[N];
 
-        pos = new int[arr.length];
         findLISLength(arr);
-        sb.append(N-lis.size()+"\n");
 
-        // LIS 역추적하여 명령어 출력
+        sb.append(N - lis.size() + "\n");
+
         int num = 1;
         for (int i = 0; i < lis.size(); num++) {
             if (lis.get(i) == num) {
