@@ -28,21 +28,21 @@ public class Main {
         System.out.println(ans);
     }
 
-    static int solve(int cur, int cnt) {
-        if (cnt == (1 << N) - 1) {
+    static int solve(int cur, int visit) {
+        if (visit == (1 << N) - 1) {
             if (map[cur][0] == 0) return 16_000_000;
             return map[cur][0];
         }
 
-        if (dp[cur][cnt] != -1) return dp[cur][cnt];
-        dp[cur][cnt] = 16_000_000;
+        if (dp[cur][visit] != -1) return dp[cur][visit];
+        dp[cur][visit] = 16_000_000;
 
-        for (int i = 0; i < N; i++) {
-            if ((cnt & (1 << i)) == 0 && map[cur][i] != 0) {
-                dp[cur][cnt] = Math.min(solve(i, cnt | (1 << i)) + map[cur][i], dp[cur][cnt]);
+        for (int i = 1; i < N; i++) {
+            if ((visit & (1 << i)) == 0 && map[cur][i] != 0) {
+                dp[cur][visit] = Math.min(solve(i, visit | (1 << i)) + map[cur][i], dp[cur][visit]);
             }
         }
 
-        return dp[cur][cnt];
+        return dp[cur][visit];
     }
 }
