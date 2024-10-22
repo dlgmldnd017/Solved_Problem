@@ -1,10 +1,13 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
 
 public class Main {
     static int N, arr[][], ans;
-    static boolean visited[];
+    static List<Integer> list1 = new ArrayList<>();
+    static List<Integer> list2 = new ArrayList<>();
 
     public static void main(String args[]) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -22,8 +25,6 @@ public class Main {
             }
         }
 
-        visited = new boolean[N];
-
         ans = Integer.MAX_VALUE;
 
         solve(0);
@@ -32,30 +33,38 @@ public class Main {
     }
 
     static void solve(int depth) {
-        if (ans == 0) return;
-
         if (depth == N) {
-            int sum1 = 0, sum2 = 0;
-
-            for (int i = 0; i < N; i++) {
-                for (int j = i + 1; j < N; j++) {
-                    if (visited[i] != visited[j]) continue;
-
-                    if (visited[i]) sum1 += arr[i][j] + arr[j][i];
-                    else sum2 += arr[i][j] + arr[j][i];
-                }
-            }
-
+            int sum1 = getSum(list1);
+            int sum2 = getSum(list2);
             int diff = Math.abs(sum1 - sum2);
 
             if (ans > diff) ans = diff;
+
             return;
         }
 
-        visited[depth] = true;
+        list1.add(depth);
         solve(depth + 1);
+        list1.remove(list1.size() - 1);
 
-        visited[depth] = false;
+        list2.add(depth);
         solve(depth + 1);
+        list2.remove(list2.size() - 1);
+    }
+
+    static int getSum(List<Integer> list) {
+        int sum = 0;
+
+        for (int i = 0; i < list.size(); i++) {
+            int a = list.get(i);
+
+            for (int j = i + 1; j < list.size(); j++) {
+                int b = list.get(j);
+
+                sum += arr[a][b] + arr[b][a];
+            }
+        }
+
+        return sum;
     }
 }
