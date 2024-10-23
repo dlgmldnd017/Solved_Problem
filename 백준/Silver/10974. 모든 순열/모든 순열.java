@@ -1,45 +1,45 @@
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.StringTokenizer;
 
 public class Main {
     static int N;
-    static List<Integer> list;
-    static boolean isSelected[];
+    static List<Integer> list = new ArrayList<>();
+    static boolean visited[];
 
-    static BufferedReader sc = new BufferedReader(new InputStreamReader(System.in));
-    static StringTokenizer st;
+    static StringBuilder sb = new StringBuilder();
 
-    public static void main(String[] args) throws IOException {
-        N = Integer.parseInt(sc.readLine());
+    public static void main(String args[]) throws Exception {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st;
 
-        list = new ArrayList<>();
-        isSelected = new boolean[N];
+        st = new StringTokenizer(br.readLine());
+        N = Integer.parseInt(st.nextToken());
+
+        visited = new boolean[N + 1];
 
         solve(0);
+
+        System.out.println(sb);
     }
 
-    public static void solve(int depth) {
+    static void solve(int depth) {
         if (depth == N) {
-            for(int j=0; j<N; j++){
-                System.out.print(list.get(j)+" ");
-            }
-            System.out.println();
+            for (int i : list) sb.append(i + " ");
+            sb.append("\n");
             return;
         }
 
-        for (int i = 0; i < N; i++) {
-            if (!isSelected[i]) {
-                isSelected[i] = true;
-                list.add(i+1);
-                solve(depth + 1);
-                list.remove(list.size()-1);
-                isSelected[i] = false;
-            }
+        for (int i = 1; i <= N; i++) {
+            if (visited[i]) continue;
+
+            list.add(i);
+            visited[i] = true;
+            solve(depth + 1);
+            visited[i] = false;
+            list.remove(list.size() - 1);
         }
     }
 }
