@@ -1,45 +1,48 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
 
 public class Main {
-	static int N, M;
-	static ArrayList<Integer> arr;
-	static boolean[] visited;
+    static int N, M;
+    static boolean visited[];
+    static List<Integer> list = new ArrayList<>();
 
-	public static void main(String[] args) throws Exception {
-		BufferedReader sc = new BufferedReader(new InputStreamReader(System.in));
-		StringTokenizer st;
+    static StringBuilder sb = new StringBuilder();
 
-		st = new StringTokenizer(sc.readLine());
-		N = Integer.parseInt(st.nextToken());
-		M = Integer.parseInt(st.nextToken());
+    public static void main(String args[]) throws Exception {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st;
 
-		arr = new ArrayList<>();
-		visited = new boolean[N+1];
-		solve(0);
-	}
+        st = new StringTokenizer(br.readLine());
+        N = Integer.parseInt(st.nextToken());
+        M = Integer.parseInt(st.nextToken());
 
-	public static void solve(int depth) {
-		if(depth==M) {
-			for(int i=0; i<arr.size(); i++) {
-				System.out.print(arr.get(i) + " ");
-			}
-			System.out.println();
-			return;
-		}
-		
-		int here = arr.isEmpty()?1:arr.get(arr.size()-1)+1;
-		for(int i=here; i<=N; i++) {
+        visited = new boolean[N + 1];
 
-			if(!visited[i]) {
-				visited[i]=true; 
-				arr.add(i);
-				solve(depth+1);
-				arr.remove(arr.size()-1);
-				visited[i]=false; 
-			}
-		}
-	}
+        solve(0, 1);
+
+        System.out.println(sb);
+    }
+
+    static void solve(int depth, int idx) {
+        if (depth == M) {
+            for (int i : list) sb.append(i + " ");
+            sb.append("\n");
+            return;
+        }
+
+        for (int i = idx; i <= N; i++) {
+            if (visited[i]) continue;
+
+            visited[i] = true;
+            list.add(i);
+
+            solve(depth + 1, i);
+
+            visited[i] = false;
+            list.remove(list.size() - 1);
+        }
+    }
 }
