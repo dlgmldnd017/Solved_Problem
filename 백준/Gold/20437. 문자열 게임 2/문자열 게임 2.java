@@ -1,10 +1,12 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Main {
     static String W;
     static int T, K;
-    static boolean check;
+    static List<Integer> list[] = new ArrayList[26];
 
     static StringBuilder sb = new StringBuilder();
 
@@ -17,60 +19,38 @@ public class Main {
             W = br.readLine();
             K = Integer.parseInt(br.readLine());
 
-            check = false;
+            if (K == 1) {
+                sb.append("1 1\n");
+                continue;
+            }
 
-            solve3();
-            if (check) continue;
-            solve4();
+            solve();
         }
 
         System.out.println(sb);
     }
 
-    static void solve3() {
-        int len = Integer.MAX_VALUE;
+    static void solve() {
+        for (int i = 0; i < 26; i++) list[i] = new ArrayList<>();
+        for (int i = 0; i < W.length(); i++) list[W.charAt(i) - 'a'].add(i);
 
-        for (int i = 0; i < W.length(); i++) {
-            char c = W.charAt(i);
+        int min = W.length() + 1;
+        int max = -1;
 
-            int idx = i;
-            for (int j = 0; j < K; j++) {
-                idx = W.indexOf(c, idx);
-                if (idx == -1) break;
-                idx++;
+        for (int i = 0; i < 26; i++) {
+            List<Integer> now = list[i];
+            if (now.size() < K) continue;
+
+            int end = K - 1;
+
+            for (int j = end; j < now.size(); j++) {
+                int tmp = now.get(j) - now.get(j - K + 1) + 1;
+                if (min > tmp) min = tmp;
+                if (max < tmp) max = tmp;
             }
-
-            if (idx == -1) continue;
-
-            int diff = (idx - i);
-            if (len > diff) len = diff;
         }
 
-        if (len == Integer.MAX_VALUE) {
-            sb.append(-1 + "\n");
-            check = true;
-        } else sb.append(len + " ");
-    }
-
-    static void solve4() {
-        int len = Integer.MIN_VALUE;
-
-        for (int i = 0; i < W.length(); i++) {
-            char c = W.charAt(i);
-
-            int idx = i;
-            for (int j = 0; j < K; j++) {
-                idx = W.indexOf(c, idx);
-                if (idx == -1) break;
-                idx++;
-            }
-
-            if (idx == -1) continue;
-
-            int diff = (idx - i);
-            if (len < diff) len = diff;
-        }
-
-        sb.append(len + "\n");
+        if (min == W.length() + 1 && max == -1) sb.append("-1\n");
+        else sb.append(min + " " + max + "\n");
     }
 }
