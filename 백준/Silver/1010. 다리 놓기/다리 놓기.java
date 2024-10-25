@@ -3,44 +3,34 @@ import java.io.InputStreamReader;
 import java.util.StringTokenizer;
 
 public class Main {
-	static int N, M, ans;
-	
-	static int cache[][];
+    static int N, M, T, dp[][];
 
-	public static void main(String[] args) throws Exception {
-		BufferedReader sc = new BufferedReader(new InputStreamReader(System.in));
-		StringTokenizer st;
-		StringBuilder sb = new StringBuilder();
+    static StringBuilder sb = new StringBuilder();
 
-		int test_case = Integer.parseInt(sc.readLine());
-		for (int T = 1; T <= test_case; T++) {
+    public static void main(String args[]) throws Exception {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st;
 
-			st = new StringTokenizer(sc.readLine());
-			N = Integer.parseInt(st.nextToken());
-			M = Integer.parseInt(st.nextToken());
-			
-			
-			ans = 0;
-			if(N>M) {
-				cache = new int[N+1][M+1];
-				ans = solve(N, M);
-			}
-			else if(N<M) {
-				cache = new int[M+1][N+1];
-				ans = solve(M, N);
-			}
-			else ans=1;
-			
-			sb.append(ans + "\n");
-		}
-		System.out.println(sb);
-	}
+        T = Integer.parseInt(br.readLine());
 
-	static int solve(int n, int m) {
-		if(cache[n][m]!=0) return cache[n][m];
-		
-		if(n==m || m==0) return 1;
-		
-		return cache[n][m] = solve(n-1, m)+solve(n-1, m-1);
-	}
+        for (int t = 0; t < T; t++) {
+            st = new StringTokenizer(br.readLine());
+            N = Integer.parseInt(st.nextToken());
+            M = Integer.parseInt(st.nextToken());
+
+            dp = new int[30][30];
+
+            sb.append(solve(M, N) + "\n");
+        }
+
+        System.out.println(sb);
+    }
+
+    static int solve(int i, int j) {
+        if (dp[i][j] > 0) return dp[i][j];
+
+        if (i == j || j == 0) return dp[i][j] = 1;
+
+        return dp[i][j] = solve(i - 1, j - 1) + solve(i - 1, j);
+    }
 }
