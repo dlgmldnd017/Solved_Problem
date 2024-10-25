@@ -1,28 +1,20 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.StringTokenizer;
 
 public class Main {
-	static int N, ans;
-	static int cache[];
+    static int N;
 
-	public static void main(String[] args) throws Exception {
-		BufferedReader sc = new BufferedReader(new InputStreamReader(System.in));
-		StringTokenizer st;
-		
-		N = Integer.parseInt(sc.readLine());
+    public static void main(String args[]) throws Exception {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-		cache = new int[N+1];
-		cache[0]=0; cache[1]=0;
-		solve();
-		System.out.println(cache[N]);
-	}
-	
-	static void solve(){
-		for(int i=2; i<=N; i++) {
-			cache[i] = cache[i-1]+1;
-			if(i%2==0) cache[i] = Math.min(cache[i], cache[i/2]+1);
-			if(i%3==0) cache[i] = Math.min(cache[i], cache[i/3]+1);
-		}
-	}
+        N = Integer.parseInt(br.readLine());
+
+        System.out.println(solve(N, 0));
+    }
+
+    static int solve(int n, int cnt) {
+        if (n < 2) return cnt;
+
+        return Math.min(solve(n / 2, cnt + 1 + (n % 2)), solve(n / 3, cnt + 1 + (n % 3)));
+    }
 }
