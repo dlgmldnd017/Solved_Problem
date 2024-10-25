@@ -8,7 +8,7 @@ import java.util.StringTokenizer;
 class Node implements Comparable<Node> {
     int T, S;
 
-    Node(int T, int S) {
+    public Node(int T, int S) {
         this.T = T;
         this.S = S;
     }
@@ -20,7 +20,7 @@ class Node implements Comparable<Node> {
 }
 
 public class Main {
-    static int N, ans;
+    static int N, T, S, ans;
     static List<Node> list = new ArrayList<>();
 
     public static void main(String args[]) throws Exception {
@@ -31,8 +31,8 @@ public class Main {
 
         for (int i = 0; i < N; i++) {
             st = new StringTokenizer(br.readLine());
-            int T = Integer.parseInt(st.nextToken());
-            int S = Integer.parseInt(st.nextToken());
+            T = Integer.parseInt(st.nextToken());
+            S = Integer.parseInt(st.nextToken());
 
             list.add(new Node(T, S));
         }
@@ -48,18 +48,17 @@ public class Main {
     }
 
     static void solve() {
-        for (int i = 0; i <= list.get(0).S - list.get(0).T; i++) {
-            if (start(i)) ans = i;
+        for (int i = 0; i < list.get(list.size() - 1).S; i++) {
+            int nowTime = i;
+
+            for (Node cur : list) {
+                nowTime += cur.T;
+
+                if (nowTime <= cur.S) continue;
+                return;
+            }
+
+            ans = i;
         }
-    }
-
-    static boolean start(int i) {
-        for (Node n : list) {
-            i += n.T;
-
-            if(i>n.S) return false;
-        }
-
-        return true;
     }
 }
