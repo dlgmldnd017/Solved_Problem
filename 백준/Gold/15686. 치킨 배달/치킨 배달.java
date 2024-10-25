@@ -15,10 +15,11 @@ class Node {
 
 public class Main {
     static int N, M, arr[][], ans;
-    static List<Node> chickens = new ArrayList<>();
-    static List<Node> homes = new ArrayList<>();
     static List<Integer> list = new ArrayList<>();
     static boolean visited[];
+
+    static List<Node> homes = new ArrayList<>();
+    static List<Node> chickens = new ArrayList<>();
 
     public static void main(String args[]) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -36,8 +37,8 @@ public class Main {
                 int tmp = Integer.parseInt(st.nextToken());
                 arr[i][j] = tmp;
 
-                if (tmp == 2) chickens.add(new Node(i, j));
-                else if (tmp == 1) homes.add(new Node(i, j));
+                if (tmp == 1) homes.add(new Node(i, j));
+                else if (tmp == 2) chickens.add(new Node(i, j));
             }
         }
 
@@ -45,7 +46,7 @@ public class Main {
 
         ans = Integer.MAX_VALUE;
 
-        solve(0, 0);
+         solve(0, 0);
 
         System.out.println(ans);
     }
@@ -69,23 +70,19 @@ public class Main {
     }
 
     static int getSum() {
-        int len = 0;
+        int sumAll = 0;
 
-        for (Node home : homes) {
-            int sum = Integer.MAX_VALUE;
+        for (Node h : homes) {
+            int min = Integer.MAX_VALUE;
 
-            for (int i = 0; i < chickens.size(); i++) {
-                if (!visited[i]) continue;
+            for (int i = 0; i < list.size(); i++) {
+                int dis = Math.abs(h.y - chickens.get(list.get(i)).y) + Math.abs(h.x - chickens.get(list.get(i)).x);
 
-                Node chicken = chickens.get(i);
-                int dis = Math.abs(home.y - chicken.y) + Math.abs(home.x - chicken.x);
-
-                if (sum > dis) sum = dis;
+                if (min > dis) min = dis;
             }
-
-            len += sum;
+            sumAll += min;
         }
 
-        return len;
+        return sumAll;
     }
 }
