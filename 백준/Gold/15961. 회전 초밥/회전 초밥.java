@@ -1,59 +1,50 @@
-import java.util.*;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.util.StringTokenizer;
 
 public class Main {
-    static StringBuilder sb = new StringBuilder();
+    static int N, D, K, C, arr[], valueCnt[], ans;
 
-    static int N, d, k, c, ans;
-    static int map[];
-
-    public static void main(String[] args) throws Exception {
+    public static void main(String args[]) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st;
 
         st = new StringTokenizer(br.readLine());
         N = Integer.parseInt(st.nextToken());
-        d = Integer.parseInt(st.nextToken());
-        k = Integer.parseInt(st.nextToken());
-        c = Integer.parseInt(st.nextToken());
+        D = Integer.parseInt(st.nextToken());
+        K = Integer.parseInt(st.nextToken());
+        C = Integer.parseInt(st.nextToken());
 
-        map = new int[N+k-1];
+        arr = new int[N + K - 1];
 
-        for(int i=0; i<N; i++){
-            map[i] = Integer.parseInt(br.readLine());
-        }
+        for (int i = 0; i < N; i++) arr[i] = Integer.parseInt(br.readLine());
+        for (int i = N; i < N + K - 1; i++) arr[i] = arr[i - N];
 
-        for(int i=N; i<N+k-1; i++){
-            map[i] = map[i-N];
-        }
+        valueCnt = new int[D + 1];
 
         ans = Integer.MIN_VALUE;
+
         solve();
 
         System.out.println(ans);
     }
 
-    static void solve(){
-        int start = 0, end = 0, cnt = 1;
-        int visited[] = new int[d+1];
-        visited[c] = 1;
+    static void solve() {
+        int i = 0, j = 0, cnt = 0;
 
-        while(end != map.length){
-
-            visited[map[end]]++;
-
-            if(visited[map[end]] == 1) cnt++;
-
-            if(end >= start+k){
-                visited[map[start]]--;
-
-                if(visited[map[start]]==0) cnt--;
-
-                start++;
+        while (i < N) {
+            while (j < K + i) {
+                valueCnt[arr[j]]++;
+                if (valueCnt[arr[j]] == 1) cnt++;
+                j++;
             }
 
-            ans = Math.max(ans, cnt);
-            end++;
+            if (valueCnt[C] == 0) ans = Math.max(ans, cnt + 1);
+            else ans = Math.max(ans, cnt);
+
+            valueCnt[arr[i]]--;
+            if (valueCnt[arr[i]] == 0) cnt--;
+            i++;
         }
     }
 }
