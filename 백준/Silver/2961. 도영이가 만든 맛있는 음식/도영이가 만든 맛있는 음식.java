@@ -19,11 +19,14 @@ public class Main {
 
         for (int i = 0; i < N; i++) {
             st = new StringTokenizer(br.readLine());
-            for (int j = 0; j < 2; j++) arr[i][j] = Integer.parseInt(st.nextToken());
+            int S = Integer.parseInt(st.nextToken());
+            int B = Integer.parseInt(st.nextToken());
+
+            arr[i][0] = S;
+            arr[i][1] = B;
         }
 
         ans = Long.MAX_VALUE;
-
 
         solve(0);
 
@@ -32,9 +35,10 @@ public class Main {
 
     static void solve(int depth) {
         if (depth == N) {
-            long diff = Integer.MAX_VALUE;
+            if(list.size()==0) return;
 
-            if (list.size() != 0) diff = getDiff();
+            long diff = getDiff();
+
             if (ans > diff) ans = diff;
             return;
         }
