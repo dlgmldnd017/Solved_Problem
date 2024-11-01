@@ -14,7 +14,6 @@ class Pool implements Comparable<Pool> {
     }
 
     public int compareTo(Pool p) {
-        if (this.start == p.start) return p.end - this.end;
         return this.start - p.start;
     }
 }
@@ -60,13 +59,12 @@ public class Main {
 
             int diff = end - start;
 
-            if (diff % L != 0) {
-                ans += diff / L + 1;
-                prev = start + L * (diff / L);
-                prev += L;
-            } else {
+            if (diff % L == 0) {
                 ans += diff / L;
-                prev = -1;
+                prev = end;
+            } else {
+                ans += diff / L + 1;
+                prev = L * (diff / L) + L + start;
             }
         }
     }
