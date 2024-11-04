@@ -8,7 +8,7 @@ public class Main {
     static int K;
     static String arr[], map[], max, min;
     static List<String> list = new ArrayList<>();
-    static boolean vistied[] = new boolean[10];
+    static boolean vistied[];
 
     public static void main(String args[]) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -28,51 +28,39 @@ public class Main {
         max = "-9999999999";
         min = "9999999999";
 
-        solve(0);
+        for (int i = 0; i < 10; i++) {
+            vistied = new boolean[10];
+            vistied[i] = true;
+            solve(0, i, i + "");
+        }
 
-        System.out.println(max + "\n" + min);
+        System.out.println(list.get(list.size() - 1) + "\n" + list.get(0));
     }
 
-    static void solve(int depth) {
-        if (depth == K + 1) {
-            if (!check()) return;
-
-            String value = "";
-            for (String str : list) value += str;
-
-            long num = Long.parseLong(value);
-            long MAX = Long.parseLong(max);
-            long MIN = Long.parseLong(min);
-
-            if (MAX < num) max = value;
-            if (MIN > num) min = value;
-
+    static void solve(int depth, int left, String word) {
+        if (depth == K) {
+            list.add(word);
             return;
         }
 
         for (int i = 0; i < 10; i++) {
             if (vistied[i]) continue;
 
-            list.add(i + "");
-            vistied[i] = true;
-            solve(depth + 1);
-            vistied[i] = false;
-            list.remove(list.size() - 1);
-        }
-    }
+            String str = map[depth];
 
-    static boolean check() {
-        for (int i = 0; i < map.length; i++) {
-            int x1 = Integer.parseInt(list.get(i));
-            int x2 = Integer.parseInt(list.get(i + 1));
-
-            if (map[i].equals("<")) {
-                if (x1 > x2) return false;
+            if(str.equals(">")){
+                if (left > i) {
+                    vistied[i] = true;
+                    solve(depth + 1, i, word + i);
+                    vistied[i] = false;
+                }
             } else {
-                if (x1 < x2) return false;
+                if (left < i) {
+                    vistied[i] = true;
+                    solve(depth + 1, i, word + i);
+                    vistied[i] = false;
+                }
             }
         }
-
-        return true;
     }
 }
