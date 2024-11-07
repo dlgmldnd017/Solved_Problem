@@ -1,43 +1,37 @@
 import java.util.*;
 
 class Solution {
-    static Set<Integer> set = new TreeSet<>();
-    static Set<Integer> black = new TreeSet<>();
-    
     public int solution(int n, int[] lost, int[] reserve) {
         int answer = 0;
         
-        Arrays.sort(lost);
+        TreeSet<Integer> set = new TreeSet<>();
         
-        for(int i : lost){
-            for(int j : reserve) {
-                if(i==j) {
-                    black.add(i);
-                    break;
-                }
+        for (int i : reserve) set.add(i);
+        
+        List<Integer> list = new ArrayList<>();
+        
+        for (int i : lost) {
+            if (set.contains(i)) set.remove(i);
+            else list.add(i);
+        }
+        
+        Collections.sort(list);
+        
+        int cnt = 0;
+        
+        for (int i : list) {
+            if (set.contains(i - 1)) {
+                set.remove(i - 1);
+                cnt++;
+            } else if (set.contains(i + 1)) {
+                set.remove(i + 1);
+                cnt++;
             }
-        }
-        
-        for(int i : reserve) {
-            if(black.contains(i)) continue;
-            set.add(i);
-        }
-        
-        for(int i : lost) {
-            if(black.contains(i)) continue;
-            i--;
             
-            for(int j=0; j<2; j++) {
-                if(set.contains(i)){
-                    answer++;
-                    set.remove(i);
-                    break;
-                }
-                i+=2;
-            }
+            if (set.size() == 0) break;
         }
         
-        answer = n - lost.length + answer + black.size();
+        answer = n - list.size() + cnt;
         
         return answer;
     }
