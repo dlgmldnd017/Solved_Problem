@@ -1,16 +1,14 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.StringTokenizer;
+import java.util.*;
 
 public class Main {
-    static int N, arr[], cnt[];
-    static String ops[] = {"+", "-", "*", "/"};
-    static long max, min;
-    static List<Integer> list = new ArrayList<>();
+    static int N, arr[], op[], max, min;
+    static List<String> list = new ArrayList<>();
+    static List<Integer> list2 = new ArrayList<>();
+    static boolean visited[];
 
-    public static void main(String args[]) throws Exception {
+    public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st;
 
@@ -21,10 +19,35 @@ public class Main {
         st = new StringTokenizer(br.readLine());
         for (int i = 0; i < N; i++) arr[i] = Integer.parseInt(st.nextToken());
 
-        cnt = new int[4];
+        op = new int[4];
 
         st = new StringTokenizer(br.readLine());
-        for (int i = 0; i < 4; i++) cnt[i] = Integer.parseInt(st.nextToken());
+        for (int i = 0; i < 4; i++) op[i] = Integer.parseInt(st.nextToken());
+
+        for (int i = 0; i < 4; i++) {
+            int cnt = op[i];
+
+            while (cnt != 0) {
+                switch (i) {
+                    case 0:
+                        list.add("+");
+                        break;
+                    case 1:
+                        list.add("-");
+                        break;
+                    case 2:
+                        list.add("*");
+                        break;
+                    case 3:
+                        list.add("/");
+                        break;
+                }
+
+                cnt--;
+            }
+        }
+
+        visited = new boolean[list.size()];
 
         max = Integer.MIN_VALUE;
         min = Integer.MAX_VALUE;
@@ -35,51 +58,48 @@ public class Main {
     }
 
     static void solve(int depth) {
-        if (depth == N-1) {
-            long sum = getSum();
+        if (depth == list.size()) {
+            int sum = getSum();
 
-            if (max < sum) max = sum;
-            if (min > sum) min = sum;
+            if(max < sum) max = sum;
+            if(min > sum) min = sum;
+
             return;
         }
 
-        for (int i = 0; i < 4; i++) {
-            if (cnt[i] == 0) continue;
+        for (int i = 0; i < list.size(); i++) {
+            if (visited[i]) continue;
 
-            cnt[i]--;
-            list.add(i);
-
+            list2.add(i);
+            visited[i] = true;
             solve(depth + 1);
-
-            cnt[i]++;
-            list.remove(list.size() - 1);
+            visited[i] = false;
+            list2.remove(list2.size() - 1);
         }
     }
 
-    static long getSum() {
-        long sum = arr[0];
+    static int getSum() {
+        int sum = arr[0];
 
-        for (int i = 1; i < N; i++) {
-            switch (ops[list.get(i - 1)]) {
+        for (int i = 0; i < list2.size(); i++) {
+            String operation = list.get(list2.get(i));
+
+            switch (operation) {
                 case "+":
-                    sum += arr[i];
+                    sum += arr[i + 1];
                     break;
                 case "-":
-                    sum -= arr[i];
+                    sum -= arr[i + 1];
                     break;
                 case "*":
-                    sum *= arr[i];
+                    sum *= arr[i + 1];
                     break;
                 case "/":
-                    if (arr[i] < 0) {
-                        sum /= -(arr[i]);
-                        sum = -sum;
-                    } else {
-                        sum /= arr[i];
-                    }
+                    sum /= arr[i + 1];
                     break;
             }
         }
+
         return sum;
     }
 }
