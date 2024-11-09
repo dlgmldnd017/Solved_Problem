@@ -1,14 +1,16 @@
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.util.*;
-import java.io.*;
 
-public class Main{
+public class Main {
     static int L, C;
-    static char map[], code[];
-    static TreeSet<Character> set = new TreeSet<>();
+    static String s[], mos[] = {"a", "e", "i", "o", "u"};
+    static List<String> list = new ArrayList<>();
+    static boolean visited[];
 
     static StringBuilder sb = new StringBuilder();
 
-    public static void main(String args[]) throws Exception{
+    public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st;
 
@@ -16,45 +18,46 @@ public class Main{
         L = Integer.parseInt(st.nextToken());
         C = Integer.parseInt(st.nextToken());
 
-        st = new StringTokenizer(br.readLine());
-        for(int i=0; i<C; i++){
-            String c = st.nextToken();
-            set.add(c.charAt(0));
-        }
+        s = new String[C];
 
-        map = new char[C];
+        String str = br.readLine();
 
-        for(int i=0; i<C; i++){
-            map[i] = set.pollFirst();
-        }
+        s = str.split(" ");
 
-        code = new char[L];
+        Arrays.sort(s);
+
+        visited = new boolean[C];
 
         solve(0, 0);
+
+        System.out.println(sb);
     }
 
-    static void solve(int depth, int idx){
-        if(depth == L){
-            if(isValid()) System.out.println(code);
+    static void solve(int depth, int idx) {
+        if (depth == L) {
+            int mo = 0, ja = 0;
+
+            for (String str : list) {
+                if (str.equals("a") || str.equals("e") || str.equals("i") || str.equals("o") || str.equals("u")) mo++;
+                else ja++;
+            }
+
+            if (mo < 1 || ja < 2) return;
+
+            for (String str : list) sb.append(str);
+            sb.append("\n");
+
             return;
         }
 
-        for(int i=idx; i<C; i++){
-            code[depth] = map[i];
-            solve(depth+1, i+1);
+        for (int i = idx; i < C; i++) {
+            if (visited[i]) continue;
+
+            list.add(s[i]);
+            visited[i] = true;
+            solve(depth + 1, i);
+            visited[i] = false;
+            list.remove(list.size() - 1);
         }
-    }
-
-    static boolean isValid(){
-        int mo=0, ja=0;
-
-        for(int i=0; i<L; i++){
-            if(code[i]=='a' || code[i]=='e' || code[i]=='i' || code[i]=='o' || code[i]=='u') mo++;
-            else ja++;
-        }
-
-        if(mo>=1 && ja>=2) return true;
-
-        return false;
     }
 }
