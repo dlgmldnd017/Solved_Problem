@@ -1,15 +1,13 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.StringTokenizer;
+import java.util.*;
 
 public class Main {
-    static int N, arr[][], gom[], ans;
+    static int N, gom[], arr[][], ans;
     static List<Integer> list = new ArrayList<>();
     static boolean visited[];
 
-    public static void main(String args[]) throws Exception {
+    public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st;
 
@@ -19,6 +17,7 @@ public class Main {
 
         for (int i = 0; i < N; i++) {
             st = new StringTokenizer(br.readLine());
+
             for (int j = 0; j < 3; j++) arr[i][j] = Integer.parseInt(st.nextToken());
         }
 
@@ -27,11 +26,11 @@ public class Main {
         st = new StringTokenizer(br.readLine());
         for (int i = 0; i < 3; i++) gom[i] = Integer.parseInt(st.nextToken());
 
-        int k = N >= 7 ? 7 : N;
-
         ans = Integer.MAX_VALUE;
 
-        for (int i = 2; i <= k; i++) {
+        int K = N <= 7 ? N : 7;
+
+        for (int i = 2; i <= K; i++) {
             visited = new boolean[N];
             solve(0, i, 0);
         }
@@ -41,12 +40,17 @@ public class Main {
 
     static void solve(int depth, int K, int idx) {
         if (depth == K) {
-            int rgb[] = getRGB();
+            int sum[] = getSum();
 
-            int diffSum = 0;
-            for (int j = 0; j < 3; j++) diffSum += Math.abs(rgb[j] - gom[j]);
+            int min = 0;
+            for (int i = 0; i < 3; i++) {
+                sum[i] /= list.size();
+                sum[i] = Math.abs(sum[i] - gom[i]);
+                min += sum[i];
+            }
 
-            if (ans > diffSum) ans = diffSum;
+            if (ans > min) ans = min;
+
             return;
         }
 
@@ -61,20 +65,15 @@ public class Main {
         }
     }
 
-    static int[] getRGB() {
-        int rgb[] = new int[3];
-        int r = 0, g = 0, b = 0;
+    static int[] getSum() {
+        int sum[] = new int[3];
 
         for (int i : list) {
-            r += arr[i][0];
-            g += arr[i][1];
-            b += arr[i][2];
+            for (int j = 0; j < 3; j++) {
+                sum[j] += arr[i][j];
+            }
         }
 
-        rgb[0] = r / list.size();
-        rgb[1] = g / list.size();
-        rgb[2] = b / list.size();
-
-        return rgb;
+        return sum;
     }
 }
