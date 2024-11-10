@@ -1,27 +1,25 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.StringTokenizer;
+import java.util.*;
 
 public class Main {
-    static int N, A[][], ans;
+    static int N, arr[][], dp[][], ans;
 
-    public static void main(String args[]) throws Exception {
+    public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st;
 
         N = Integer.parseInt(br.readLine());
 
-        A = new int[N][3];
+        arr = new int[N + 1][3];
 
-        for (int i = 0; i < N; i++) {
+        for (int i = 1; i <= N; i++) {
             st = new StringTokenizer(br.readLine());
 
-            for (int j = 0; j < 3; j++) {
-                A[i][j] = Integer.parseInt(st.nextToken());
-            }
+            for (int j = 0; j < 3; j++) arr[i][j] = Integer.parseInt(st.nextToken());
         }
 
-        ans = Integer.MAX_VALUE;
+        dp = new int[N + 1][3];
 
         solve();
 
@@ -29,13 +27,12 @@ public class Main {
     }
 
     static void solve() {
-        for (int i = 1; i < N; i++) {
-            A[i][0] += Math.min(A[i-1][1], A[i-1][2]);
-            A[i][1] += Math.min(A[i-1][0], A[i-1][2]);
-            A[i][2] += Math.min(A[i-1][0], A[i-1][1]);
+        for (int i = 1; i <= N; i++) {
+            dp[i][0] = Math.min(dp[i - 1][1], dp[i - 1][2]) + arr[i][0];
+            dp[i][1] = Math.min(dp[i - 1][0], dp[i - 1][2]) + arr[i][1];
+            dp[i][2] = Math.min(dp[i - 1][0], dp[i - 1][1]) + arr[i][2];
         }
 
-        ans = Math.min(A[N-1][0], Math.min(A[N-1][1], A[N-1][2]));
+        ans = Math.min(dp[N][0], Math.min(dp[N][1], dp[N][2]));
     }
 }
-
