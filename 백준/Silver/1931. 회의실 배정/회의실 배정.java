@@ -1,36 +1,37 @@
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.util.*;
-import java.io.*;
 
-class Meeting implements Comparable<Meeting>{
-    int S, E;
+class Node implements Comparable<Node> {
+    int s, e;
 
-    public Meeting(int S, int E){
-        this.S = S;
-        this.E = E;
+    Node(int s, int e) {
+        this.s = s;
+        this.e = e;
     }
 
-    public int compareTo(Meeting m){
-        if(this.E==m.E) return this.S-m.S;
-        return this.E-m.E;
+    public int compareTo(Node n) {
+        if (this.e == n.e) return this.s - n.s;
+        return this.e - n.e;
     }
 }
 
-public class Main{
+public class Main {
     static int N, ans;
-    static List<Meeting> list = new ArrayList<>();
+    static List<Node> list = new ArrayList<>();
 
-    public static void main(String args[]) throws Exception{
+    public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st;
 
         N = Integer.parseInt(br.readLine());
 
-        for(int i=0; i<N; i++){
+        for (int i = 0; i < N; i++) {
             st = new StringTokenizer(br.readLine());
-            int S = Integer.parseInt(st.nextToken());
-            int E = Integer.parseInt(st.nextToken());
+            int s = Integer.parseInt(st.nextToken());
+            int e = Integer.parseInt(st.nextToken());
 
-            list.add(new Meeting(S, E));
+            list.add(new Node(s, e));
         }
 
         Collections.sort(list);
@@ -40,13 +41,13 @@ public class Main{
         System.out.println(ans);
     }
 
-    static void solve(){
-        int curTime = 0;
+    static void solve() {
+        int prevE = -1;
 
-        for(Meeting m : list){
-            if(m.S<curTime) continue;
+        for (Node cur : list) {
+            if (cur.s < prevE) continue;
 
-            curTime = m.E;
+            prevE = cur.e;
             ans++;
         }
     }
