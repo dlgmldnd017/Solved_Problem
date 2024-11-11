@@ -1,24 +1,25 @@
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.util.*;
-import java.io.*;
 
-class Node implements Comparable<Node>{
-    int E, W;
+class Node implements Comparable<Node> {
+    int e, w;
 
-    public Node(int E, int W){
-        this.E = E;
-        this.W = W;
+    Node(int e, int w) {
+        this.e = e;
+        this.w = w;
     }
 
-    public int compareTo(Node n){
-        return this.W - n.W;
+    public int compareTo(Node n) {
+        return this.w - n.w;
     }
 }
 
-public class Main{
+public class Main {
     static int V, E, ans;
     static List<Node> list[];
 
-    public static void main(String args[]) throws Exception{
+    public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st;
 
@@ -26,20 +27,18 @@ public class Main{
         V = Integer.parseInt(st.nextToken());
         E = Integer.parseInt(st.nextToken());
 
-        list = new ArrayList[V+1];
+        list = new ArrayList[V + 1];
 
-        for(int i=1; i<=V; i++){
-            list[i] = new ArrayList<>();
-        }
+        for (int i = 0; i <= V; i++) list[i] = new ArrayList<>();
 
-        for(int i=1; i<=E; i++){
+        for (int i = 0; i < E; i++) {
             st = new StringTokenizer(br.readLine());
             int A = Integer.parseInt(st.nextToken());
             int B = Integer.parseInt(st.nextToken());
             int C = Integer.parseInt(st.nextToken());
 
-            list[A].add(new Node(B,C));
-            list[B].add(new Node(A,C));
+            list[A].add(new Node(B, C));
+            list[B].add(new Node(A, C));
         }
 
         solve();
@@ -47,21 +46,24 @@ public class Main{
         System.out.println(ans);
     }
 
-    static void solve(){
+    static void solve() {
         PriorityQueue<Node> pq = new PriorityQueue<>();
         pq.add(new Node(1, 0));
-        
-        boolean visited[] = new boolean[V+1];
 
-        while(!pq.isEmpty()){
+        boolean visited[] = new boolean[V + 1];
+
+        while (!pq.isEmpty()) {
             Node cur = pq.poll();
-            
-            if(visited[cur.E]) continue;
-            visited[cur.E] = true;
-            ans += cur.W;
 
-            for(Node next : list[cur.E]){
-                pq.add(next);
+            if (visited[cur.e]) continue;
+            visited[cur.e] = true;
+
+            ans += cur.w;
+
+            for (Node next : list[cur.e]) {
+                if (visited[next.e]) continue;
+
+                pq.add(new Node(next.e, next.w));
             }
         }
     }
