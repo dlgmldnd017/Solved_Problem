@@ -1,86 +1,80 @@
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.util.*;
-import java.io.*;
 
-class Node implements Comparable<Node>{
-    int end, weight;
+class Node implements Comparable<Node> {
+    int e, w;
 
-    public Node(int end, int weight){
-        this.end = end;
-        this.weight = weight;
+    Node(int e, int w) {
+        this.e = e;
+        this.w = w;
     }
 
-    @Override
-    public int compareTo(Node node){
-        return weight - node.weight;
+    public int compareTo(Node n) {
+        return this.w - n.w;
     }
 }
 
 public class Main {
-    static StringBuilder sb = new StringBuilder();
-
-    static int N, M, X;
-
-    static ArrayList<Node> map1[], map2[];
+    static int N, M, X, ans;
+    static List<Node> list1[], list2[];
 
     public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st;
 
         st = new StringTokenizer(br.readLine());
-        N = Integer.parseInt(st.nextToken())+1;
+        N = Integer.parseInt(st.nextToken());
         M = Integer.parseInt(st.nextToken());
         X = Integer.parseInt(st.nextToken());
 
-        map1 = new ArrayList[N];
-        map2 = new ArrayList[N];
+        list1 = new ArrayList[N + 1];
+        list2 = new ArrayList[N + 1];
 
-        for(int i=1; i<N; i++){
-            map1[i] = new ArrayList<>();
-            map2[i] = new ArrayList<>();
+        for (int i = 1; i <= N; i++) {
+            list1[i] = new ArrayList<>();
+            list2[i] = new ArrayList<>();
         }
 
-        for(int i=0; i<M; i++){
+        for (int i = 1; i <= M; i++) {
             st = new StringTokenizer(br.readLine());
-            int y = Integer.parseInt(st.nextToken());
-            int x = Integer.parseInt(st.nextToken());
-            int w = Integer.parseInt(st.nextToken());
+            int A = Integer.parseInt(st.nextToken());
+            int B = Integer.parseInt(st.nextToken());
+            int T = Integer.parseInt(st.nextToken());
 
-            map1[y].add(new Node(x, w));
-            map2[x].add(new Node(y, w));
+            list1[A].add(new Node(B, T));
+            list2[B].add(new Node(A, T));
         }
 
-        int[] dist1 = solve(map1);
-        int[] dist2 = solve(map2);
+        int dist1[] = solve(list1);
+        int dist2[] = solve(list2);
 
-        int max = Integer.MIN_VALUE;
+        ans = Integer.MIN_VALUE;
 
-        for(int i=1; i<N; i++){
-            max = Math.max(max, dist1[i] + dist2[i]);
+        for (int i = 1; i <= N; i++) {
+            int sum = dist1[i] + dist2[i];
+
+            if(ans < sum) ans = sum;
         }
 
-        System.out.println(max);
+        System.out.println(ans);
     }
 
-    static int[] solve(ArrayList<Node> map[]){
-        int dist[] = new int[N];
+    static int[] solve(List<Node> list[]) {
+        int dist[] = new int[N + 1];
         Arrays.fill(dist, Integer.MAX_VALUE);
         dist[X] = 0;
 
         PriorityQueue<Node> pq = new PriorityQueue<>();
         pq.add(new Node(X, 0));
 
-        boolean[] visited = new boolean[N];
-
-        while(!pq.isEmpty()){
+        while (!pq.isEmpty()) {
             Node cur = pq.poll();
 
-            if(visited[cur.end]) continue;
-            visited[cur.end] = true;
-
-            for(Node next : map[cur.end]){
-                if(!visited[next.end] && dist[next.end] > dist[cur.end] + next.weight){
-                    dist[next.end] = dist[cur.end] + next.weight;
-                    pq.add(new Node(next.end, dist[next.end]));
+            for (Node next : list[cur.e]) {
+                if (dist[next.e] > dist[cur.e] + next.w) {
+                    dist[next.e] = dist[cur.e] + next.w;
+                    pq.add(new Node(next.e, dist[next.e]));
                 }
             }
         }
