@@ -4,7 +4,7 @@ import java.util.*;
 
 public class Main {
     static int R, C, ans;
-    static String str[];
+    static char ch[][];
 
     public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -14,15 +14,12 @@ public class Main {
         R = Integer.parseInt(st.nextToken());
         C = Integer.parseInt(st.nextToken());
 
-        String tmp[] = new String[R];
+        ch = new char[C][R];
 
-        for (int i = 0; i < R; i++) tmp[i] = br.readLine();
+        for (int i = 0; i < R; i++) {
+            String input = br.readLine();
 
-        str = new String[C];
-
-        for (int i = 0; i < C; i++) {
-            str[i] = "";
-            for (int j = 0; j < R; j++) str[i] += tmp[j].charAt(i);
+            for (int j = 0; j < C; j++) ch[j][i] = input.charAt(j);
         }
 
         solve();
@@ -49,10 +46,12 @@ public class Main {
         Set<String> set = new TreeSet<>();
 
         for (int i = 0; i < C; i++) {
-            String tmp = str[i].substring(mid, R);
+            StringBuilder sb = new StringBuilder();
 
-            if (set.contains(tmp)) return false;
-            set.add(tmp);
+            for (int j = mid; j < R; j++) sb.append(ch[i][j]);
+
+            if (set.contains(sb.toString())) return false;
+            set.add(sb.toString());
         }
 
         return true;
