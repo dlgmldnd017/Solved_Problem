@@ -1,12 +1,12 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.StringTokenizer;
+import java.util.*;
 
 public class Main {
     static int N, arr[][], ans;
-    static boolean visited[] = new boolean[10];
+    static boolean visited[];
 
-    public static void main(String args[]) throws Exception {
+    public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st;
 
@@ -16,10 +16,13 @@ public class Main {
 
         for (int i = 0; i < N; i++) {
             st = new StringTokenizer(br.readLine());
+
             for (int j = 0; j < N; j++) arr[i][j] = Integer.parseInt(st.nextToken());
         }
 
         ans = Integer.MAX_VALUE;
+
+        visited = new boolean[10];
 
         solve(0, 0);
 
@@ -27,7 +30,7 @@ public class Main {
     }
 
     static void solve(int depth, int cost) {
-        if (depth == 9 && isMagicSquare()) {
+        if (depth == 9 && check()) {
             if (ans > cost) ans = cost;
             return;
         }
@@ -41,13 +44,15 @@ public class Main {
             int tmp = arr[y][x];
             arr[y][x] = i;
             visited[i] = true;
+
             solve(depth + 1, cost + Math.abs(tmp - i));
+
             visited[i] = false;
             arr[y][x] = tmp;
         }
     }
 
-    static boolean isMagicSquare() {
+    static boolean check() {
         int sum = 0;
 
         for (int i = 0; i < N; i++) {
