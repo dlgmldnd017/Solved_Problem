@@ -5,26 +5,21 @@ import java.util.*;
 
 public class Main {
     static int T, N;
-    static String op[] = {"+", "-", " "};
-    static List<String> list = new ArrayList<>();
-    static TreeSet<String> set;
+    static char op[];
 
     static StringBuilder sb = new StringBuilder();
 
     public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st;
 
         T = Integer.parseInt(br.readLine());
 
         for (int t = 0; t < T; t++) {
             N = Integer.parseInt(br.readLine());
 
-            set = new TreeSet<>();
+            op = new char[N - 1];
 
             solve(0);
-
-            for (String s : set) sb.append(s + "\n");
 
             sb.append("\n");
         }
@@ -35,66 +30,55 @@ public class Main {
     static void solve(int depth) {
         if (depth == N - 1) {
             if (!check()) return;
+
+            for (int i = 1; i < N; i++) sb.append(i + "" + op[i - 1]);
+            sb.append(N + "\n");
             return;
         }
 
-        for (int i = 0; i < 3; i++) {
-            list.add(op[i]);
-            solve(depth + 1);
-            list.remove(list.size() - 1);
-        }
+        op[depth] = ' ';
+        solve(depth + 1);
+
+        op[depth] = '+';
+        solve(depth + 1);
+
+        op[depth] = '-';
+        solve(depth + 1);
     }
 
     static boolean check() {
-        String calc = "1", ans = "1";
+        List<Integer> list = new ArrayList<>();
 
-        for (int i = 1; i < N; i++) {
-            String s = list.get(i - 1);
-            ans += list.get(i - 1) + (i + 1);
+        int i = 0;
 
-            if (s.equals(" ")) calc += (i + 1);
-            else calc += s + (i + 1);
+        while (i <= N - 1) {
+            int num = i + 1;
+
+            while (i < N - 1 && op[i] == ' ') {
+                num *= 10;
+                num += ++i + 1;
+            }
+
+            list.add(num);
+            i++;
         }
 
-        String operation = "", num = "";
-        List<Integer> tmp = new ArrayList<>();
+        int sum = list.get(0), idx = 1;
 
-        for (int i = 0; i < calc.length(); i++) {
-            char c = calc.charAt(i);
-
-            switch (c) {
+        for (i = 0; i < N - 1; i++) {
+            switch (op[i]) {
                 case '+':
-                    tmp.add(Integer.parseInt(num));
-                    num = "";
-                    operation += "+";
+                    sum += list.get(idx);
+                    idx++;
                     break;
+
                 case '-':
-                    tmp.add(Integer.parseInt(num));
-                    num = "";
-                    operation += "-";
-                    break;
-                default:
-                    num += c;
+                    sum -= list.get(idx);
+                    idx++;
                     break;
             }
         }
 
-        tmp.add(Integer.parseInt(num));
-
-        int sum = tmp.get(0);
-        for (int i = 0; i < tmp.size() - 1; i++) {
-            switch (operation.charAt(i)) {
-                case '+':
-                    sum += tmp.get(i + 1);
-                    break;
-                case '-':
-                    sum -= tmp.get(i + 1);
-                    break;
-            }
-        }
-
-        if (sum == 0) set.add(ans);
-
-        return true;
+        return sum == 0;
     }
 }
