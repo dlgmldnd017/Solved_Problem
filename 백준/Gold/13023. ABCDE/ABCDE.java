@@ -1,63 +1,54 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.StringTokenizer;
+import java.util.*;
 
 public class Main {
-	static int N, M, ans;
-	
-	static ArrayList<Integer> list[];
-	
-	static boolean visited[];
-	
-	public static void main(String[] args) throws Exception {
-		BufferedReader sc = new BufferedReader(new InputStreamReader(System.in));
-		StringTokenizer st;
+    static int N, M;
+    static List<Integer> list[];
+    static boolean visited[];
 
-		st = new StringTokenizer(sc.readLine());
-		N = Integer.parseInt(st.nextToken());
-		M = Integer.parseInt(st.nextToken());
-		
-		list = new ArrayList[N];
-		for(int i=0; i<N; i++) {
-			list[i] = new ArrayList<Integer>();
-		}
-		
-		visited = new boolean[N];
-		
-		for(int i=0; i<M; i++) {
-			st = new StringTokenizer(sc.readLine());
-			int y = Integer.parseInt(st.nextToken());
-			int x = Integer.parseInt(st.nextToken());
-			
-			list[y].add(x);
-			list[x].add(y);
-		}
-		
-		for(int i=0; i<N; i++) {
-			if(ans==0) solve(i, 1);
-		}
-		
-		System.out.println(ans);
-	}
+    public static void main(String[] args) throws Exception {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st;
 
-	static void solve(int idx, int depth) {
-		if(depth==5) {
-			ans=1;
-			return;
-		}
-		
-		visited[idx]=true;
-		for(int i:list[idx]) {
-			if(!visited[i]) solve(i, depth+1);
-		}
-		visited[idx]=false;
-	}
-	
-	static boolean checkFriend() {
-		for(int i=0; i<N; i++) {
-			if(!visited[i]) return false;
-		}
-		return true;
-	}
+        st = new StringTokenizer(br.readLine());
+        N = Integer.parseInt(st.nextToken());
+        M = Integer.parseInt(st.nextToken());
+
+        list = new ArrayList[N];
+
+        for (int i = 0; i < N; i++) list[i] = new ArrayList<>();
+
+        for (int i = 0; i < M; i++) {
+            st = new StringTokenizer(br.readLine());
+            int a = Integer.parseInt(st.nextToken());
+            int b = Integer.parseInt(st.nextToken());
+
+            list[a].add(b);
+            list[b].add(a);
+        }
+
+        for (int i = 0; i < N; i++) {
+            visited = new boolean[N];
+
+            visited[i] = true;
+            solve(i, 1);
+        }
+
+        System.out.println(0);
+    }
+
+    static void solve(int start, int cnt) {
+        if (cnt == 5) {
+            System.out.println(1);
+            System.exit(0);
+        }
+
+        for (int next : list[start]) {
+            if (visited[next]) continue;
+            visited[next] = true;
+            solve(next, cnt + 1);
+            visited[next] = false;
+        }
+    }
 }
