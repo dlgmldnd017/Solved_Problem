@@ -1,65 +1,46 @@
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.StringTokenizer;
+import java.util.*;
 
 public class Main {
-	static int N;
-	static int map[];
-	
-	static ArrayList<Integer> list = new ArrayList<>();
+    static int N, arr[], ans;
 
-	static StringBuilder sb = new StringBuilder();
+    public static void main(String[] args) throws Exception {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st;
 
-	public static void main(String[] args) throws NumberFormatException, IOException {
-		BufferedReader sc = new BufferedReader(new InputStreamReader(System.in));
-		StringTokenizer st;
+        N = Integer.parseInt(br.readLine());
 
-		N = Integer.parseInt(sc.readLine());
+        arr = new int[N];
 
-		map = new int[N];
-		
-		st = new StringTokenizer(sc.readLine());
-		for(int i=0; i<N; i++) {
-			map[i] = Integer.parseInt(st.nextToken());
-		}
-		
-		list.add(map[0]);
-		
-		for(int i=1; i<N; i++) {
-			if(map[i]>list.get(list.size()-1)) {
-				list.add(map[i]);
-			}
-			else {
-				int r = Collections.binarySearch(list, map[i]);
-				if (r < 0) {
-	                if (-r > list.size())
-	                    list.add(map[i]);
-	                else
-	                    list.set(-r - 1, map[i]);
-	            }
-			}
-		}
-		
-		System.out.println(list.size());
-	}
-//
-//	private static int binaryInsert(int k) {
-//		int left = 0;
-//		int right = list.size()-1;
-//		
-//		while(left<right) {
-//			int mid = (left+right)/2;
-//			
-//			if(map[mid]>=k) {
-//				right = mid;
-//			}
-//			else {
-//				left = mid+1;
-//			}
-//		}
-//		return right;
-//	}
+        st = new StringTokenizer(br.readLine());
+        for (int i = 0; i < N; i++) arr[i] = Integer.parseInt(st.nextToken());
+
+        solve();
+
+        System.out.println(ans);
+    }
+
+    static void solve() {
+        findLIS();
+    }
+
+    static void findLIS() {
+        List<Integer> lis = new ArrayList<>();
+        int[] pos = new int[arr.length];
+
+        for (int i = 0; i < arr.length; i++) {
+            int num = arr[i];
+            int posIdx = Collections.binarySearch(lis, num);
+            if (posIdx < 0) posIdx = -(posIdx + 1);
+
+            if (posIdx < lis.size()) lis.set(posIdx, num);
+            else lis.add(num);
+
+
+            pos[i] = posIdx;
+        }
+
+        ans = lis.size();
+    }
 }
