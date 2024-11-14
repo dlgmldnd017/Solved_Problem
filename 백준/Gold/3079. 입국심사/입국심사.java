@@ -3,8 +3,8 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 public class Main {
-    static int N, M;
-    static long arr[], ans;
+    static int N, M, arr[];
+    static long ans;
 
     public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -14,9 +14,9 @@ public class Main {
         N = Integer.parseInt(st.nextToken());
         M = Integer.parseInt(st.nextToken());
 
-        arr = new long[N];
+        arr = new int[N];
 
-        for (int i = 0; i < N; i++) arr[i] = Long.parseLong(br.readLine());
+        for (int i = 0; i < N; i++) arr[i] = Integer.parseInt(br.readLine());
 
         Arrays.sort(arr);
 
@@ -26,27 +26,27 @@ public class Main {
     }
 
     static void solve() {
-        long low = 1, high = M * arr[N - 1];
+        long low = 0, high = (long) arr[N - 1] * M;
 
         while (low <= high) {
             long mid = (low + high) / 2;
 
-            long cnt = canHowManyPeople(mid);
+            long cnt = getCnt(mid);
 
-            if (M > cnt) low = mid + 1;
-            else {
+            if (cnt >= M) {
                 ans = mid;
                 high = mid - 1;
-            }
+            } else low = mid + 1;
         }
     }
 
-    static long canHowManyPeople(long mid) {
+    static long getCnt(long mid) {
         long cnt = 0;
 
-        for (long i : arr) {
-            if (M < cnt) break;
-            cnt += mid / i;
+        for (int i = 0; i < N; i++) {
+            cnt += mid / arr[i];
+
+            if (cnt >= M) break;
         }
 
         return cnt;
