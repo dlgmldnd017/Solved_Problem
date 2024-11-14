@@ -1,44 +1,46 @@
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Arrays;
-import java.util.StringTokenizer;
+import java.util.*;
 
 public class Main {
-	static int N, ans;
-	static int map[], dp[];
+    static int N, arr[], ans;
 
-	static StringBuilder sb = new StringBuilder();
+    public static void main(String[] args) throws Exception {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st;
 
-	public static void main(String[] args) throws NumberFormatException, IOException {
-		BufferedReader sc = new BufferedReader(new InputStreamReader(System.in));
-		StringTokenizer st;
+        N = Integer.parseInt(br.readLine());
 
-		N = Integer.parseInt(sc.readLine());
+        arr = new int[N];
 
-		dp = new int[N];
-		Arrays.fill(dp, 1);
-		
-		map = new int[N];
-		
-		st = new StringTokenizer(sc.readLine());
-		for(int i=0; i<N; i++) {
-			map[i] = Integer.parseInt(st.nextToken());
-		}
-		ans=1;
-		solve();
-		System.out.println(ans);
-	}
+        st = new StringTokenizer(br.readLine());
+        for (int i = 0; i < N; i++) arr[i] = Integer.parseInt(st.nextToken());
 
-	static void solve() {
-		for(int i=1; i<N; i++) {
-			for(int j=0; j<i; j++) {
-				if(map[i]<=map[j]) continue;
-				
-				dp[i] = Math.max(dp[i], dp[j]+1);
-			}
-			
-			ans = Math.max(ans, dp[i]);
-		}
-	}
+        solve();
+
+        System.out.println(ans);
+    }
+
+    static void solve() {
+        findLIS();
+    }
+
+    static void findLIS() {
+        List<Integer> lis = new ArrayList<>();
+        int[] pos = new int[arr.length];
+
+        for (int i = 0; i < arr.length; i++) {
+            int num = arr[i];
+            int posIdx = Collections.binarySearch(lis, num);
+            if (posIdx < 0) posIdx = -(posIdx + 1);
+
+            if (posIdx < lis.size()) lis.set(posIdx, num);
+            else lis.add(num);
+
+
+            pos[i] = posIdx;
+        }
+
+        ans = lis.size();
+    }
 }
