@@ -4,18 +4,15 @@ import java.util.*;
 
 class Node {
     int x, cnt;
-    String str;
 
-    Node(int x, int cnt, String str) {
+    Node(int x, int cnt) {
         this.x = x;
         this.cnt = cnt;
-        this.str = str;
     }
 }
 
 public class Main {
-    static int N, K;
-    static boolean visited[];
+    static int N, K, visited[], route[], ans;
 
     public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -25,40 +22,55 @@ public class Main {
         N = Integer.parseInt(st.nextToken());
         K = Integer.parseInt(st.nextToken());
 
-        if (N < K) solve();
-        else {
-            StringBuilder sb = new StringBuilder();
+        ans = Integer.MAX_VALUE;
 
-            for (int i = N; i >= K; i--) sb.append(i + " ");
-
-            System.out.println((N-K) + "\n" + sb);
-        }
+        solve();
     }
 
     static void solve() {
         Queue<Node> q = new ArrayDeque<>();
-        q.add(new Node(N, 0, N + ""));
+        q.add(new Node(N, 0));
 
-        visited = new boolean[100_001];
+        visited = new int[100_001];
+        Arrays.fill(visited, Integer.MAX_VALUE);
+        visited[N] = 0;
+
+        route = new int[100_001];
 
         while (!q.isEmpty()) {
             Node cur = q.poll();
 
             if (cur.x == K) {
-                System.out.println(cur.cnt + "\n" + cur.str);
-                return;
+                ans = cur.cnt;
+                break;
             }
-
-            if (visited[cur.x]) continue;
-            visited[cur.x] = true;
 
             int nextPos[] = {cur.x - 1, cur.x + 1, cur.x * 2};
 
             for (int next : nextPos) {
-                if (next < 0 || next > 100_000) continue;
+                if (next < 0 || next > 100_000 || visited[next] < cur.cnt + 1) continue;
 
-                q.add(new Node(next, cur.cnt + 1, cur.str + " " + next));
+                route[next] = cur.x;
+                visited[next] = cur.cnt + 1;
+                q.add(new Node(next, cur.cnt + 1));
             }
         }
+
+        Stack<Integer> st = new Stack<>();
+        int idx = K;
+
+        while(idx != N) {
+            st.add(idx);
+            idx = route[idx];
+        }
+
+        st.add(N);
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(ans + "\n");
+
+        while (st.size() != 0) sb.append(st.pop() + " ");
+
+        System.out.println(sb);
     }
 }
