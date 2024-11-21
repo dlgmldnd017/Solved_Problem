@@ -4,7 +4,7 @@ import java.util.*;
 
 public class Main {
     static int R, C, ans;
-    static char ch[][];
+    static StringBuilder sb[];
 
     public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -14,12 +14,14 @@ public class Main {
         R = Integer.parseInt(st.nextToken());
         C = Integer.parseInt(st.nextToken());
 
-        ch = new char[C][R];
+        sb = new StringBuilder[C];
+
+        for (int i = 0; i < C; i++) sb[i] = new StringBuilder();
 
         for (int i = 0; i < R; i++) {
-            String input = br.readLine();
+            String str = br.readLine();
 
-            for (int j = 0; j < C; j++) ch[j][i] = input.charAt(j);
+            for (int j = 0; j < C; j++) sb[j].append(str.charAt(j));
         }
 
         solve();
@@ -28,32 +30,17 @@ public class Main {
     }
 
     static void solve() {
-        int low = 0, high = R;
+        for (int i = 0; i < R - 1; i++) {
+            for (int j = 0; j < C; j++) sb[j].deleteCharAt(0);
 
-        while (low <= high) {
-            int mid = (low + high) / 2;
+            TreeSet<String> set = new TreeSet<>();
 
-            if (check(mid)) {
-                low = mid + 1;
-                ans = mid;
-            } else {
-                high = mid - 1;
+            for (int j = 0; j < C; j++) {
+                if (set.contains(sb[j].toString())) return;
+                set.add(sb[j].toString());
             }
+
+            ans++;
         }
-    }
-
-    static boolean check(int mid) {
-        Set<String> set = new TreeSet<>();
-
-        for (int i = 0; i < C; i++) {
-            StringBuilder sb = new StringBuilder();
-
-            for (int j = mid; j < R; j++) sb.append(ch[i][j]);
-
-            if (set.contains(sb.toString())) return false;
-            set.add(sb.toString());
-        }
-
-        return true;
     }
 }
