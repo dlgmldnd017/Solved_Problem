@@ -1,107 +1,109 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.StringTokenizer;
+import java.util.*;
 
-class Node{
-	int y, x;
+class Virus {
+    int y, x;
 
-	public Node(int y, int x) {
-		this.y = y;
-		this.x = x;
-	}
+    Virus(int y, int x) {
+        this.y = y;
+        this.x = x;
+    }
 }
 
 public class Main {
-	static int N, M, ans;
-	static int map[][];
-	
-	static Queue<Node> virus = new LinkedList<Node>();
-	
-	static int dy[] = {-1, 0, 1, 0};
-	static int dx[] = {0, 1, 0, -1};
+    static int N, M, arr[][], ans;
 
-	public static void main(String[] args) throws Exception {
-		BufferedReader sc = new BufferedReader(new InputStreamReader(System.in));
-		StringTokenizer st;
+    static List<Virus> list = new ArrayList<>();
 
-		st = new StringTokenizer(sc.readLine());
-		N = Integer.parseInt(st.nextToken());
-		M = Integer.parseInt(st.nextToken());
-		
-		map = new int[N][M];
-		
-		int safeCnt=0;
-		
-		for(int i=0; i<N; i++) {
-			st = new StringTokenizer(sc.readLine());
-			
-			for(int j=0; j<M; j++) {
-				map[i][j] = Integer.parseInt(st.nextToken());
-				if(map[i][j]==0) safeCnt++;
-				else if(map[i][j]==2) virus.add(new Node(i, j));
-			}
-		}
-		
-		ans = Integer.MIN_VALUE;
-		solve(0, 0, safeCnt, 3);
-		System.out.println(ans);
-	}
+    static int dy[] = {0, 0, -1, 1};
+    static int dx[] = {-1, 1, 0, 0};
 
-	static void solve(int y, int x, int safeCnt, int wallCnt) {
-		if(ans>safeCnt) return;
-		
-		if(x==M) {
-			solve(y+1, 0, safeCnt, wallCnt);
-			return;
-		}
-		
-		if(wallCnt==0) {
-			int virusCnt = spreadVirus(map);
-			ans = Math.max(ans, (safeCnt-3-virusCnt));
-			return;
-		}
-		
-		if(y==N) return;
-		
-		if(map[y][x]==0) {
-			map[y][x]=1;
-			solve(y, x+1, safeCnt, wallCnt-1);
-			map[y][x]=0;
-		}
-		solve(y, x+1, safeCnt, wallCnt);
-	}
+    public static void main(String[] args) throws Exception {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st;
 
-	static int spreadVirus(int[][] copy) {
-		int virucCnt=0;
-		
-		boolean visited[][] = new boolean[N][M];
-		
-		for(Node n : virus) {
-			Queue<Node> q = new LinkedList<Node>();
-			q.add(new Node(n.y, n.x));
-			
-			while(!q.isEmpty()) {
-				Node cur = q.poll();
-				
-				for(int k=0; k<4; k++) {
-					int ny = cur.y+dy[k];
-					int nx = cur.x+dx[k];
-					
-					if(!inRange(ny, nx) || visited[ny][nx] || copy[ny][nx]!=0) continue;
-					
-					virucCnt++;
-					visited[ny][nx]=true;
-					q.add(new Node(ny, nx));
-				}
-			}
-		}
-		
-		return virucCnt;
-	}
-	
-	static boolean inRange(int y, int x) {
-		return (y>=0&&y<N) && (x>=0&&x<M);
-	}
-}
+        st = new StringTokenizer(br.readLine());
+        N = Integer.parseInt(st.nextToken());
+        M = Integer.parseInt(st.nextToken());
+
+        arr = new int[N][M];
+
+        int cnt = 0;
+
+        for (int i = 0; i < N; i++) {
+            st = new StringTokenizer(br.readLine());
+
+            for (int j = 0; j < M; j++) {
+                arr[i][j] = Integer.parseInt(st.nextToken());
+
+                if (arr[i][j] == 0) cnt++;
+                else if (arr[i][j] == 2) list.add(new Virus(i, j));
+            }
+        }
+
+
+        solve(3, cnt);
+
+        System.out.println(ans);
+    }
+
+    static void solve(int wall, int emptyCnt) {
+        if (wall == 0) {
+            int[][] tmp = new int[N][M];
+
+            for (int i = 0; i < N; i++) tmp[i] = arr[i].clone();
+
+            int cnt = emptyCnt - getRemovedCnt();
+
+            if (ans < cnt) ans = cnt;
+
+            arr = tmp;
+            return;
+        }
+
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < M; j++) {
+                if (arr[i][j] == 0) {
+                    arr[i][j] = 1;
+                    solve(wall - 1, emptyCnt - 1);
+                    arr[i][j] = 0;
+                }
+            }
+        }
+    }
+
+    static int getRemovedCnt() {
+        int cnt = 0;
+
+        for (Virus v : list) {
+            Queue<Virus> q = new ArrayDeque<>();
+            q.add(new Virus(v.y, v.x));
+
+            boolean visited[][] = new boolean[N][M];
+            visited[v.y][v.x] = true;
+
+            while (!q.isEmpty()) {
+                Virus cur = q.poll();
+
+                for (int k = 0; k < 4; k++) {
+                    int ny = dy[k] + cur.y;
+                    int nx = dx[k] + cur.x;
+
+                    if (!inRange(ny, nx) || visited[ny][nx] || arr[ny][nx] != 0) continue;
+
+                    arr[ny][nx] = -1;
+                    visited[ny][nx] = true;
+                    q.add(new Virus(ny, nx));
+                    cnt++;
+                }
+            }
+        }
+
+        return cnt;
+    }
+
+    static boolean inRange(int y, int x) {
+        return (y >= 0 && y < N) && (x >= 0 && x < M);
+    }
+} 
