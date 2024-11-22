@@ -43,45 +43,44 @@ public class Main {
         }
 
 
-        solve(3, cnt);
+        solve(0, 0, 3, cnt);
 
         System.out.println(ans);
     }
 
-    static void solve(int wall, int emptyCnt) {
-        if (wall == 0) {
-            int[][] tmp = new int[N][M];
+    static void solve(int y, int x, int wall, int emptyCnt) {
+        if (ans > emptyCnt) return;
 
-            for (int i = 0; i < N; i++) tmp[i] = arr[i].clone();
-
-            int cnt = emptyCnt - getRemovedCnt();
-
-            if (ans < cnt) ans = cnt;
-
-            arr = tmp;
+        if (x == M) {
+            solve(y + 1, 0, wall, emptyCnt);
             return;
         }
 
-        for (int i = 0; i < N; i++) {
-            for (int j = 0; j < M; j++) {
-                if (arr[i][j] == 0) {
-                    arr[i][j] = 1;
-                    solve(wall - 1, emptyCnt - 1);
-                    arr[i][j] = 0;
-                }
-            }
+        if (wall == 0) {
+            int cnt = emptyCnt - getRemovedCnt(arr);
+            if (ans < cnt) ans = cnt;
+            return;
         }
+
+        if (y == N) return;
+
+        if (arr[y][x] == 0) {
+            arr[y][x] = 1;
+            solve(y, x + 1, wall - 1, emptyCnt - 1);
+            arr[y][x] = 0;
+        }
+
+        solve(y, x + 1, wall, emptyCnt);
     }
 
-    static int getRemovedCnt() {
+    static int getRemovedCnt(int tmp[][]) {
         int cnt = 0;
+
+        boolean visited[][] = new boolean[N][M];
 
         for (Virus v : list) {
             Queue<Virus> q = new ArrayDeque<>();
             q.add(new Virus(v.y, v.x));
-
-            boolean visited[][] = new boolean[N][M];
-            visited[v.y][v.x] = true;
 
             while (!q.isEmpty()) {
                 Virus cur = q.poll();
@@ -90,12 +89,11 @@ public class Main {
                     int ny = dy[k] + cur.y;
                     int nx = dx[k] + cur.x;
 
-                    if (!inRange(ny, nx) || visited[ny][nx] || arr[ny][nx] != 0) continue;
+                    if (!inRange(ny, nx) || visited[ny][nx] || tmp[ny][nx] != 0) continue;
 
-                    arr[ny][nx] = -1;
+                    cnt++;
                     visited[ny][nx] = true;
                     q.add(new Virus(ny, nx));
-                    cnt++;
                 }
             }
         }
