@@ -5,38 +5,38 @@ class Solution {
     static boolean visited[];
     
     public int solution(String begin, String target, String[] words) {
-       
         ans = Integer.MAX_VALUE;
+        
         visited = new boolean[words.length];
         
-        solve(begin, target, words, 0);
-        
-        if(ans==Integer.MAX_VALUE) ans=0;
+        dfs(begin, target, 0, words);
+    
+        if (ans == Integer.MAX_VALUE) ans = 0;
         return ans;
     }
     
-    static void solve(String begin, String target, String[] words, int cnt){
-        if(begin.equals(target)){
-            if(ans>cnt) ans=cnt;
+    static void dfs(String s, String e, int cnt, String[] words) {
+        if (s.equals(e)) {
+            if (ans > cnt) ans = cnt;
             return;
         }
         
-        for(int i=0; i<words.length; i++){
-            if(visited[i]) continue;
+        for (int i = 0; i < words.length; i++) {
+            if (visited[i] || !check(s, words[i])) continue;
             
-            int count=0;
-            
-            for(int j=0; j<words[i].length(); j++){
-                if(begin.charAt(j)==words[i].charAt(j)) continue;
-                
-                count++;
-            }
-            
-            if(count>1) continue;
-            
-            visited[i]=true;
-            solve(words[i], target, words, cnt+1);
-            visited[i]=false;
+            visited[i] = true;
+            dfs(words[i], e, cnt + 1, words);
+            visited[i] = false;
         }
+    }
+    
+    static boolean check(String s, String t) {
+        int cnt = 0;
+        
+        for (int i = 0; i < s.length(); i++) {
+            if (s.charAt(i) != t.charAt(i)) cnt++;
+        }
+        
+        return cnt == 1;
     }
 }
