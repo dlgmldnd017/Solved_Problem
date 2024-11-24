@@ -1,26 +1,22 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.Arrays;
-import java.util.StringTokenizer;
+import java.util.*;
 
 public class Main {
-    static int N, K;
-    static long arr[], ans;
+    static int N, K, arr[];
+    static long ans;
 
-    public static void main(String args[]) throws Exception {
+    public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st;
 
         N = Integer.parseInt(br.readLine());
         K = Integer.parseInt(br.readLine());
 
-        arr = new long[N];
+        arr = new int[N];
 
         st = new StringTokenizer(br.readLine());
-
-        for (int i = 0; i < N; i++) {
-            arr[i] = Integer.parseInt(st.nextToken());
-        }
+        for (int i = 0; i < N; i++) arr[i] = Integer.parseInt(st.nextToken());
 
         Arrays.sort(arr);
 
@@ -30,16 +26,12 @@ public class Main {
     }
 
     static void solve() {
-        long diffArr[] = new long[N - 1];
+        long diff[] = new long[N - 1];
 
-        for (int i = 0; i < N - 1; i++) {
-            diffArr[i] = arr[i + 1] - arr[i];
-        }
+        for (int i = 0; i < N - 1; i++) diff[i] = arr[i + 1] - arr[i];
 
-        Arrays.sort(diffArr);
+        Arrays.sort(diff);
 
-        for (int i = 0; i < N - K; i++) {
-            ans += diffArr[i];
-        }
+        for (int i = 0; i < N - K; i++) ans += diff[i];
     }
-}
+} 
