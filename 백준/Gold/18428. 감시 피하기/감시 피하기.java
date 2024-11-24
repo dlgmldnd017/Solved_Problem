@@ -21,6 +21,7 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st;
 
         N = Integer.parseInt(br.readLine());
 
@@ -36,14 +37,18 @@ public class Main {
             }
         }
 
-        solve(3);
+        solve(0, 0, 0);
 
         System.out.println("NO");
     }
 
-    static void solve(int cnt) {
+    static void solve(int y, int x, int cnt) {
+        if (x == N) {
+            solve(y + 1, 0, cnt);
+            return;
+        }
 
-        if (cnt == 0) {
+        if (cnt == 3) {
             if (check()) {
                 System.out.println("YES");
                 System.exit(0);
@@ -51,29 +56,31 @@ public class Main {
             return;
         }
 
-        for (int i = 0; i < N; i++) {
-            for (int j = 0; j < N; j++) {
-                if (arr[i][j] == 'X') {
-                    arr[i][j] = 'O';
-                    solve(cnt - 1);
-                    arr[i][j] = 'X';
-                }
-            }
+        if (y == N) return;
+
+        if (arr[y][x] == 'X') {
+            arr[y][x] = 'O';
+            solve(y, x + 1, cnt + 1);
+            arr[y][x] = 'X';
         }
+
+        solve(y, x + 1, cnt);
     }
 
     static boolean check() {
-
         for (Teacher t : list) {
+            boolean visited[][] = new boolean[N][N];
+
             for (int k = 0; k < 4; k++) {
                 int ny = dy[k] + t.y;
                 int nx = dx[k] + t.x;
 
                 while (true) {
-                    if (!inRange(ny, nx) || arr[ny][nx] == 'O') break;
+                    if (!inRange(ny, nx) || visited[ny][nx] || arr[ny][nx] == 'O' || arr[ny][nx] == 'T') break;
 
                     if (arr[ny][nx] == 'S') return false;
 
+                    visited[ny][nx] = true;
                     ny += dy[k];
                     nx += dx[k];
                 }
@@ -86,4 +93,4 @@ public class Main {
     static boolean inRange(int y, int x) {
         return (y >= 0 && y < N) && (x >= 0 && x < N);
     }
-}
+} 
