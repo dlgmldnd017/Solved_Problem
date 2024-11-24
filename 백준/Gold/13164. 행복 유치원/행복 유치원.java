@@ -3,8 +3,8 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 public class Main {
-    static int N, K, arr[], ans;
-    static List<Integer> list = new ArrayList<>();
+    static int N, K, arr[];
+    static long ans;
 
     public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -19,17 +19,20 @@ public class Main {
         st = new StringTokenizer(br.readLine());
         for (int i = 0; i < N; i++) arr[i] = Integer.parseInt(st.nextToken());
 
-        if (K == 1) ans = arr[N - 1] - arr[0];
-        else solve();
+        Arrays.sort(arr);
+
+        solve();
 
         System.out.println(ans);
     }
 
     static void solve() {
-        for (int i = 1; i < N; i++) list.add(arr[i] - arr[i - 1]);
+        long diff[] = new long[N - 1];
 
-        Collections.sort(list);
+        for (int i = 0; i < N - 1; i++) diff[i] = arr[i + 1] - arr[i];
 
-        for (int i = 0; i < N - K; i++) ans += list.get(i);
+        Arrays.sort(diff);
+
+        for (int i = 0; i < N - K; i++) ans += diff[i];
     }
 } 
