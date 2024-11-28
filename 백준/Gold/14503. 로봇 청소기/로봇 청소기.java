@@ -1,104 +1,110 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.StringTokenizer;
-
-class Node{
-	int y, x;
-
-	public Node(int y, int x) {
-		this.y = y;
-		this.x = x;
-	}
-}
+import java.util.*;
 
 public class Main {
-	static int N, M, R, C, d, ans;
-	static int map[][];
+    static int N, M, arr[][], ans;
+    static boolean visited[][];
 
-	static int dy[] = {-1, 0, 1, 0};
-	static int dx[] = {0, 1, 0, -1};
+    static int dr[] = {-1, 0, 1, 0};
+    static int dc[] = {0, 1, 0, -1};
 
-	public static void main(String[] args) throws Exception {
-		BufferedReader sc = new BufferedReader(new InputStreamReader(System.in));
-		StringTokenizer st;
+    public static void main(String[] args) throws Exception {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st;
 
-		st = new StringTokenizer(sc.readLine());
-		N = Integer.parseInt(st.nextToken());
-		M = Integer.parseInt(st.nextToken());
+        st = new StringTokenizer(br.readLine());
+        N = Integer.parseInt(st.nextToken());
+        M = Integer.parseInt(st.nextToken());
 
-		map = new int[N][M];
+        st = new StringTokenizer(br.readLine());
+        int r = Integer.parseInt(st.nextToken());
+        int c = Integer.parseInt(st.nextToken());
+        int d = Integer.parseInt(st.nextToken());
 
-		st = new StringTokenizer(sc.readLine());
-		R = Integer.parseInt(st.nextToken());
-		C = Integer.parseInt(st.nextToken());
-		d = Integer.parseInt(st.nextToken());
+        arr = new int[N][M];
 
-		for(int i=0; i<N; i++) {
-			st = new StringTokenizer(sc.readLine());
+        for (int i = 0; i < N; i++) {
+            st = new StringTokenizer(br.readLine());
 
-			for(int j=0; j<M; j++) {
-				map[i][j] = Integer.parseInt(st.nextToken());
-			}
-		}
+            for (int j = 0; j < M; j++) arr[i][j] = Integer.parseInt(st.nextToken());
+        }
 
-		ans=1;
-		solve();
-		System.out.println(ans);
-	}
+        visited = new boolean[N][M];
 
-	static void solve() {
-		Queue<Node> q = new LinkedList<Node>();
-		q.add(new Node(R, C));
-		
-		boolean visited[][] = new boolean[N][M];
-		visited[R][C]=true;
-		
-		while(!q.isEmpty()) {
-			Node cur = q.poll();
-			R = cur.y;
-			C = cur.x;
-			
-			// 반시계 방향으로 돈다.
-			for(int k=0; k<4; k++) {
-				d--;
-				if(d<0) d=3;
-				
-				int ny = R+dy[d];
-				int nx = C+dx[d];
+        solve(r, c, d);
 
-				if(!inRange(ny, nx) || map[ny][nx]==1 || visited[ny][nx]) continue; 
-				
-				q.add(new Node(ny, nx));
-				visited[ny][nx]=true;
-				ans++;
-				break;
-			}
-			
-			if(q.isEmpty()) {
-				setRear();
-				
-				int ny = R+dy[d];
-				int nx = C+dx[d];
-				
-				if(map[ny][nx]==1) return;
-				
-				q.add(new Node(ny, nx));
-				
-				setRear();
-			}
-		}
-	}
-		
-	static void setRear() {
-		d+=2;
-		d%=4;
-	}
+        for (boolean i[] : visited) {
+            for (boolean j : i) {
+                if (j) ans++;
+            }
+        }
 
-	static boolean inRange(int y, int x) {
-		return (y>=0&&y<N) && (x>=0&&x<M);
-	}
+        System.out.println(ans);
+    }
+
+    static void solve(int r, int c, int d) {
+        visited[r][c] = true;
+
+        int dir = d;
+        boolean check = false;
+
+        for (int k = 0; k < 4; k++) {
+            int nr = r + dr[d];
+            int nc = c + dc[d];
+
+            if (!inRange(nr, nc) || arr[nr][nc] == 1 || visited[nr][nc]) {
+                d--;
+                if (d < 0) d = 3;
+            } else {
+                check = true;
+                break;
+            }
+        }
+
+        if (!check) {
+            // 후진
+            int nr = -1, nc = -1;
+
+            switch (dir) {
+                case 0:
+                    nr = r + dr[2];
+                    nc = c + dc[2];
+                    break;
+                case 1:
+                    nr = r + dr[3];
+                    nc = c + dc[3];
+                    break;
+                case 2:
+                    nr = r + dr[0];
+                    nc = c + dc[0];
+                    break;
+                case 3:
+                    nr = r + dr[1];
+                    nc = c + dc[1];
+                    break;
+            }
+
+            if (!inRange(nr, nc) || arr[nr][nc] == 1) return;
+            else solve(nr, nc, dir);
+
+        } else {
+            for (int k = 0; k < 4; k++) {
+                dir--;
+                if (dir < 0) dir = 3;
+
+                int nr = r + dr[dir];
+                int nc = c + dc[dir];
+
+                if (!inRange(nr, nc) || visited[nr][nc] || arr[nr][nc] == 1) continue;
+
+                solve(nr, nc, dir);
+                break;
+            }
+        }
+    }
+
+    static boolean inRange(int r, int c) {
+        return (r >= 0 && r < N) && (c >= 0 && c < M);
+    }
 }
-
-
