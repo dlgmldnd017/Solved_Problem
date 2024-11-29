@@ -1,70 +1,73 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.StringTokenizer;
-
-class Node{
-	int E, ans;
-	
-	public Node(int E, int ans) {
-		this.E=E;
-		this.ans=ans;
-	}
-}
+import java.util.*;
 
 public class Main {
-	static int N, K[], ans;
-	static int[][] map;
-	
-	static boolean[] visited;
-	
-	public static void main(String[] args) throws Exception {
-		BufferedReader sc = new BufferedReader(new InputStreamReader(System.in));
-		StringTokenizer st;
-		
-		N = Integer.parseInt(sc.readLine());
-		
-		st = new StringTokenizer(sc.readLine());
-		K = new int[2];
-		K[0] = Integer.parseInt(st.nextToken());
-		K[1] = Integer.parseInt(st.nextToken());
-		
-		int to = Integer.parseInt(sc.readLine());
-		map = new int[N][N];
-		for(int i=0; i<to; i++) {
-			st = new StringTokenizer(sc.readLine());
-			int y = Integer.parseInt(st.nextToken())-1;
-			int x = Integer.parseInt(st.nextToken())-1;
-			
-			map[y][x]=1;
-			map[x][y]=1;
-		}
-		
-		solve();
-		if(ans!=0) System.out.println(ans);
-		else System.out.println(-1);
-	}
-	
-	static void solve() {
-		Queue<Node> q = new LinkedList<>();
-		q.add(new Node(K[0]-1, 0));
-		visited = new boolean[N];
-		
-		while(!q.isEmpty()) {
-			Node cur = q.poll();
-			visited[cur.E] = true;
-			
-			if(cur.E == K[1]-1) {
-				ans = cur.ans;
-				return;
-			}
-			
-			for(int i=0; i<N; i++) {
-				if(!visited[i]&&map[cur.E][i]==1) {
-					q.add(new Node(i, cur.ans+1));
-				}
-			}
-		}
-	}
+    static int N, M, ans;
+    static List<Integer> list[];
+
+    public static void main(String[] args) throws Exception {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st;
+
+        N = Integer.parseInt(br.readLine());
+
+        st = new StringTokenizer(br.readLine());
+        int start = Integer.parseInt(st.nextToken());
+        int end = Integer.parseInt(st.nextToken());
+
+        M = Integer.parseInt(br.readLine());
+
+        list = new ArrayList[N + 1];
+
+        for (int i = 1; i < N + 1; i++) list[i] = new ArrayList<>();
+
+        for (int i = 0; i < M; i++) {
+            st = new StringTokenizer(br.readLine());
+            int a = Integer.parseInt(st.nextToken());
+            int b = Integer.parseInt(st.nextToken());
+
+            list[a].add(b);
+            list[b].add(a);
+        }
+
+        solve(start, end);
+
+        if (ans == 0) ans = -1;
+        System.out.println(ans);
+    }
+
+    static void solve(int start, int end) {
+        Queue<Node> q = new ArrayDeque<>();
+        q.add(new Node(start, 0));
+
+        boolean visited[] = new boolean[N + 1];
+
+        while (!q.isEmpty()) {
+            Node cur = q.poll();
+
+            if (visited[cur.e]) continue;
+            visited[cur.e] = true;
+
+            for (int next : list[cur.e]) {
+                if (visited[next]) continue;
+
+                if (next == end) {
+                    ans = cur.cnt + 1;
+                    return;
+                }
+
+                q.add(new Node(next, cur.cnt + 1));
+            }
+        }
+    }
+}
+
+class Node {
+    int e, cnt;
+
+    Node(int e, int cnt) {
+        this.e = e;
+        this.cnt = cnt;
+    }
 }
