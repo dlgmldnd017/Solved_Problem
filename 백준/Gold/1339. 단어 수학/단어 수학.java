@@ -9,16 +9,17 @@ public class Main {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st;
 
-        N = Integer.parseInt(br.readLine());
-
         arr = new int[26];
 
-        for (int i = 0; i < N; i++) {
-            String str = br.readLine();
+        N = Integer.parseInt(br.readLine());
 
-            for (int j = 0; j < str.length(); j++) {
-                char c = str.charAt(j);
-                arr[c - 'A'] += (int) Math.pow(10, str.length() - 1 - j);
+        for (int i = 0; i < N; i++) {
+            String input = br.readLine();
+
+            for (int j = 0; j < input.length(); j++) {
+                char c = input.charAt(j);
+
+                arr[c - 'A'] += (int) Math.pow(10, input.length() - j - 1);
             }
         }
 
@@ -32,6 +33,6 @@ public class Main {
     static void solve() {
         int num = 9, idx = arr.length - 1;
 
-        while (arr[idx] != 0) ans += arr[idx--] * num--;
+        while (idx >= 0 && arr[idx] != 0) ans += num-- * arr[idx--];
     }
 }
