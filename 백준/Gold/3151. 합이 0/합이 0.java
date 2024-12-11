@@ -19,12 +19,6 @@ public class Main {
 
         Arrays.sort(arr);
 
-        solve();
-
-        System.out.println(ans);
-    }
-
-    static void solve() {
         for (int i = 0; i < N; i++) {
             if (arr[i] > 0) break;
 
@@ -60,6 +54,8 @@ public class Main {
                 else left++;
             }
         }
+
+        System.out.println(ans);
     }
 
     static long getComb(int n) {
