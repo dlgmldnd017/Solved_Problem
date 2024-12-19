@@ -1,129 +1,113 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.StringTokenizer;
+import java.util.*;
 
 public class Main {
-	static int N, M, y, x, K, ans;
-	static int width[], height[], map[][];
+    static int N, M, x, y, K, arr[][], w[], h[];
+    static List<Integer> list = new ArrayList<>();
 
-	static List<Integer> order = new ArrayList<>();
+    static StringBuilder sb = new StringBuilder();
 
-	static int dy[] = {0, 0, -1, 1};
-	static int dx[] = {1, -1, 0, 0};
+    static int dy[] = {0, 0, 0, -1, 1};
+    static int dx[] = {0, 1, -1, 0, 0};
 
-	static StringBuilder sb = new StringBuilder();
+    public static void main(String[] args) throws Exception {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st;
 
-	public static void main(String[] args) throws Exception {
-		BufferedReader sc = new BufferedReader(new InputStreamReader(System.in));
-		StringTokenizer st;
+        st = new StringTokenizer(br.readLine());
+        N = Integer.parseInt(st.nextToken());
+        M = Integer.parseInt(st.nextToken());
+        x = Integer.parseInt(st.nextToken());
+        y = Integer.parseInt(st.nextToken());
+        K = Integer.parseInt(st.nextToken());
 
-		st = new StringTokenizer(sc.readLine());
-		N = Integer.parseInt(st.nextToken());
-		M = Integer.parseInt(st.nextToken());
-		y = Integer.parseInt(st.nextToken());
-		x = Integer.parseInt(st.nextToken());
-		K = Integer.parseInt(st.nextToken());
+        arr = new int[N][M];
 
-		map = new int[N][M];
-		for(int i=0; i<N; i++) {
-			st = new StringTokenizer(sc.readLine());
+        for (int i = 0; i < N; i++) {
+            st = new StringTokenizer(br.readLine());
 
-			for(int j=0; j<M; j++) {
-				map[i][j] = Integer.parseInt(st.nextToken());
-			}
-		}
+            for (int j = 0; j < M; j++) arr[i][j] = Integer.parseInt(st.nextToken());
+        }
 
-		width = new int[3];
-		height = new int[4];
+        st = new StringTokenizer(br.readLine());
+        for (int i = 0; i < K; i++) list.add(Integer.parseInt(st.nextToken()));
 
-		st = new StringTokenizer(sc.readLine());
-		for(int i=0; i<K; i++) {
-			ans = solve(Integer.parseInt(st.nextToken())-1);
-			if(ans==-1) continue;
-			sb.append(ans+"\n");
-		}
+        solve();
 
-		System.out.println(sb);
-	}
+        System.out.println(sb);
+    }
 
-	static int solve(int dir) {
-		// 현재 위치 업데이트
-		y += dy[dir];
-		x += dx[dir];
+    static void solve() {
+        w = new int[3];
+        h = new int[4];
 
-		// 만약 범위를 벗어나면 명령 무시함.
-		if(!inRange(y, x)) {
-			y -= dy[dir];
-			x -= dx[dir];
-			return -1;
-		}
-		
-		// 주사위 돌리기
-		rotateDice(dir);
-				
-		// (1) 현재 위치에 값이 있는지 확인
-		if(map[y][x]!=0) {
-			height[3] = map[y][x];
-			map[y][x]=0;
-		}
-		else {
-			map[y][x] = height[3];
-		}
-		
-		// 윗면 리턴
-		return width[1];
-	}
+        for (int i : list) {
+            x += dy[i];
+            y += dx[i];
 
-	static void rotateDice(int dir){
-		int copyHeight[] = height.clone();
-		int copyWidth[] = width.clone();
-		
-		switch(dir) {
-		// 동쪽
-		case 0:
-			copyWidth[0] = height[3];
-			copyHeight[3] = width[2];
-			copyHeight[1] = width[0];
-			copyWidth[1] = width[0];
-			copyWidth[2] = width[1];
-			break;
+            if (!inRange(x, y)) {
+                x -= dy[i];
+                y -= dx[i];
+                continue;
+            }
 
-		// 서쪽
-		case 1:
-			copyWidth[0] = width[1];
-			copyWidth[1] = width[2];
-			copyWidth[2] = height[3];
-			copyHeight[3] = width[0];
-			copyHeight[1] = width[2];
-			break;
+            rotateDice(i);
 
-		// 북쪽
-		case 2:
-			copyHeight[0] = height[3];
-			copyHeight[1] = height[0];
-			copyWidth[1] = height[0];
-			copyHeight[2] = height[1];
-			copyHeight[3] = height[2];
-			break;
+            if (arr[x][y] != 0) {
+                w[1] = h[1] = arr[x][y];
+                arr[x][y] = 0;
+            } else {
+                arr[x][y] = w[1];
+            }
 
-		// 남쪽
-		case 3:
-			copyHeight[0] = height[1];
-			copyHeight[1] = height[2];
-			copyWidth[1] = height[2];
-			copyHeight[2] = height[3];
-			copyHeight[3] = height[0];
-			break;
-		}
-		
-		height = copyHeight.clone();
-		width = copyWidth.clone();
-	}
+            sb.append(h[3] + "\n");
+        }
+    }
 
-	static boolean inRange(int i, int j) {
-		return (i>=0&&i<N) && (j>=0&&j<M);
-	}
+    static void rotateDice(int dir) {
+        int tmpH[] = h.clone();
+        int tmpW[] = w.clone();
+
+        switch (dir) {
+            case 1:
+                tmpH[1] = w[2];
+                tmpH[3] = w[0];
+                tmpW[0] = w[1];
+                tmpW[1] = w[2];
+                tmpW[2] = h[3];
+                break;
+
+            case 2:
+                tmpH[1] = w[0];
+                tmpH[3] = w[2];
+                tmpW[0] = h[3];
+                tmpW[1] = w[0];
+                tmpW[2] = w[1];
+                break;
+
+            case 3:
+                tmpW[1] = h[0];
+                tmpH[0] = h[3];
+                tmpH[1] = h[0];
+                tmpH[2] = h[1];
+                tmpH[3] = h[2];
+                break;
+
+            case 4:
+                tmpW[1] = h[2];
+                tmpH[0] = h[1];
+                tmpH[1] = h[2];
+                tmpH[2] = h[3];
+                tmpH[3] = h[0];
+                break;
+        }
+
+        h = tmpH.clone();
+        w = tmpW.clone();
+    }
+
+    static boolean inRange(int x, int y) {
+        return (x >= 0 && x < N) && (y >= 0 && y < M);
+    }
 }
