@@ -21,22 +21,27 @@ public class Main {
 
         solve();
 
-        System.out.println(N - ans);
+        System.out.println(ans);
     }
 
     static void solve() {
         Arrays.sort(arr, Comparator.comparing(a -> a[0]));
 
-        dp = new int[N];
+        List<Integer> lis = new ArrayList<>();
+        int[] pos = new int[N];
 
         for (int i = 0; i < N; i++) {
-            dp[i] = 1;
-            for (int j = 0; j < i; j++) {
-                if (arr[i][1] > arr[j][1]) {
-                    dp[i] = Math.max(dp[i], dp[j] + 1);
-                }
-            }
-            ans = Math.max(ans, dp[i]);
+            int num = arr[i][1];
+            int posIdx = Collections.binarySearch(lis, num);
+            if (posIdx < 0) posIdx = -(posIdx + 1);
+
+            if (posIdx < lis.size()) lis.set(posIdx, num);
+            else lis.add(num);
+
+
+            pos[i] = posIdx;
         }
+
+        ans = N - lis.size();
     }
 }
