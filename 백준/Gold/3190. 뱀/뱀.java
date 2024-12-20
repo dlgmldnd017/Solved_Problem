@@ -1,97 +1,105 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.StringTokenizer;
-
-class Node{
-	int y, x;
-
-	public Node(int y, int x) {
-		this.y=y;
-		this.x=x;
-	}
-}
+import java.util.*;
 
 public class Main {
-	static int N, L, ans;
-	static int[] sec;
-	static int[][] map;
-	
-	static String[] str;
-	
-	static Queue<Node> q = new LinkedList<>();
-	
-	static int[] dy = {0, 1, 0, -1};
-	static int[] dx = {1, 0, -1, 0};
+    static int N, K, arr[][], L, Y, X, dir, cnt, ans;
+    static Map<Integer, Character> map = new HashMap<>();
 
-	public static void main(String[] args) throws Exception {
-		BufferedReader sc = new BufferedReader(new InputStreamReader(System.in));
-		StringTokenizer st;
-		
-		N = Integer.parseInt(sc.readLine());
-		map = new int[N+1][N+1];
-		
-		int size = Integer.parseInt(sc.readLine());
-		for(int i=0; i<size; i++) {
-			st = new StringTokenizer(sc.readLine());
-			int y = Integer.parseInt(st.nextToken());
-			int x = Integer.parseInt(st.nextToken());
-			map[y][x]=2;
-		}
-		
-		L = Integer.parseInt(sc.readLine());
-		sec = new int[L];
-		str = new String[L];
-		for(int i=0; i<L; i++) {
-			st = new StringTokenizer(sc.readLine());
-			sec[i] = Integer.parseInt(st.nextToken());
-			str[i] = st.nextToken();
-		}
-		
-		solve();
-		System.out.println(ans);
-	}
-	
-	public static void solve() {
-		Deque<Node> snake = new ArrayDeque<>();
-		snake.add(new Node(1,1));
-		
-		int dir=0, time=0, idx=0;
-		while(true) {
-			time++;
-			
-			int ny = snake.getFirst().y+dy[dir];
-			int nx = snake.getFirst().x+dx[dir];
-			
-			// 기저 사례(1): 이동 좌표가 범위 밖이거나 내 몸일경우
-			if(!inRange(ny,nx) ||  map[ny][nx]==1) {
-				ans = time;
-				return;
-			}
-			
-			if(map[ny][nx]==2) {
-				map[ny][nx]=0;
-			}else {
-				Node tail = snake.pollLast();
-				map[tail.y][tail.x]=0;
-			}
-			
-			snake.addFirst(new Node(ny, nx));
-			map[ny][nx]=1;
-			
-			// 만약 시간이 다 되면 방향 바꾸기
-			if(idx!=L&&sec[idx]==time) {
-				if(str[idx].equals("D")) dir = (dir+1)==4?0:dir+1;
-				else dir = (dir-1)==-1?3:dir-1;
-				idx++;
-			}
-		}
-	}
-	
-	public static boolean inRange(int y, int x) {
-		return (y>=1&&y<=N) && (x>=1&&x<=N);
-	}
+    static int dy[] = {0, 1, 0, -1};
+    static int dx[] = {1, 0, -1, 0};
+
+    public static void main(String[] args) throws Exception {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st;
+
+        N = Integer.parseInt(br.readLine());
+
+        arr = new int[N][N];
+
+        K = Integer.parseInt(br.readLine());
+
+        for (int i = 0; i < K; i++) {
+            st = new StringTokenizer(br.readLine());
+            int y = Integer.parseInt(st.nextToken()) - 1;
+            int x = Integer.parseInt(st.nextToken()) - 1;
+
+            arr[y][x] = 2;
+        }
+
+        L = Integer.parseInt(br.readLine());
+
+        for (int i = 0; i < L; i++) {
+            st = new StringTokenizer(br.readLine());
+            int X = Integer.parseInt(st.nextToken());
+            String C = st.nextToken();
+
+            map.put(X, C.charAt(0));
+        }
+
+        solve();
+
+        System.out.println(ans);
+    }
+
+    static void solve() {
+        arr[0][0] = cnt = 1;
+
+        PriorityQueue<Node> pq = new PriorityQueue<>();
+        pq.add(new Node(0, 0, cnt++));
+
+        while (true) {
+            if (map.containsKey(ans)) setDir(map.get(ans));
+
+            int ny = Y + dy[dir];
+            int nx = X + dx[dir];
+
+            if (!inRange(ny, nx) || arr[ny][nx] == 1) {
+                ans++;
+                return;
+            }
+
+            Y = ny;
+            X = nx;
+            ans++;
+
+            if (arr[ny][nx] == 2) {
+                arr[ny][nx] = 1;
+                pq.add(new Node(ny, nx, cnt++));
+                continue;
+            }
+
+            arr[ny][nx] = 1;
+            pq.add(new Node(ny, nx, cnt++));
+
+            Node tail = pq.poll();
+            arr[tail.y][tail.x] = 0;
+        }
+    }
+
+    static void setDir(char c) {
+        if (c == 'L') {
+            if (--dir < 0) dir = 3;
+        } else {
+            dir = (dir + 1) % 4;
+        }
+    }
+
+    static boolean inRange(int y, int x) {
+        return (y >= 0 && y < N) && (x >= 0 && x < N);
+    }
+}
+
+class Node implements Comparable<Node> {
+    int y, x, cnt;
+
+    Node(int y, int x, int cnt) {
+        this.y = y;
+        this.x = x;
+        this.cnt = cnt;
+    }
+
+    public int compareTo(Node n) {
+        return this.cnt - n.cnt;
+    }
 }
