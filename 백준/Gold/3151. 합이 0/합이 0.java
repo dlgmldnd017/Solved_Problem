@@ -18,7 +18,13 @@ public class Main {
         for (int i = 0; i < N; i++) arr[i] = Integer.parseInt(st.nextToken());
 
         Arrays.sort(arr);
+        
+        solve();
 
+        System.out.println(ans);
+    }
+
+    static void solve() {
         for (int i = 0; i < N; i++) {
             if (arr[i] > 0) break;
 
@@ -28,12 +34,10 @@ public class Main {
                 int sum = arr[i] + arr[left] + arr[right];
 
                 if (sum == 0) {
-                    int l = 1;
-                    int r = 1;
+                    int l = 1, r = 1;
 
                     if (arr[left] == arr[right]) {
-                        int n = right - left + 1;
-                        ans += getComb(n);
+                        ans += getComb(right - left + 1);
                         break;
                     }
 
@@ -54,8 +58,6 @@ public class Main {
                 else left++;
             }
         }
-
-        System.out.println(ans);
     }
 
     static long getComb(int n) {
