@@ -36,19 +36,9 @@ public class Main {
             }
 
             if (rowLen >= colLen) {
-                int maxCol = 0;
-                for (int j = 0; j < rowLen; j++) {
-                    R(j);
-                    maxCol = Math.max(maxCol, getRowLength(j));
-                }
-                colLen = maxCol;
+                for (int j = 0; j < rowLen; j++) R(j);
             } else {
-                int maxRow = 0;
-                for (int j = 0; j < colLen; j++) {
-                    C(j);
-                    maxRow = Math.max(maxRow, getColLength(j));
-                }
-                rowLen = maxRow;
+                for (int j = 0; j < colLen; j++) C(j);
             }
         }
 
@@ -70,13 +60,18 @@ public class Main {
                 .forEach(pq::add);
 
         int i = 0;
-        while (i < 100 && !pq.isEmpty()) {
+        while (!pq.isEmpty()) {
             Node n = pq.poll();
             A[idx][i++] = n.num;
             A[idx][i++] = n.cnt;
         }
 
-        while (i < 100) A[idx][i++] = 0;
+        colLen = Math.max(colLen, i);
+
+        while (i <= 99) {
+            A[idx][i++] = 0;
+            A[idx][i++] = 0;
+        }
     }
 
     static void C(int idx) {
@@ -94,33 +89,18 @@ public class Main {
                 .forEach(pq::add);
 
         int i = 0;
-        while (i < 100 && !pq.isEmpty()) {
+        while (!pq.isEmpty()) {
             Node n = pq.poll();
             A[i++][idx] = n.num;
             A[i++][idx] = n.cnt;
         }
 
-        while (i < 100) A[i++][idx] = 0;
-    }
+        rowLen = Math.max(rowLen, i);
 
-    // 각 행의 유효한 길이를 계산
-    static int getRowLength(int row) {
-        int len = 0;
-        for (int i = 0; i < 100; i++) {
-            if (A[row][i] == 0) break;
-            len++;
+        while (i <= 99) {
+            A[i++][idx] = 0;
+            A[i++][idx] = 0;
         }
-        return len;
-    }
-
-    // 각 열의 유효한 길이를 계산
-    static int getColLength(int col) {
-        int len = 0;
-        for (int i = 0; i < 100; i++) {
-            if (A[i][col] == 0) break;
-            len++;
-        }
-        return len;
     }
 }
 
