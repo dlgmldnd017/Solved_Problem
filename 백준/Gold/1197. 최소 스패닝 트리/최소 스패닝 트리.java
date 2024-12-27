@@ -1,70 +1,84 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.PriorityQueue;
+import java.util.StringTokenizer;
 
-class Node implements Comparable<Node> {
-    int e, w;
+class Graph implements Comparable<Graph>{
+	int idx, d;
+	
+	public Graph(int idx, int d) {
+		super();
+		this.idx = idx;
+		this.d = d;
+	}
 
-    Node(int e, int w) {
-        this.e = e;
-        this.w = w;
-    }
-
-    public int compareTo(Node n) {
-        return this.w - n.w;
-    }
+	@Override
+	public int compareTo(Graph o) {
+		return d-o.d;
+	}
 }
 
 public class Main {
-    static int V, E, ans;
-    static List<Node> list[];
+	static int N, M, ans;
+	static int dist[];
+	
+	static List<Graph> list[];
 
-    public static void main(String[] args) throws Exception {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st;
+	public static void main(String[] args) throws Exception {
+		BufferedReader sc = new BufferedReader(new InputStreamReader(System.in));
+		StringTokenizer st;
 
-        st = new StringTokenizer(br.readLine());
-        V = Integer.parseInt(st.nextToken());
-        E = Integer.parseInt(st.nextToken());
+		st = new StringTokenizer(sc.readLine());
+		N = Integer.parseInt(st.nextToken());
+		M = Integer.parseInt(st.nextToken());
+		
+		dist = new int[N];
+		list = new ArrayList[N];
+		
+		for(int i=0; i<N; i++) {
+			dist[i] = Integer.MAX_VALUE;
+			list[i] = new ArrayList<Graph>();
+		}
+		dist[0]=0;
+		
+		for(int i=0; i<M; i++) {
+			st = new StringTokenizer(sc.readLine());
+			int y = Integer.parseInt(st.nextToken())-1;
+			int x = Integer.parseInt(st.nextToken())-1;
+			int d = Integer.parseInt(st.nextToken());
+			
+			list[y].add(new Graph(x, d));
+			list[x].add(new Graph(y, d));
+		}
 
-        list = new ArrayList[V + 1];
+		solve();
+		for(int i=1; i<N; i++) {
+			ans += dist[i];
+		}
+		System.out.println(ans);
+	}
 
-        for (int i = 0; i <= V; i++) list[i] = new ArrayList<>();
-
-        for (int i = 0; i < E; i++) {
-            st = new StringTokenizer(br.readLine());
-            int A = Integer.parseInt(st.nextToken());
-            int B = Integer.parseInt(st.nextToken());
-            int C = Integer.parseInt(st.nextToken());
-
-            list[A].add(new Node(B, C));
-            list[B].add(new Node(A, C));
-        }
-
-        solve();
-
-        System.out.println(ans);
-    }
-
-    static void solve() {
-        PriorityQueue<Node> pq = new PriorityQueue<>();
-        pq.add(new Node(1, 0));
-
-        boolean visited[] = new boolean[V + 1];
-
-        while (!pq.isEmpty()) {
-            Node cur = pq.poll();
-
-            if (visited[cur.e]) continue;
-            visited[cur.e] = true;
-
-            ans += cur.w;
-
-            for (Node next : list[cur.e]) {
-                if (visited[next.e]) continue;
-
-                pq.add(new Node(next.e, next.w));
-            }
-        }
-    }
+	static void solve() {
+		PriorityQueue<Graph> pq = new PriorityQueue<Graph>();
+		pq.add(new Graph(0, 0));
+		
+		boolean visited[] = new boolean[N];
+		
+		while(!pq.isEmpty()) {
+			Graph cur = pq.poll();
+			
+			if(visited[cur.idx]) continue;
+			visited[cur.idx]=true;
+			
+			for(Graph g : list[cur.idx]) {
+				if(visited[g.idx] || dist[g.idx]<g.d) continue;
+				
+				dist[g.idx] = g.d;
+				pq.add(new Graph(g.idx, dist[g.idx]));
+			}
+		}
+	}
 }
