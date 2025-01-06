@@ -3,11 +3,13 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 public class Main {
-    static int N, K, words[], selected, ans;
+    static int N, K, selected, arr[], ans;
 
     public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st;
+
+        // antic
 
         st = new StringTokenizer(br.readLine());
         N = Integer.parseInt(st.nextToken());
@@ -18,17 +20,18 @@ public class Main {
             return;
         }
 
-        words = new int[N];
+        arr = new int[N];
 
         for (int i = 0; i < N; i++) {
-            for (char c : br.readLine().toCharArray()) words[i] |= (1 << (c - 'a'));
+            String input = br.readLine();
+            for (int j = 0; j < input.length(); j++) arr[i] |= 1 << (input.charAt(j) - 'a');
         }
 
-        selected |= (1 << ('a' - 'a'));
-        selected |= (1 << ('n' - 'a'));
-        selected |= (1 << ('t' - 'a'));
-        selected |= (1 << ('i' - 'a'));
-        selected |= (1 << ('c' - 'a'));
+        selected |= 1 << ('a' - 'a');
+        selected |= 1 << ('n' - 'a');
+        selected |= 1 << ('t' - 'a');
+        selected |= 1 << ('i' - 'a');
+        selected |= 1 << ('c' - 'a');
 
         solve(0, 0);
 
@@ -37,25 +40,25 @@ public class Main {
 
     static void solve(int depth, int idx) {
         if (depth == K - 5) {
-            int cnt = getReadableWords();
+            int cnt = getReadableCnt();
+
             if (ans < cnt) ans = cnt;
             return;
         }
 
         for (int i = idx; i < 26; i++) {
-            if ((selected & (1 << i)) != 0) continue;
-
+            if (((1 << i) & selected) != 0) continue;
             selected |= (1 << i);
             solve(depth + 1, i + 1);
             selected &= ~(1 << i);
         }
     }
 
-    static int getReadableWords() {
+    static int getReadableCnt() {
         int cnt = 0;
 
-        for (int i : words) {
-            if ((i & selected) == i) cnt++;
+        for (int i : arr) {
+            if ((selected & i) == i) cnt++;
         }
 
         return cnt;
