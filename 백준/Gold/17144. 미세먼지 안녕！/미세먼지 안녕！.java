@@ -1,168 +1,222 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.*;
+import java.util.StringTokenizer;
 
 public class Main {
-    static int R, C, T, arr[][], ans;
-    static List<AirPur> air = new ArrayList<>();
-    static List<Dust> dusts;
+	static int R, C, T;
+	static int r[], c[];
+	static int map[][], tmp[][];
 
-    static int dy[] = {0, -1, 0, 1};
-    static int dx[] = {1, 0, -1, 0};
+	static int dy[] = {-1, 0, 1, 0};
+	static int dx[] = {0, 1, 0, -1};
 
-    public static void main(String[] args) throws Exception {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st;
+	public static void main(String[] args) throws Exception {
+		BufferedReader sc = new BufferedReader(new InputStreamReader(System.in));
+		StringTokenizer st;
 
-        st = new StringTokenizer(br.readLine());
-        R = Integer.parseInt(st.nextToken());
-        C = Integer.parseInt(st.nextToken());
-        T = Integer.parseInt(st.nextToken());
+		st = new StringTokenizer(sc.readLine());
+		R = Integer.parseInt(st.nextToken());
+		C = Integer.parseInt(st.nextToken());
+		T = Integer.parseInt(st.nextToken());
 
-        arr = new int[R][C];
+		r = new int[2];
+		c = new int[2];
+		map = new int[R][C];
 
-        int dir = 1;
+		int idx=0;
+		for(int i=0; i<R; i++) {
+			st = new StringTokenizer(sc.readLine());
 
-        for (int i = 0; i < R; i++) {
-            st = new StringTokenizer(br.readLine());
-            for (int j = 0; j < C; j++) {
-                arr[i][j] = Integer.parseInt(st.nextToken());
+			for(int j=0; j<C; j++) {
+				map[i][j] = Integer.parseInt(st.nextToken());
 
-                if (arr[i][j] == -1) air.add(new AirPur(i, j, dir++));
-            }
-        }
+				if(map[i][j]==-1) {
+					r[idx]=i;
+					c[idx]=j;
+					idx++;
+				}
+			}
+		}
 
-        solve();
+		solve();
+		System.out.println(countDust());
+	}
 
-        System.out.println(ans);
-    }
+	static int countDust() {
+		int sum=0;
 
-    static void solve() {
-        for (int t = 0; t < T; t++) {
-            checkDust();
+		for(int i[]:map) {
+			for(int j:i) {
+				if(j==0 || j==-1) continue;
 
-            spreadDust();
-//            for (int i[] : arr) {
-//                for (int j : i) System.out.print(j + " ");
-//                System.out.println();
-//            }
-//            System.out.println();
-            clearAir();
-        }
+				sum+=j;
+			}
+		}
 
-        for (int i[] : arr) {
-            for (int j : i) ans += j;
-        }
+		return sum;
+	}
 
-        ans += 2;
-    }
+	static void solve() {
+		// T만큼 돌기.
+		for(int t=1; t<=T; t++) {
+			tmp = new int[R][C];
+			// 미세먼지 확산
+			spreadDust();
+			
+			tmp = new int[R][C];
+			// 공기청정기 실행
+			excuteAirCleaner();
+		}
+	}
 
-    static void checkDust() {
-        dusts = new ArrayList<>();
+	static void spreadDust() {
+		// 확산된 후의 원산지의 값 변경은 map에 저장
+		// 확산된 값은 tmp에 저장
+		for(int i=0; i<R; i++) {
+			for(int j=0; j<C; j++) {
+				if(map[i][j]==0) continue;
 
-        for (int i = 0; i < R; i++) {
-            for (int j = 0; j < C; j++) {
-                if (arr[i][j] == 0 || arr[i][j] == -1) continue;
+				int sum=0;
+				// 4방향으로 탐색
+				for(int k=0; k<4; k++) {
+					int ny = i+dy[k];
+					int nx = j+dx[k];
 
-                dusts.add(new Dust(i, j, arr[i][j]));
-            }
-        }
-    }
+					// 범위를 벗어나거나 로봇청소기가 있다면 확산하지 않음.
+					if(!inRange(ny, nx) || map[ny][nx]==-1) continue;
 
-    static void spreadDust() {
-        for (Dust d : dusts) {
-            int sum = d.cnt / 5, cnt = 0;
+					sum += map[i][j]/5;
 
-            for (int k = 0; k < 4; k++) {
-                int ny = d.y + dy[k];
-                int nx = d.x + dx[k];
+					tmp[ny][nx] += map[i][j]/5;
+				}
 
-                if (!inRange(ny, nx) || arr[ny][nx] == -1) continue;
+				// 확산시킨 만큼 뺀다.
+				map[i][j] -= sum;
+			}
+		}
 
-                arr[ny][nx] += sum;
-                cnt++;
-            }
+		// 그런 다음, 다 더해줌.
+		for(int i=0; i<R; i++) {
+			for(int j=0; j<C; j++) {
+				if(tmp[i][j]==0) continue;
+				map[i][j] += tmp[i][j];
+			}
+		}
 
-            arr[d.y][d.x] -= sum * cnt;
-        }
-    }
+		//		print();
+	}
 
-    static void clearAir() {
-        for (AirPur a : air) {
-            if (a.dir == 1) {
-                if (a.y == 0) continue;
-                arr[a.y - 1][0] = 0;
+	static void print() {
+		for(int i[]:map) {
+			for(int j:i) {
+				System.out.print(j+" ");
+			}
+			System.out.println();
+		}
+		System.out.println();
+	}
 
-                for (int i = a.y - 1; i > 0; i--) {
-                    int tmp = arr[i][0];
-                    arr[i][0] = arr[i - 1][0];
-                    arr[i - 1][0] = tmp;
-                }
+	static void excuteAirCleaner() {
+		// 반시계 방향
+		int r1=r[0], c1=c[0];
+		int printX=C-1, printY=r1, t=1;
 
-                for (int i = 0; i < C - 1; i++) {
-                    int tmp = arr[0][i];
-                    arr[0][i] = arr[0][i + 1];
-                    arr[0][i + 1] = tmp;
-                }
+		for(int k=0; k<2; k++) {
 
-                for (int i = 0; i < a.y; i++) {
-                    int tmp = arr[i][C - 1];
-                    arr[i][C - 1] = arr[i + 1][C - 1];
-                    arr[i + 1][C - 1] = tmp;
-                }
+			for(int i=0; i<printX; i++) {
+				int dust = map[r1][c1];
+				c1 += t;
 
-            } else {
-                if (a.y == R - 1) continue;
-                arr[a.y + 1][0] = 0;
+				if(dust==-1 || dust==0) continue;
 
-                for (int i = a.y + 1; i < R - 1; i++) {
-                    int tmp = arr[i][0];
-                    arr[i][0] = arr[i + 1][0];
-                    arr[i + 1][0] = tmp;
-                }
+				tmp[r1][c1]=dust;
+			}
 
-                for (int i = 0; i < C - 1; i++) {
-                    int tmp = arr[R - 1][i];
-                    arr[R - 1][i] = arr[R - 1][i + 1];
-                    arr[R - 1][i + 1] = tmp;
-                }
+			t *= -1;
 
-                for (int i = R - 1; i > a.y; i--) {
-                    int tmp = arr[i][C - 1];
-                    arr[i][C - 1] = arr[i - 1][C - 1];
-                    arr[i - 1][C - 1] = tmp;
-                }
-            }
+			for(int i=0; i<printY; i++) {
+				int dust = map[r1][c1];
+				r1 += t;
 
-            for (int i = C - 1; i > 1; i--) {
-                int tmp = arr[a.y][i];
-                arr[a.y][i] = arr[a.y][i - 1];
-                arr[a.y][i - 1] = tmp;
-            }
-        }
-    }
+				if(dust==0) continue;
 
-    static boolean inRange(int y, int x) {
-        return (y >= 0 && y < R) && (x >= 0 && x < C);
-    }
-}
+				if(map[r1][c1]!=-1) tmp[r1][c1]=dust;
+			}
+		}
 
-class Dust {
-    int y, x, cnt;
 
-    Dust(int y, int x, int cnt) {
-        this.y = y;
-        this.x = x;
-        this.cnt = cnt;
-    }
-}
+		// 시계 방향
+		int r2=r[1], c2=c[1];
+		printY=R-r2; printX=C-1; t=1;
+		
+		if(r2!=R-1) {
+			for(int k=0; k<2; k++) {
+				for(int i=0; i<printX; i++) {
+					int dust = map[r2][c2];
+					c2 += t;
 
-class AirPur {
-    int y, x, dir;
+					if(dust==-1 || dust==0) continue;
+					
+					tmp[r2][c2]=dust;
+				}
 
-    AirPur(int y, int x, int dir) {
-        this.y = y;
-        this.x = x;
-        this.dir = dir;
-    }
+				for(int i=0; i<printY-1; i++) {
+					int dust = map[r2][c2];
+					r2 += t;
+
+					if(dust==0) continue;
+					
+					if(map[r2][c2]!=-1) tmp[r2][c2]=dust;
+				}
+				
+				t *= -1;
+			}
+		}
+		copy();
+	}
+
+	static void copy() {
+		// 반시계 방향
+				int r1=r[0], c1=c[0];
+				int printX=C-1, printY=r1, t=1;
+
+				for(int k=0; k<2; k++) {
+					for(int i=0; i<printX; i++) {
+						if(map[r1][c1]!=-1) map[r1][c1] = tmp[r1][c1];
+						c1 += t;
+					}
+
+					t *= -1;
+
+					for(int i=0; i<printY; i++) {
+						if(map[r1][c1]!=-1) map[r1][c1] = tmp[r1][c1];
+						r1 += t;
+					}
+				}
+
+
+				// 시계 방향
+				int r2=r[1], c2=c[1];
+				printY=R-r2; printX=C-1; t=1;
+				
+				if(r2!=R-1) {
+					for(int k=0; k<2; k++) {
+						for(int i=0; i<printX; i++) {
+							if(map[r2][c2]!=-1) map[r2][c2] = tmp[r2][c2];
+							c2 += t;
+						}
+
+						for(int i=0; i<printY-1; i++) {
+							if(map[r2][c2]!=-1) map[r2][c2] = tmp[r2][c2];
+							r2 += t;
+						}
+						
+						t *= -1;
+					}
+				}
+	}
+
+	static boolean inRange(int y, int x) {
+		return (y>=0&&y<R) && (x>=0&&x<C);
+	}
 }
