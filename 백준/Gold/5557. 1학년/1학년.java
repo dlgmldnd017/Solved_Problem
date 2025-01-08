@@ -17,7 +17,6 @@ public class Main {
         st = new StringTokenizer(br.readLine());
         for (int i = 0; i < N; i++) arr[i] = Integer.parseInt(st.nextToken());
 
-
         solve();
 
         System.out.println(ans);
