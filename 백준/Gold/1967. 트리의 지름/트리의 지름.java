@@ -1,79 +1,72 @@
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.util.*;
-import java.io.*;
 
-class Node implements Comparable<Node>{
-    int E, W;
-
-    public Node(int E, int W){
-        this.E = E;
-        this.W = W;
-    }
-
-    public int compareTo(Node n){
-        return n.W - this.W;
-    }
-}
-
-public class Main{
+public class Main {
     static int N, maxIdx, ans;
     static List<Node> list[];
     static boolean visited[];
 
-    public static void main(String args[]) throws Exception{
+    public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st;
 
         N = Integer.parseInt(br.readLine());
 
-        list = new ArrayList[N+1];
-
-        for(int i=0; i<=N; i++){
-            list[i] = new ArrayList<>();
+        if (N == 1) {
+            System.out.println(0);
+            return;
         }
 
-        for(int i=0; i<N-1; i++){
+        list = new ArrayList[N + 1];
+
+        for (int i = 1; i <= N; i++) list[i] = new ArrayList<>();
+
+        for (int i = 0; i < N - 1; i++) {
             st = new StringTokenizer(br.readLine());
-            int A = Integer.parseInt(st.nextToken());
-            int B = Integer.parseInt(st.nextToken());
-            int C = Integer.parseInt(st.nextToken());
+            int y = Integer.parseInt(st.nextToken());
+            int x = Integer.parseInt(st.nextToken());
+            int w = Integer.parseInt(st.nextToken());
 
-            list[A].add(new Node(B, C));
-            list[B].add(new Node(A, C));
+            list[y].add(new Node(x, w));
+            list[x].add(new Node(y, w));
         }
 
-        solve(1);
-        solve(maxIdx);
+        solve();
 
         System.out.println(ans);
     }
 
-    static void solve(int start){
-        PriorityQueue<Node> pq = new PriorityQueue<>();
-        pq.add(new Node(start, 0));
+    static void solve() {
+        visited = new boolean[N + 1];
+        visited[1] = true;
+        dfs(1, 0);
 
-        visited = new boolean[N+1];
+        visited = new boolean[N + 1];
+        visited[maxIdx] = true;
+        dfs(maxIdx, 0);
+    }
 
-        int sum=0, idx=0;
-
-        while(!pq.isEmpty()){
-            Node cur = pq.poll();
-
-            if(visited[cur.E]) continue;
-            visited[cur.E] = true;
-
-            if(sum < cur.W) {
-                sum = cur.W;
-                idx = cur.E;
-            }
-
-            for(Node next : list[cur.E]){
-                if(visited[next.E]) continue;
-
-                pq.add(new Node(next.E, next.W+cur.W));
-            }
+    static void dfs(int idx, int w) {
+        if (ans < w) {
+            ans = w;
+            maxIdx = idx;
         }
 
-        maxIdx = idx;
-        ans = sum;
+        for (Node n : list[idx]) {
+            if (visited[n.e]) continue;
+
+            visited[n.e] = true;
+            dfs(n.e, w + n.w);
+        }
+    }
+}
+
+class Node {
+    int e, w;
+
+    Node(int e, int w) {
+        this.e = e;
+        this.w = w;
     }
 }
