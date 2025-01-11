@@ -10,7 +10,8 @@ public class Main {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st;
 
-        N = Integer.parseInt(br.readLine());
+        st = new StringTokenizer(br.readLine());
+        N = Integer.parseInt(st.nextToken());
 
         arr = new int[N];
 
@@ -28,16 +29,16 @@ public class Main {
 
         for (int i = 1; i < N - 1; i++) {
             for (int j = 0; j <= 20; j++) {
-                if (dp[i - 1][j] > 0) {
-                    int plus = j + arr[i];
-                    int minus = j - arr[i];
+                if (dp[i - 1][j] <= 0) continue;
 
-                    if (plus <= 20) dp[i][plus] += dp[i - 1][j];
-                    if (minus >= 0) dp[i][minus] += dp[i - 1][j];
-                }
+                int plus = j + arr[i];
+                int minus = j - arr[i];
+
+                if (plus <= 20) dp[i][plus] += dp[i - 1][j];
+                if (minus >= 0) dp[i][minus] += dp[i - 1][j];
             }
         }
 
-        ans = dp[N - 2][arr[N - 1]];
+        ans = dp[N-2][arr[N-1]];
     }
 }
