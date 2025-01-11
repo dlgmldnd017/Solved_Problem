@@ -4,7 +4,7 @@ import java.util.*;
 
 public class Main {
     static int N, maxIdx, ans;
-    static List<Node> list[];
+    static List<Tree> list[];
     static boolean visited[];
 
     public static void main(String[] args) throws Exception {
@@ -13,59 +13,55 @@ public class Main {
 
         N = Integer.parseInt(br.readLine());
 
-        if (N == 1) {
-            System.out.println(0);
-            return;
-        }
-
         list = new ArrayList[N + 1];
 
         for (int i = 1; i <= N; i++) list[i] = new ArrayList<>();
 
         for (int i = 0; i < N - 1; i++) {
             st = new StringTokenizer(br.readLine());
-            int y = Integer.parseInt(st.nextToken());
-            int x = Integer.parseInt(st.nextToken());
+            int a = Integer.parseInt(st.nextToken());
+            int b = Integer.parseInt(st.nextToken());
             int w = Integer.parseInt(st.nextToken());
 
-            list[y].add(new Node(x, w));
-            list[x].add(new Node(y, w));
+            list[a].add(new Tree(b, w));
+            list[b].add(new Tree(a, w));
         }
 
-        solve();
+        if (N == 1) ans = 0;
+        else solve();
 
         System.out.println(ans);
     }
 
     static void solve() {
         visited = new boolean[N + 1];
-        visited[1] = true;
         dfs(1, 0);
 
+        ans = 0;
+
         visited = new boolean[N + 1];
-        visited[maxIdx] = true;
         dfs(maxIdx, 0);
     }
 
-    static void dfs(int idx, int w) {
-        if (ans < w) {
-            ans = w;
-            maxIdx = idx;
+    static void dfs(int cur, int sum) {
+        visited[cur] = true;
+
+        if (ans < sum) {
+            ans = sum;
+            maxIdx = cur;
         }
 
-        for (Node n : list[idx]) {
-            if (visited[n.e]) continue;
-
-            visited[n.e] = true;
-            dfs(n.e, w + n.w);
+        for (Tree next : list[cur]) {
+            if (visited[next.e]) continue;
+            dfs(next.e, sum + next.w);
         }
     }
 }
 
-class Node {
+class Tree {
     int e, w;
 
-    Node(int e, int w) {
+    Tree(int e, int w) {
         this.e = e;
         this.w = w;
     }
