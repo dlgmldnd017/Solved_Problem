@@ -3,9 +3,8 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 public class Main {
-    static int N, T;
-    static int[] parent, depth;
-    static List<Integer>[] tree;
+    static int T, N, p[], h[], A, B, ans;
+    static List<Integer> tree[];
     static StringBuilder sb = new StringBuilder();
 
     public static void main(String[] args) throws Exception {
@@ -18,60 +17,65 @@ public class Main {
             N = Integer.parseInt(br.readLine());
 
             tree = new ArrayList[N + 1];
-            parent = new int[N + 1];
-            depth = new int[N + 1];
 
             for (int i = 1; i <= N; i++) tree[i] = new ArrayList<>();
 
+            p = new int[N + 1];
+
             for (int i = 0; i < N - 1; i++) {
                 st = new StringTokenizer(br.readLine());
-                int a = Integer.parseInt(st.nextToken());
-                int b = Integer.parseInt(st.nextToken());
+                int parent = Integer.parseInt(st.nextToken());
+                int child = Integer.parseInt(st.nextToken());
 
-                tree[a].add(b);
-                parent[b] = a;
+                tree[parent].add(child);
+                p[child] = parent;
             }
 
             st = new StringTokenizer(br.readLine());
-            int A = Integer.parseInt(st.nextToken());
-            int B = Integer.parseInt(st.nextToken());
+            A = Integer.parseInt(st.nextToken());
+            B = Integer.parseInt(st.nextToken());
 
-            solve(A, B);
+            solve();
         }
 
         System.out.println(sb);
     }
 
-    static void solve(int A, int B) {
+    static void solve() {
         int root = findRoot();
 
-        dfs(root, 0);
+        h = new int[N + 1];
 
-        sb.append(findLCA(A, B)).append("\n");
+        findHeight(root, 0);
+
+        findLCA();
+
+        sb.append(ans + "\n");
     }
 
     static int findRoot() {
         for (int i = 1; i <= N; i++) {
-            if (parent[i] == 0) return i;
+            if (p[i] == 0) return i;
         }
+
         return -1;
     }
 
-    static void dfs(int node, int d) {
-        depth[node] = d;
+    static void findHeight(int cur, int depth) {
+        h[cur] = depth;
 
-        for (int child : tree[node]) dfs(child, d + 1);
+        for (int next : tree[cur]) findHeight(next, depth + 1);
     }
 
-    static int findLCA(int a, int b) {
-        while (depth[a] > depth[b]) a = parent[a];
-        while (depth[b] > depth[a]) b = parent[b];
+    static void findLCA() {
+        while (h[A] > h[B]) A = p[A];
+        while (h[B] > h[A]) B = p[B];
 
-        while (a != b) {
-            a = parent[a];
-            b = parent[b];
+        while (A != B) {
+            A = p[A];
+            B = p[B];
         }
 
-        return a;
+        ans = A;
     }
 }
