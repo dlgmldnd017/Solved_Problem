@@ -2,19 +2,10 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.*;
 
-class Teacher {
-    int y, x;
-
-    Teacher(int y, int x) {
-        this.y = y;
-        this.x = x;
-    }
-}
-
 public class Main {
     static int N;
-    static char arr[][];
-    static List<Teacher> list = new ArrayList<>();
+    static char ch[][];
+    static List<Node> teachers = new ArrayList<>();
 
     static int dy[] = {0, 0, -1, 1};
     static int dx[] = {-1, 1, 0, 0};
@@ -25,30 +16,27 @@ public class Main {
 
         N = Integer.parseInt(br.readLine());
 
-        arr = new char[N][N];
+        ch = new char[N][N];
 
         for (int i = 0; i < N; i++) {
-            String str[] = br.readLine().split(" ");
-
+            st = new StringTokenizer(br.readLine());
             for (int j = 0; j < N; j++) {
-                arr[i][j] = str[j].charAt(0);
-
-                if (arr[i][j] == 'T') list.add(new Teacher(i, j));
+                ch[i][j] = st.nextToken().charAt(0);
+                if (ch[i][j] == 'T') teachers.add(new Node(i, j));
             }
         }
 
-        solve(0, 0, 0);
+        solve();
 
         System.out.println("NO");
     }
 
-    static void solve(int y, int x, int cnt) {
-        if (x == N) {
-            solve(y + 1, 0, cnt);
-            return;
-        }
+    static void solve() {
+        dfs(0, 0, 3);
+    }
 
-        if (cnt == 3) {
+    static void dfs(int y, int x, int cnt) {
+        if (cnt == 0) {
             if (check()) {
                 System.out.println("YES");
                 System.exit(0);
@@ -56,33 +44,38 @@ public class Main {
             return;
         }
 
-        if (y == N) return;
-
-        if (arr[y][x] == 'X') {
-            arr[y][x] = 'O';
-            solve(y, x + 1, cnt + 1);
-            arr[y][x] = 'X';
+        if (x == N) {
+            dfs(y + 1, 0, cnt);
+            return;
         }
 
-        solve(y, x + 1, cnt);
+        if (y == N) return;
+
+        if (ch[y][x] == 'X') {
+            ch[y][x] = 'O';
+            dfs(y, x + 1, cnt - 1);
+            ch[y][x] = 'X';
+        }
+
+        dfs(y, x + 1, cnt);
     }
 
     static boolean check() {
-        for (Teacher t : list) {
+        for (Node cur : teachers) {
             boolean visited[][] = new boolean[N][N];
 
             for (int k = 0; k < 4; k++) {
-                int ny = dy[k] + t.y;
-                int nx = dx[k] + t.x;
+                int ny = cur.y, nx = cur.x;
 
                 while (true) {
-                    if (!inRange(ny, nx) || visited[ny][nx] || arr[ny][nx] == 'O' || arr[ny][nx] == 'T') break;
-
-                    if (arr[ny][nx] == 'S') return false;
-
-                    visited[ny][nx] = true;
                     ny += dy[k];
                     nx += dx[k];
+
+                    if (!inRange(ny, nx) || visited[ny][nx] || ch[ny][nx] == 'T' || ch[ny][nx] == 'O') break;
+
+                    if (ch[ny][nx] == 'S') return false;
+
+                    visited[ny][nx] = true;
                 }
             }
         }
@@ -93,4 +86,13 @@ public class Main {
     static boolean inRange(int y, int x) {
         return (y >= 0 && y < N) && (x >= 0 && x < N);
     }
-} 
+}
+
+class Node {
+    int y, x;
+
+    Node(int y, int x) {
+        this.y = y;
+        this.x = x;
+    }
+}
