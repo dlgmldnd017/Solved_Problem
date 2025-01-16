@@ -2,24 +2,10 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.*;
 
-class Node implements Comparable<Node> {
-    int e;
-    long t;
-
-    Node(int e, long t) {
-        this.e = e;
-        this.t = t;
-    }
-
-    public int compareTo(Node n) {
-        if (this.t - n.t > 0) return 1;
-        return -1;
-    }
-}
-
 public class Main {
-    static int N, M, arr[];
+    static int N, M;
     static long ans;
+    static boolean view[];
     static List<Node> list[];
 
     public static void main(String[] args) throws Exception {
@@ -30,10 +16,12 @@ public class Main {
         N = Integer.parseInt(st.nextToken());
         M = Integer.parseInt(st.nextToken());
 
-        arr = new int[N];
+        view = new boolean[N];
 
         st = new StringTokenizer(br.readLine());
-        for (int i = 0; i < N; i++) arr[i] = Integer.parseInt(st.nextToken());
+        for (int i = 0; i < N - 1; i++) {
+            if (Integer.parseInt(st.nextToken()) == 1) view[i] = true;
+        }
 
         list = new ArrayList[N];
 
@@ -41,27 +29,20 @@ public class Main {
 
         for (int i = 0; i < M; i++) {
             st = new StringTokenizer(br.readLine());
-            int s = Integer.parseInt(st.nextToken());
-            int e = Integer.parseInt(st.nextToken());
+            int a = Integer.parseInt(st.nextToken());
+            int b = Integer.parseInt(st.nextToken());
             int t = Integer.parseInt(st.nextToken());
 
-            list[s].add(new Node(e, t));
-            list[e].add(new Node(s, t));
+            list[a].add(new Node(b, t));
+            list[b].add(new Node(a, t));
         }
-
-        arr[N - 1] = 0;
 
         solve();
 
-        if (ans == Long.MAX_VALUE) ans = -1;
-        System.out.println(ans);
+        System.out.println(ans == 0 ? -1 : ans);
     }
 
     static void solve() {
-        long dist[] = new long[N];
-        Arrays.fill(dist, Long.MAX_VALUE);
-        dist[0] = 0;
-
         PriorityQueue<Node> pq = new PriorityQueue<>();
         pq.add(new Node(0, 0));
 
@@ -70,17 +51,33 @@ public class Main {
         while (!pq.isEmpty()) {
             Node cur = pq.poll();
 
+            if (cur.e == N - 1) {
+                ans = cur.t;
+                return;
+            }
+
             if (visited[cur.e]) continue;
             visited[cur.e] = true;
 
             for (Node next : list[cur.e]) {
-                if (arr[next.e] == 1 || dist[next.e] <= dist[cur.e] + next.t) continue;
+                if (visited[next.e] || view[next.e]) continue;
 
-                dist[next.e] = dist[cur.e] + next.t;
-                pq.add(new Node(next.e, dist[next.e]));
+                pq.add(new Node(next.e, next.t + cur.t));
             }
         }
-
-        ans = dist[N - 1];
     }
-} 
+}
+
+class Node implements Comparable<Node> {
+    int e;
+    long t;
+
+    Node(int e, long t) {
+        this.e = e;
+        this.t = t;
+    }
+
+    public int compareTo(Node n) {
+        return Long.compare(this.t, n.t);
+    }
+}
