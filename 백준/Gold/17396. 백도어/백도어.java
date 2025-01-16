@@ -1,83 +1,70 @@
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.*;
 
 public class Main {
-    static int N, M;
-    static long ans;
-    static boolean view[];
-    static List<Node> list[];
+    public static class Node implements Comparable<Node> {
+        public int num;
+        public long cost;
 
-    public static void main(String[] args) throws Exception {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st;
-
-        st = new StringTokenizer(br.readLine());
-        N = Integer.parseInt(st.nextToken());
-        M = Integer.parseInt(st.nextToken());
-
-        view = new boolean[N];
-
-        st = new StringTokenizer(br.readLine());
-        for (int i = 0; i < N - 1; i++) {
-            if (Integer.parseInt(st.nextToken()) == 1) view[i] = true;
+        public Node(int num, long cost) {
+            this.num = num;
+            this.cost = cost;
         }
 
-        list = new ArrayList[N];
+        @Override
+        public int compareTo(Node o) {
+            return Long.compare(this.cost, o.cost);
+        }
+    }
 
-        for (int i = 0; i < N; i++) list[i] = new ArrayList<>();
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        StringTokenizer st = new StringTokenizer(br.readLine());
+        int N = Integer.parseInt(st.nextToken());
+        int M = Integer.parseInt(st.nextToken());
+
+        boolean[] visible = new boolean[N];
+        List<List<Node>> graph = new ArrayList<>();
+
+        st = new StringTokenizer(br.readLine());
+        for (int i = 0; i < N; i++) {
+            visible[i] = Integer.parseInt(st.nextToken()) == 1;
+            graph.add(new ArrayList<>());
+        }
+        visible[N - 1] = false;
 
         for (int i = 0; i < M; i++) {
             st = new StringTokenizer(br.readLine());
             int a = Integer.parseInt(st.nextToken());
             int b = Integer.parseInt(st.nextToken());
             int t = Integer.parseInt(st.nextToken());
-
-            list[a].add(new Node(b, t));
-            list[b].add(new Node(a, t));
+            graph.get(a).add(new Node(b, t));
+            graph.get(b).add(new Node(a, t));
         }
 
-        solve();
-
-        System.out.println(ans == Long.MAX_VALUE ? -1 : ans);
-    }
-
-    static void solve() {
-        long dist[] = new long[N];
+        long[] dist = new long[N];
         Arrays.fill(dist, Long.MAX_VALUE);
-
-        dist[0] = 0;
 
         PriorityQueue<Node> pq = new PriorityQueue<>();
         pq.offer(new Node(0, 0));
+        dist[0] = 0;
 
         while (!pq.isEmpty()) {
             Node cur = pq.poll();
+            if (cur.cost > dist[cur.num]) continue;
 
-            if (cur.t > dist[cur.e]) continue;
-
-            for (Node next : list[cur.e]) {
-                if (!view[next.e] && dist[next.e] > dist[cur.e] + next.t) {
-                    dist[next.e] = dist[cur.e] + next.t;
-                    pq.offer(new Node(next.e, dist[next.e]));
+            for (Node next : graph.get(cur.num)) {
+                if (visible[next.num]) continue;
+                if (dist[cur.num] + next.cost < dist[next.num]) {
+                    dist[next.num] = dist[cur.num] + next.cost;
+                    pq.offer(new Node(next.num, dist[next.num]));
                 }
             }
         }
 
-        ans = dist[N - 1];
-    }
-}
-
-class Node implements Comparable<Node> {
-    int e;
-    long t;
-
-    Node(int e, long t) {
-        this.e = e;
-        this.t = t;
-    }
-
-    public int compareTo(Node n) {
-        return Long.compare(this.t, n.t);
+        long answer = dist[N - 1] == Long.MAX_VALUE ? -1 : dist[N - 1];
+        bw.write(String.valueOf(answer));
+        bw.flush();
     }
 }
