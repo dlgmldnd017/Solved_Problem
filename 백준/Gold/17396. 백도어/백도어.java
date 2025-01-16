@@ -39,32 +39,32 @@ public class Main {
 
         solve();
 
-        System.out.println(ans == 0 ? -1 : ans);
+        System.out.println(ans == Long.MAX_VALUE ? -1 : ans);
     }
 
     static void solve() {
-        PriorityQueue<Node> pq = new PriorityQueue<>();
-        pq.add(new Node(0, 0));
+        long dist[] = new long[N];
+        Arrays.fill(dist, Long.MAX_VALUE);
 
-        boolean visited[] = new boolean[N];
+        dist[0] = 0;
+
+        PriorityQueue<Node> pq = new PriorityQueue<>();
+        pq.offer(new Node(0, 0));
 
         while (!pq.isEmpty()) {
             Node cur = pq.poll();
 
-            if (cur.e == N - 1) {
-                ans = cur.t;
-                return;
-            }
-
-            if (visited[cur.e]) continue;
-            visited[cur.e] = true;
+            if (cur.t > dist[cur.e]) continue;
 
             for (Node next : list[cur.e]) {
-                if (visited[next.e] || view[next.e]) continue;
-
-                pq.add(new Node(next.e, next.t + cur.t));
+                if (!view[next.e] && dist[next.e] > dist[cur.e] + next.t) {
+                    dist[next.e] = dist[cur.e] + next.t;
+                    pq.offer(new Node(next.e, dist[next.e]));
+                }
             }
         }
+
+        ans = dist[N - 1];
     }
 }
 
