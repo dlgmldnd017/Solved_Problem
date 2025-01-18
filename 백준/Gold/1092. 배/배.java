@@ -4,8 +4,7 @@ import java.util.*;
 
 public class Main {
     static int N, M, ans;
-    static List<Integer> crane = new ArrayList<>();
-    static List<Integer> box = new ArrayList<>();
+    static List<Integer> crane = new ArrayList<>(), box = new ArrayList<>();
 
     public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -37,17 +36,17 @@ public class Main {
         while (!box.isEmpty()) {
             int i = 0, j = 0;
 
-            while (i < N) {
-                if (j == box.size()) break;
-                else if (crane.get(i) >= box.get(j)) {
-                    box.remove(j);
-                    i++;
-                } else j++;
-            }
+            while(j < N) {
+                if (i == box.size()) break;
 
+                if (box.get(i) <= crane.get(j)) {
+                    box.remove(i);
+                    j++;
+                } else {
+                    i++;
+                }
+            }
             ans++;
         }
     }
 }
-
-
