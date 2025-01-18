@@ -2,20 +2,9 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.*;
 
-class Node {
-    int y, x;
-
-    Node(int y, int x) {
-        this.y = y;
-        this.x = x;
-    }
-}
-
 public class Main {
-    static int N, L, R, arr[][], ans;
-    static List<Node> list[];
-    static boolean visited[][], check;
-
+    static int N, L, R, A[][], newA[][], ans;
+    static boolean flag, visited[][];
     static int dy[] = {0, 0, -1, 1};
     static int dx[] = {-1, 1, 0, 0};
 
@@ -28,12 +17,12 @@ public class Main {
         L = Integer.parseInt(st.nextToken());
         R = Integer.parseInt(st.nextToken());
 
-        arr = new int[N][N];
+        A = new int[N][N];
 
         for (int i = 0; i < N; i++) {
             st = new StringTokenizer(br.readLine());
 
-            for (int j = 0; j < N; j++) arr[i][j] = Integer.parseInt(st.nextToken());
+            for (int j = 0; j < N; j++) A[i][j] = Integer.parseInt(st.nextToken());
         }
 
         solve();
@@ -43,65 +32,69 @@ public class Main {
 
     static void solve() {
         while (true) {
-            int num = 0;
-            check = false;
-            list = new ArrayList[N * N];
+            flag = false;
+            newA = new int[N][N];
             visited = new boolean[N][N];
 
             for (int i = 0; i < N; i++) {
                 for (int j = 0; j < N; j++) {
                     if (visited[i][j]) continue;
 
-                    list[num] = new ArrayList<>();
-                    bfs(i, j, num++);
+                    bfs(i, j);
                 }
             }
 
-            if (!check) break;
-            updateArr(num);
+            if (!flag) return;
+
+            for (int i = 0; i < N; i++) A[i] = newA[i].clone();
+
             ans++;
         }
     }
 
-    static void bfs(int y, int x, int num) {
+    static void bfs(int y, int x) {
         Queue<Node> q = new ArrayDeque<>();
         q.add(new Node(y, x));
 
+        Queue<Node> nq = new ArrayDeque<>();
+        nq.add(new Node(y, x));
+
+        int sum = A[y][x];
+
         visited[y][x] = true;
-        list[num].add(new Node(y, x));
 
         while (!q.isEmpty()) {
             Node cur = q.poll();
 
             for (int k = 0; k < 4; k++) {
-                int ny = dy[k] + cur.y;
-                int nx = dx[k] + cur.x;
+                int ny = cur.y + dy[k];
+                int nx = cur.x + dx[k];
 
                 if (!inRange(ny, nx) || visited[ny][nx]) continue;
 
-                int value = Math.abs(arr[cur.y][cur.x] - arr[ny][nx]);
+                int diff = Math.abs(A[cur.y][cur.x] - A[ny][nx]);
 
-                if (L <= value && value <= R) {
-                    check = true;
+                if (L <= diff && diff <= R) {
+                    sum += A[ny][nx];
                     visited[ny][nx] = true;
                     q.add(new Node(ny, nx));
-                    list[num].add(new Node(ny, nx));
+                    nq.add(new Node(ny, nx));
                 }
             }
         }
-    }
 
-    static void updateArr(int num) {
-        for (int i = 0; i < num; i++) {
-            if (list[i].size() == 1) continue;
+        if (nq.size() == 1) {
+            Node n = nq.poll();
+            newA[n.y][n.x] = A[n.y][n.x];
+        } else {
+            flag = true;
 
-            int sum = 0;
+            int avg = sum / nq.size();
 
-            for (Node n : list[i]) sum += arr[n.y][n.x];
-
-            int value = sum / list[i].size();
-
-            for (Node n : list[i]) arr[n.y][n.x] = value;
+            while (!nq.isEmpty()) {
+                Node cur = nq.poll();
+                newA[cur.y][cur.x] = avg;
+            }
         }
     }
 
@@ -110,4 +103,11 @@ public class Main {
     }
 }
 
+class Node {
+    int y, x;
 
+    Node(int y, int x) {
+        this.y = y;
+        this.x = x;
+    }
+}
