@@ -1,6 +1,5 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.*;
 
 public class Main {
     static int N, ans;
@@ -10,23 +9,19 @@ public class Main {
 
         N = Integer.parseInt(br.readLine());
 
-        String input = br.readLine();
+        char bulbs[] = br.readLine().toCharArray();
 
-        char[] bulbs = input.toCharArray();
-
-        ans = 1_000_000;
+        ans = 200_000;
 
         for (int i = 0; i < 3; i++) {
-            ans = Math.min(ans, solve(bulbs, bulbs[0]) + i);
+            ans = Math.min(ans, solve(bulbs.clone(), bulbs[0]) + i);
             flipBulbs(bulbs, 0);
         }
 
-        if (ans == 1_000_000) ans = -1;
-        System.out.println(ans);
+        System.out.println(ans == 200_000 ? -1 : ans);
     }
 
-    static int solve(char c[], char target) {
-        char[] bulbs = Arrays.copyOf(c, N);
+    static int solve(char bulbs[], char target) {
         int cnt = 0;
 
         for (int i = 1; i <= N - 3; i++) {
@@ -39,7 +34,7 @@ public class Main {
         for (int i = 0; i < N; i++) {
             if (target == bulbs[i]) continue;
 
-            cnt = 1_000_000;
+            cnt = 200_000;
             break;
         }
 
