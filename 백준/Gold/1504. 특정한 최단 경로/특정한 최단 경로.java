@@ -5,7 +5,6 @@ import java.util.*;
 public class Main {
     static int N, E, v1, v2, ans;
     static List<Node> list[];
-    static boolean visited[];
 
     public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -23,39 +22,51 @@ public class Main {
             st = new StringTokenizer(br.readLine());
             int a = Integer.parseInt(st.nextToken());
             int b = Integer.parseInt(st.nextToken());
-            int c = Integer.parseInt(st.nextToken());
+            int w = Integer.parseInt(st.nextToken());
 
-            list[a].add(new Node(b, c));
-            list[b].add(new Node(a, c));
+            list[a].add(new Node(b, w));
+            list[b].add(new Node(a, w));
         }
 
         st = new StringTokenizer(br.readLine());
         v1 = Integer.parseInt(st.nextToken());
         v2 = Integer.parseInt(st.nextToken());
 
-        int dist1 = solve(1, v1);
-        dist1 += solve(v1, v2);
-        dist1 += solve(v2, N);
-
-        int dist2 = solve(1, v2);
-        dist2 += solve(v2, v1);
-        dist2 += solve(v1, N);
-
-        if (dist1 >= 100_000_000 && dist2 >= 100_000_000) ans = -1;
-        else ans = Math.min(dist1, dist2);
+        if (E == 0) ans = -1;
+        else solve();
 
         System.out.println(ans);
     }
 
-    static int solve(int start, int end) {
+    static void solve() {
+        int a1 = bfs(1, v1);
+        int b1 = bfs(v1, v2);
+        int c1 = bfs(v2, N);
+
+        if (a1 == Integer.MAX_VALUE || b1 == Integer.MAX_VALUE || c1 == Integer.MAX_VALUE) {
+            ans = -1;
+            return;
+        } else {
+            ans = a1 + b1 + c1;
+        }
+
+        int a2 = bfs(1, v2);
+        int b2 = bfs(v2, v1);
+        int c2 = bfs(v1, N);
+
+        if (ans > a2 + b2 + c2) ans = a2 + b2 + c2;
+    }
+
+    static int bfs(int start, int end) {
+        int dist[] = new int[N + 1];
+        Arrays.fill(dist, Integer.MAX_VALUE);
+
+        dist[start] = 0;
+
         PriorityQueue<Node> pq = new PriorityQueue<>();
         pq.add(new Node(start, 0));
 
-        int dist[] = new int[N + 1];
-        Arrays.fill(dist, 100_000_000);
-        dist[start] = 0;
-
-        visited = new boolean[N + 1];
+        boolean visited[] = new boolean[N + 1];
 
         while (!pq.isEmpty()) {
             Node cur = pq.poll();
@@ -63,29 +74,26 @@ public class Main {
             if (visited[cur.e]) continue;
             visited[cur.e] = true;
 
-            ans += cur.d;
-
             for (Node next : list[cur.e]) {
-                if (visited[next.e] | (dist[next.e] <= dist[cur.e] + next.d)) continue;
+                if (visited[next.e] || dist[next.e] <= dist[cur.e] + next.w) continue;
 
-                dist[next.e] = dist[cur.e] + next.d;
+                dist[next.e] = dist[cur.e] + next.w;
                 pq.add(new Node(next.e, dist[next.e]));
             }
         }
-
         return dist[end];
     }
 }
 
 class Node implements Comparable<Node> {
-    int e, d;
+    int e, w;
 
-    Node(int e, int d) {
+    Node(int e, int w) {
         this.e = e;
-        this.d = d;
+        this.w = w;
     }
 
     public int compareTo(Node n) {
-        return this.d - n.d;
+        return this.w - n.w;
     }
 }
