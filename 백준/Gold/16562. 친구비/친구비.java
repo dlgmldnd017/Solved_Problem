@@ -3,7 +3,8 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 public class Main {
-    static int N, M, K, A[], min;
+    static int N, M, K, ans;
+    static PriorityQueue<Node> pq = new PriorityQueue<>();
     static List<Integer> list[];
     static boolean visited[];
 
@@ -16,10 +17,11 @@ public class Main {
         M = Integer.parseInt(st.nextToken());
         K = Integer.parseInt(st.nextToken());
 
-        A = new int[N + 1];
-
         st = new StringTokenizer(br.readLine());
-        for (int i = 1; i <= N; i++) A[i] = Integer.parseInt(st.nextToken());
+        for (int i = 1; i <= N; i++) {
+            int cost = Integer.parseInt(st.nextToken());
+            pq.add(new Node(i, cost));
+        }
 
         list = new ArrayList[N + 1];
 
@@ -27,48 +29,45 @@ public class Main {
 
         for (int i = 0; i < M; i++) {
             st = new StringTokenizer(br.readLine());
-            int v = Integer.parseInt(st.nextToken());
-            int w = Integer.parseInt(st.nextToken());
+            int a = Integer.parseInt(st.nextToken());
+            int b = Integer.parseInt(st.nextToken());
 
-            list[v].add(w);
-            list[w].add(v);
+            list[a].add(b);
+            list[b].add(a);
         }
 
         visited = new boolean[N + 1];
 
-        int k = K;
+        solve();
 
-        for (int i = 1; i <= N; i++) {
-            if (visited[i]) continue;
-
-            min = 1_000_000;
-            solve(i);
-            k -= min;
-
-            if (k < 0) break;
-        }
-
-        if (k < 0) System.out.println("Oh no");
-        else System.out.println(K - k);
+        System.out.println(ans == -1 ? "Oh no" : ans);
     }
 
-    static void solve(int start) {
-        Queue<Integer> q = new ArrayDeque<>();
-        q.add(start);
+    static void solve() {
+        while (!pq.isEmpty()) {
+            Node cur = pq.poll();
 
-        while (!q.isEmpty()) {
-            int cur = q.poll();
+            if (visited[cur.idx]) continue;
 
-            if (visited[cur]) continue;
-            visited[cur] = true;
+            ans += cur.cost;
 
-            min = Math.min(min, A[cur]);
+            Queue<Integer> q = new ArrayDeque<>();
+            q.add(cur.idx);
 
-            for (int next : list[cur]) {
-                if (visited[next]) continue;
-                q.add(next);
+            while (!q.isEmpty()) {
+                int next1 = q.poll();
+
+                if (visited[next1]) continue;
+                visited[next1] = true;
+
+                for (int next2 : list[next1]) {
+                    if (visited[next2]) continue;
+                    q.add(next2);
+                }
             }
         }
+
+        if (ans > K) ans = -1;
     }
 }
 
