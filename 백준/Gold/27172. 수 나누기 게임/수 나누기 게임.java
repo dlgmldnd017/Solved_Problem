@@ -37,8 +37,8 @@ public class Main {
             for (int j = i * 2; j <= max; j += i) {
                 if (cnt[j] <= 0) continue;
 
-                score[i] += cnt[j];
-                score[j] -= cnt[i];
+                score[i] += 1;
+                score[j] -= 1;
             }
         }
 
