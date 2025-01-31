@@ -3,13 +3,13 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 public class Main {
-    static int N, M, H, arr[][][], ans;
-    static PriorityQueue<Node> q = new PriorityQueue<>();
+    static int M, N, H, box[][][], ans;
+    static PriorityQueue<Node> pq = new PriorityQueue<>();
     static boolean visited[][][];
 
-    static int dh[] = {0, 0, 0, 0, 1, -1};
-    static int dy[] = {0, 0, -1, 1, 0, 0};
-    static int dx[] = {-1, 1, 0, 0, 0, 0};
+    static int dh[] = {0, 0, 0, 0, -1, 1};
+    static int dy[] = {-1, 1, 0, 0, 0, 0};
+    static int dx[] = {0, 0, -1, 1, 0, 0};
 
     public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -20,15 +20,15 @@ public class Main {
         N = Integer.parseInt(st.nextToken());
         H = Integer.parseInt(st.nextToken());
 
-        arr = new int[H][N][M];
+        box = new int[H][N][M];
 
         for (int i = 0; i < H; i++) {
             for (int j = 0; j < N; j++) {
                 st = new StringTokenizer(br.readLine());
                 for (int k = 0; k < M; k++) {
-                    arr[i][j][k] = Integer.parseInt(st.nextToken());
+                    box[i][j][k] = Integer.parseInt(st.nextToken());
 
-                    if (arr[i][j][k] == 1) q.add(new Node(i, j, k, 1));
+                    if (box[i][j][k] == 1) pq.add(new Node(i, j, k, 1));
                 }
             }
         }
@@ -38,8 +38,8 @@ public class Main {
         solve();
 
         if (ans == 1) System.out.println(0);
-        else if(ans == -1) System.out.println(ans);
-        else System.out.println(ans-1);
+        else if (ans == -1) System.out.println(ans);
+        else System.out.println(ans - 1);
     }
 
     static void solve() {
@@ -48,32 +48,32 @@ public class Main {
         for (int i = 0; i < H; i++) {
             for (int j = 0; j < N; j++) {
                 for (int k = 0; k < M; k++) {
-                    if (arr[i][j][k] == 0) {
+                    if (box[i][j][k] == 0) {
                         ans = -1;
                         return;
                     }
 
-                    ans = Math.max(ans, arr[i][j][k]);
+                    ans = Math.max(ans, box[i][j][k]);
                 }
             }
         }
     }
 
     static void bfs() {
-        while (!q.isEmpty()) {
-            Node cur = q.poll();
+        while (!pq.isEmpty()) {
+            Node cur = pq.poll();
 
             for (int k = 0; k < 6; k++) {
                 int nh = dh[k] + cur.h;
                 int ny = dy[k] + cur.y;
                 int nx = dx[k] + cur.x;
 
-                if (!inRange(nh, ny, nx) || arr[nh][ny][nx] == -1 || visited[nh][ny][nx]) continue;
+                if (!inRange(nh, ny, nx) || box[nh][ny][nx] == -1 || visited[nh][ny][nx]) continue;
 
-                if (arr[nh][ny][nx] == 0) {
+                if (box[nh][ny][nx] == 0) {
                     visited[nh][ny][nx] = true;
-                    arr[nh][ny][nx] = cur.cnt + 1;
-                    q.add(new Node(nh, ny, nx, cur.cnt + 1));
+                    box[nh][ny][nx] = cur.cnt + 1;
+                    pq.add(new Node(nh, ny, nx, cur.cnt + 1));
                 }
             }
         }
