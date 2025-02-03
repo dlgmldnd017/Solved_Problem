@@ -2,17 +2,9 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.*;
 
-class Node {
-    int x, cnt;
-
-    Node(int x, int cnt) {
-        this.x = x;
-        this.cnt = cnt;
-    }
-}
-
 public class Main {
-    static int N, K, visited[], ans, cnt;
+    static int N, K, ans, cnt;
+    static StringBuilder sb = new StringBuilder();
 
     public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -24,33 +16,28 @@ public class Main {
 
         ans = Integer.MAX_VALUE;
 
-        if (N < K) solve();
-        else {
-            ans = N - K;
-            cnt = 1;
-        }
+        solve();
 
-        System.out.println(ans + "\n" + cnt);
+        System.out.println(sb);
     }
 
     static void solve() {
         Queue<Node> q = new ArrayDeque<>();
         q.add(new Node(N, 0));
 
-        visited = new int[100_001];
-
+        int visited[] = new int[100_001];
         Arrays.fill(visited, Integer.MAX_VALUE);
         visited[N] = 0;
 
-        while (!q.isEmpty()) {
+        while(!q.isEmpty()) {
             Node cur = q.poll();
 
-            if (cur.cnt > ans) continue;
+            if (ans < cur.t) continue;
 
-            if (cur.x == K) {
-                if (ans >= cur.cnt) {
-                    if (ans > cur.cnt) {
-                        ans = cur.cnt;
+            if (cur.n == K) {
+                if (ans >= cur.t) {
+                    if (ans > cur.t) {
+                        ans = cur.t;
                         cnt = 0;
                     }
                     cnt++;
@@ -58,16 +45,26 @@ public class Main {
                 continue;
             }
 
-            int nextPos[] = {cur.x - 1, cur.x + 1, cur.x * 2};
+            int nextPos[] = {cur.n - 1, cur.n + 1, cur.n * 2};
 
             for (int next : nextPos) {
-                if (next >= 0 && next <= 100_000) {
-                    if (visited[next] < cur.cnt + 1) continue;
+                if (next < 0 || next > 100_000 || visited[next] < cur.t + 1) continue;
 
-                    visited[next] = cur.cnt + 1;
-                    q.add(new Node(next, cur.cnt + 1));
-                }
+                visited[next] = cur.t + 1;
+                q.add(new Node(next, cur.t + 1));
             }
         }
+
+        sb.append(ans + "\n");
+        sb.append(cnt + "\n");
+    }
+}
+
+class Node {
+    int n, t;
+
+    Node(int n, int t) {
+        this.n = n;
+        this.t = t;
     }
 }
