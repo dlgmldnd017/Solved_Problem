@@ -7,23 +7,18 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st;
-
-        arr = new int[26];
 
         N = Integer.parseInt(br.readLine());
+
+        arr = new int[26];
 
         for (int i = 0; i < N; i++) {
             String input = br.readLine();
 
             for (int j = 0; j < input.length(); j++) {
-                char c = input.charAt(j);
-
-                arr[c - 'A'] += (int) Math.pow(10, input.length() - j - 1);
+                arr[input.charAt(j) - 'A'] += (int) Math.pow(10, input.length() - j - 1);
             }
         }
-
-        Arrays.sort(arr);
 
         solve();
 
@@ -31,8 +26,10 @@ public class Main {
     }
 
     static void solve() {
-        int num = 9, idx = arr.length - 1;
+        Arrays.sort(arr);
 
-        while (idx >= 0 && arr[idx] != 0) ans += num-- * arr[idx--];
+        int num = 9, len = arr.length - 1;
+
+        while (len >= 0 && arr[len] != 0) ans += num-- * arr[len--];
     }
 }
