@@ -1,46 +1,45 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class Main {
     static int N, arr[];
-    static List<Integer> list = new ArrayList<>();
-    static boolean visited[];
-
+    static boolean visited[], cycle[];
+    static List<Integer> result = new ArrayList<>();
     static StringBuilder sb = new StringBuilder();
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String args[]) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
         N = Integer.parseInt(br.readLine());
 
         arr = new int[N + 1];
+        cycle = new boolean[N + 1];
 
         for (int i = 1; i <= N; i++) arr[i] = Integer.parseInt(br.readLine());
 
-        visited = new boolean[N + 1];
-
-        for (int i = 1; i <= N; i++) {
-            visited[i] = true;
-            solve(i, i);
-            visited[i] = false;
-        }
-
-        Collections.sort(list);
-
-        sb.append(list.size() + "\n");
-        for (int i : list) sb.append(i + "\n");
+        solve();
 
         System.out.println(sb);
     }
 
-    static void solve(int start, int target) {
-        if (!visited[arr[start]]) {
-            visited[arr[start]] = true;
-            solve(arr[start], target);
-            visited[arr[start]] = false;
+    static void solve() {
+        for (int i = 1; i <= N; i++) {
+            visited = new boolean[N + 1];
+            dfs(i, i);
         }
 
-        if (arr[start] == target) list.add(target);
+        Collections.sort(result);
+        sb.append(result.size()).append("\n");
+        for (int i : result) sb.append(i).append("\n");
+    }
+
+    static void dfs(int start, int current) {
+        if (!visited[current]) {
+            visited[current] = true;
+            dfs(start, arr[current]);
+        } else if (current == start) result.add(start);
     }
 }
