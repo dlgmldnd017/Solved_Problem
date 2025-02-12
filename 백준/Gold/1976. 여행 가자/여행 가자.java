@@ -43,7 +43,7 @@ public class Main {
             return;
         }
 
-        solve(arr[0]);
+        for (int i = 0; i < N - 1; i++) solve(arr[0]);
 
         for (int i = 0; i < M; i++) {
             if (visited[arr[i]]) continue;
