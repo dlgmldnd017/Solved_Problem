@@ -3,7 +3,7 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 public class Main {
-    static int N, arr[][], dp[], ans;
+    static int N, arr[][], ans;
 
     public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -33,11 +33,11 @@ public class Main {
         for (int i = 0; i < N; i++) {
             int num = arr[i][1];
             int posIdx = Collections.binarySearch(lis, num);
+
             if (posIdx < 0) posIdx = -(posIdx + 1);
 
             if (posIdx < lis.size()) lis.set(posIdx, num);
             else lis.add(num);
-
 
             pos[i] = posIdx;
         }
