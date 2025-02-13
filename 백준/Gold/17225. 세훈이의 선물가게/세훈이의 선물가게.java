@@ -16,13 +16,33 @@ public class Main {
         B = Integer.parseInt(st.nextToken());
         N = Integer.parseInt(st.nextToken());
 
+        int At = 0, Bt = 0;
+
         for (int i = 0; i < N; i++) {
             st = new StringTokenizer(br.readLine());
             int t = Integer.parseInt(st.nextToken());
             char c = st.nextToken().charAt(0);
-            int cnt = Integer.parseInt(st.nextToken()) - 1;
+            int cnt = Integer.parseInt(st.nextToken());
 
-            pq.add(new Node(t, c, cnt));
+            for (int j = 0; j < cnt; j++) {
+                if(c == 'B'){
+                    if(At >= t){
+                        pq.add(new Node(At, c));
+                        At += A;
+                    }else{
+                        pq.add(new Node(t, c));
+                        At = t + A;
+                    }
+                }else{
+                    if(Bt >= t){
+                        pq.add(new Node(Bt, c));
+                        Bt += B;
+                    }else{
+                        pq.add(new Node(t, c));
+                        Bt = t + B;
+                    }
+                }
+            }
         }
 
         solve();
@@ -32,44 +52,36 @@ public class Main {
 
     static void solve() {
         List<Integer> list1 = new ArrayList<>(), list2 = new ArrayList<>();
-        int i = 1, cntA = 0, cntB = 0;
-
+        int i = 1;
+        
         while (!pq.isEmpty()) {
             Node cur = pq.poll();
 
-            if (cur.c == 'B') {
-                cntA++;
-                list1.add(i++);
-                if (cur.cnt != 0) pq.add(new Node(cur.t + A, cur.c, cur.cnt - 1));
-            } else {
-                cntB++;
-                list2.add(i++);
-                if (cur.cnt != 0) pq.add(new Node(cur.t + B, cur.c, cur.cnt - 1));
-            }
+            if (cur.c == 'B') list1.add(i++);
+            else list2.add(i++);
         }
 
-        sb.append(cntA + "\n");
+        sb.append(list1.size() + "\n");
         for (int j : list1) sb.append(j + " ");
 
         sb.append("\n");
 
-        sb.append(cntB + "\n");
+        sb.append(list2.size() + "\n");
         for (int j : list2) sb.append(j + " ");
     }
 }
 
 class Node implements Comparable<Node> {
-    int t, cnt;
+    int t;
     char c;
 
-    Node(int t, char c, int cnt) {
+    Node(int t, char c) {
         this.t = t;
         this.c = c;
-        this.cnt = cnt;
     }
 
     public int compareTo(Node n) {
-        if (this.t == n.t) return this.c - n.t;
+        if (this.t == n.t) return this.c - n.c;
         return this.t - n.t;
     }
 }
