@@ -14,57 +14,70 @@ public class Main {
         M = Integer.parseInt(st.nextToken());
         H = Integer.parseInt(st.nextToken());
 
-        arr = new int[H + 1][N + 1];
+        arr = new int[H + 1][N];
 
         for (int i = 0; i < M; i++) {
             st = new StringTokenizer(br.readLine());
-            int a = Integer.parseInt(st.nextToken());
-            int b = Integer.parseInt(st.nextToken());
+            int a = Integer.parseInt(st.nextToken()) - 1;
+            int b = Integer.parseInt(st.nextToken()) - 1;
 
             arr[a][b] = 1;
-            arr[a][b + 1] = 2;
+            arr[a][b + 1] = -1;
         }
 
-        for (int i = 0; i <= 3; i++) {
-            ans = i;
-            solve(1, 0);
-        }
+        solve();
 
-        if (ans == 3) ans = -1;
         System.out.println(ans);
     }
 
-    static void solve(int y, int cnt) {
-        if (ans == cnt) {
-            if (!check()) return;
-            System.out.println(ans);
-            System.exit(0);
+    static void solve() {
+        if (M == 0 || check()) return;
+
+        ans = -1;
+
+        for (int i = 1; i <= 3; i++) dfs(0, 0, i, 0);
+    }
+
+    static void dfs(int y, int x, int depth, int cnt) {
+        if (depth == cnt) {
+            if (check()) {
+                System.out.println(cnt);
+                System.exit(0);
+            }
+            return;
         }
 
-        for (int i = y; i <= H; i++) {
-            for (int j = 1; j < N; j++) {
-                if (arr[i][j] == 0 && arr[i][j + 1] == 0) {
-                    arr[i][j] = 1;
-                    arr[i][j + 1] = 2;
-                    solve(i, cnt + 1);
-                    arr[i][j] = arr[i][j + 1] = 0;
-                }
-            }
+        if (x >= N - 1) {
+            dfs(y + 1, 0, depth, cnt);
+            return;
         }
+
+        if (y == H) return;
+
+        if (arr[y][x] == 0 && arr[y][x + 1] == 0) {
+            arr[y][x] = 1;
+            arr[y][x + 1] = -1;
+            dfs(y, x + 2, depth, cnt + 1);
+            arr[y][x] = 0;
+            arr[y][x + 1] = 0;
+        }
+
+        dfs(y, x + 1, depth, cnt);
     }
 
     static boolean check() {
-        for (int i = 1; i <= N; i++) {
-            int y = 1, x = i;
+        for (int i = 0; i < N; i++) {
+            int y = 0, x = i;
 
-            for (int j = 1; j <= H; j++) {
-                if (arr[y][x] == 1) x++;
-                else if (arr[y][x] == 2) x--;
+            while (y < H) {
+                if (arr[y][x] == 1) x += 1;
+                else if (arr[y][x] == -1) x -= 1;
                 y++;
             }
 
             if (x != i) return false;
         }
+
         return true;
     }
 }
