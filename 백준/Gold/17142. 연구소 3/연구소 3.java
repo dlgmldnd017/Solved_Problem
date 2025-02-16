@@ -61,7 +61,8 @@ public class Main {
     }
 
     static void check(int cnt) {
-        PriorityQueue<Node> pq = new PriorityQueue<>();
+        Queue<Node> pq = new ArrayDeque<>();
+
         boolean visited[][] = new boolean[N][N];
 
         for (Node n : virus) {
@@ -69,13 +70,12 @@ public class Main {
             visited[n.y][n.x] = true;
         }
 
-
-        int tmp = 0;
+        int max = 0;
 
         while (!pq.isEmpty()) {
             Node cur = pq.poll();
 
-            if (arr[cur.y][cur.x] != 2 && tmp < cur.t) tmp = cur.t;
+            if (arr[cur.y][cur.x] != 2 && max < cur.t) max = cur.t;
 
             for (int k = 0; k < 4; k++) {
                 int ny = cur.y + dy[k];
@@ -90,7 +90,7 @@ public class Main {
             }
         }
 
-        if (cnt == 0) ans = Math.min(ans, tmp);
+        if (cnt == 0) ans = Math.min(ans, max);
     }
 
     static boolean inRange(int y, int x) {
@@ -98,16 +98,12 @@ public class Main {
     }
 }
 
-class Node implements Comparable<Node> {
+class Node {
     int y, x, t;
 
     Node(int y, int x, int t) {
         this.y = y;
         this.x = x;
         this.t = t;
-    }
-
-    public int compareTo(Node n) {
-        return this.t - n.t;
     }
 }
