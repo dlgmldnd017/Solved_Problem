@@ -3,9 +3,9 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 public class Main {
-    static int N, R, Q, dp[];
+    static int N, R, Q, ans;
+    static int[] query, dp;
     static List<Integer> list[];
-
     static StringBuilder sb = new StringBuilder();
 
     public static void main(String[] args) throws Exception {
@@ -30,24 +30,31 @@ public class Main {
             list[V].add(U);
         }
 
-        dp = new int[N + 1];
-        Arrays.fill(dp, 1);
+        query = new int[Q];
 
-        solve(R, -1);
+        for (int i = 0; i < Q; i++) query[i] = Integer.parseInt(br.readLine());
 
-        for (int q = 0; q < Q; q++) {
-            int U = Integer.parseInt(br.readLine());
-            sb.append(dp[U] + "\n");
-        }
+        solve();
 
         System.out.println(sb);
     }
 
-    static void solve(int idx, int p) {
-        for (int next : list[idx]) {
-            if (p != next) solve(next, idx);
+    static void solve() {
+        dp = new int[N + 1];
+        Arrays.fill(dp, 1);
+
+        makeTree(R, -1);
+
+        for (int i : query) {
+            sb.append(dp[i] + "\n");
+        }
+    }
+
+    static void makeTree(int currentNode, int parent) {
+        for (int next : list[currentNode]) {
+            if (next != parent) makeTree(next, currentNode);
         }
 
-        if (p != -1) dp[p] += dp[idx];
+        if (parent != -1) dp[parent] += dp[currentNode];
     }
 }
