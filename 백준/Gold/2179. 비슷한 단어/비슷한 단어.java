@@ -26,6 +26,7 @@ public class Main {
 
             for (int j = i + 1; j < N; j++) {
                 String s2 = words.get(j);
+
                 int cnt = check(s1, s2);
 
                 if (cnt > max) {
@@ -41,12 +42,12 @@ public class Main {
 
     static int check(String s1, String s2) {
         int cnt = 0, size = Math.min(s1.length(), s2.length());
-        
+
         for (int i = 0; i < size; i++) {
             if (s1.charAt(i) != s2.charAt(i)) break;
             cnt++;
         }
-        
+
         return cnt;
     }
 }
