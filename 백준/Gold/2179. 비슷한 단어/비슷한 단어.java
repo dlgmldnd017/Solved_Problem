@@ -24,8 +24,12 @@ public class Main {
         for (int i = 0; i < N - 1; i++) {
             String s1 = words.get(i);
 
+            if (s1.length() <= max) continue;
+
             for (int j = i + 1; j < N; j++) {
                 String s2 = words.get(j);
+
+                if (s2.length() <= max) continue;
 
                 int cnt = check(s1, s2);
 
