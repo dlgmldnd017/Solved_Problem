@@ -3,9 +3,8 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 public class Main {
-    static int C, P, arr[], ans;
-
-    static String info[][] = {
+    static int C, P, h[], ans;
+    static String blockInfo[][] = {
             {},
             {"0000"},
             {"00"},
@@ -24,10 +23,10 @@ public class Main {
         C = Integer.parseInt(st.nextToken());
         P = Integer.parseInt(st.nextToken());
 
-        arr = new int[C];
+        h = new int[C];
 
         st = new StringTokenizer(br.readLine());
-        for (int i = 0; i < C; i++) arr[i] = Integer.parseInt(st.nextToken());
+        for (int i = 0; i < C; i++) h[i] = Integer.parseInt(st.nextToken());
 
         solve();
 
@@ -35,27 +34,25 @@ public class Main {
     }
 
     static void solve() {
-        if (P==1) ans += C;
+        if (P == 1) ans += C;
 
-        for (int i = 0; i < info[P].length; i++) {
-            check(info[P][i]);
-        }
+        for (int i = 0; i < blockInfo[P].length; i++) checkEnableBlock(blockInfo[P][i]);
     }
 
-    static void check(String block) {
+    static void checkEnableBlock(String block) {
         for (int i = 0; i <= C - block.length(); i++) {
-            int gap = arr[i] - (block.charAt(0) - '0');
+            int gap = h[i] - (block.charAt(0) - '0');
 
-            boolean flag = true;
+            boolean isSame = true;
 
             for (int j = 1; j < block.length(); j++) {
-                if (arr[i + j] - (block.charAt(j) - '0') != gap) {
-                    flag = false;
+                if (h[i + j] - (block.charAt(j) - '0') != gap) {
+                    isSame = false;
                     break;
                 }
             }
 
-            if (flag) ans++;
+            if (isSame) ans++;
         }
     }
 }
