@@ -36,9 +36,9 @@ public class Main {
 
         ans = cntB;
 
-        for (int i = 1; i < len; i++) {
-            if (str.charAt(i - 1) == 'b') cntB--;
-            if (str.charAt(i + cntA - 1) == 'b') cntB++;
+        for (int i = 0; i < len - 1; i++) {
+            if (str.charAt(i) == 'b') cntB--;
+            if (str.charAt(i + cntA) == 'b') cntB++;
             if (ans > cntB) ans = cntB;
         }
     }
