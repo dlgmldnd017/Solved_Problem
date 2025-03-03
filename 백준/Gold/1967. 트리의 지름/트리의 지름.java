@@ -4,8 +4,8 @@ import java.util.*;
 
 public class Main {
     static int N, maxIdx, ans;
-    static List<Tree> list[];
-    static boolean visited[];
+    static boolean[] visited;
+    static List<Node> list[];
 
     public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -15,7 +15,7 @@ public class Main {
 
         list = new ArrayList[N + 1];
 
-        for (int i = 1; i <= N; i++) list[i] = new ArrayList<>();
+        for (int i = 0; i < N + 1; i++) list[i] = new ArrayList<>();
 
         for (int i = 0; i < N - 1; i++) {
             st = new StringTokenizer(br.readLine());
@@ -23,45 +23,48 @@ public class Main {
             int b = Integer.parseInt(st.nextToken());
             int w = Integer.parseInt(st.nextToken());
 
-            list[a].add(new Tree(b, w));
-            list[b].add(new Tree(a, w));
+            list[a].add(new Node(b, w));
+            list[b].add(new Node(a, w));
         }
 
-        if (N == 1) ans = 0;
-        else solve();
+        solve();
 
         System.out.println(ans);
     }
 
     static void solve() {
         visited = new boolean[N + 1];
+        visited[1] = true;
+
         dfs(1, 0);
+
+        visited = new boolean[N + 1];
+        visited[maxIdx] = true;
 
         ans = 0;
 
-        visited = new boolean[N + 1];
         dfs(maxIdx, 0);
     }
 
     static void dfs(int cur, int sum) {
-        visited[cur] = true;
-
         if (ans < sum) {
             ans = sum;
             maxIdx = cur;
         }
 
-        for (Tree next : list[cur]) {
+        for (Node next : list[cur]) {
             if (visited[next.e]) continue;
+
+            visited[next.e] = true;
             dfs(next.e, sum + next.w);
         }
     }
 }
 
-class Tree {
+class Node {
     int e, w;
 
-    Tree(int e, int w) {
+    Node(int e, int w) {
         this.e = e;
         this.w = w;
     }
