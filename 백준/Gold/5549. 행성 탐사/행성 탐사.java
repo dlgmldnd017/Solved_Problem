@@ -51,7 +51,7 @@ public class Main {
             int cntO = getSum(prefixO, y1, x1, y2, x2);
             int cntI = getSum(prefixI, y1, x1, y2, x2);
 
-            sb.append(cntJ + " " + cntO + " " + cntI + "\n");
+            sb.append(cntJ).append(" ").append(cntO).append(" ").append(cntI).append("\n");
         }
 
         System.out.println(sb);
