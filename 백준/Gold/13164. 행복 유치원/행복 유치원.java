@@ -1,12 +1,13 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.*;
+import java.util.Arrays;
+import java.util.StringTokenizer;
 
 public class Main {
-    static int N, K, arr[];
-    static long ans;
+    static int N, K, ans;
+    static int[] arr;
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String args[]) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st;
 
@@ -19,15 +20,13 @@ public class Main {
         st = new StringTokenizer(br.readLine());
         for (int i = 0; i < N; i++) arr[i] = Integer.parseInt(st.nextToken());
 
-        Arrays.sort(arr);
-
         solve();
 
         System.out.println(ans);
     }
 
     static void solve() {
-        long diff[] = new long[N - 1];
+        int[] diff = new int[N - 1];
 
         for (int i = 0; i < N - 1; i++) diff[i] = arr[i + 1] - arr[i];
 
@@ -35,4 +34,4 @@ public class Main {
 
         for (int i = 0; i < N - K; i++) ans += diff[i];
     }
-} 
+}
