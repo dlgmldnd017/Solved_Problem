@@ -1,10 +1,11 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.*;
+import java.util.StringTokenizer;
 
 public class Main {
-    static int C, P, h[], ans;
-    static String blockInfo[][] = {
+    static int C, P, ans;
+    static int[] arr;
+    static String[][] blocks = {
             {},
             {"0000"},
             {"00"},
@@ -12,10 +13,10 @@ public class Main {
             {"100", "01"},
             {"000", "01", "101", "10"},
             {"000", "00", "011", "20"},
-            {"000", "02", "110", "00"}
+            {"000", "00", "110", "02"}
     };
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String args[]) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st;
 
@@ -23,10 +24,10 @@ public class Main {
         C = Integer.parseInt(st.nextToken());
         P = Integer.parseInt(st.nextToken());
 
-        h = new int[C];
+        arr = new int[C];
 
         st = new StringTokenizer(br.readLine());
-        for (int i = 0; i < C; i++) h[i] = Integer.parseInt(st.nextToken());
+        for (int i = 0; i < C; i++) arr[i] = Integer.parseInt(st.nextToken());
 
         solve();
 
@@ -36,23 +37,26 @@ public class Main {
     static void solve() {
         if (P == 1) ans += C;
 
-        for (int i = 0; i < blockInfo[P].length; i++) checkEnableBlock(blockInfo[P][i]);
+        for (int i = 0; i < blocks[P].length; i++) checkBlockMatch(blocks[P][i]);
     }
 
-    static void checkEnableBlock(String block) {
+    static void checkBlockMatch(String block) {
         for (int i = 0; i <= C - block.length(); i++) {
-            int gap = h[i] - (block.charAt(0) - '0');
-
-            boolean isSame = true;
+            int diff1 = arr[i] - (block.charAt(0) - '0');
+            boolean check = false;
 
             for (int j = 1; j < block.length(); j++) {
-                if (h[i + j] - (block.charAt(j) - '0') != gap) {
-                    isSame = false;
+                int diff2 = arr[i + j] - (block.charAt(j) - '0');
+
+                if (diff1 != diff2) {
+                    check = false;
                     break;
                 }
+
+                check = true;
             }
 
-            if (isSame) ans++;
+            if (check) ans++;
         }
     }
 }
