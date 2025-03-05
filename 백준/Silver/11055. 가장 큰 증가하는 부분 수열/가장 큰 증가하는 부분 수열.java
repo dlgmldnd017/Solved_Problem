@@ -1,24 +1,22 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.*;
+import java.util.Arrays;
+import java.util.StringTokenizer;
 
 public class Main {
-    static int N, arr[], dp[], ans;
+    static int N, ans;
+    static int[] arr;
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String args[]) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st;
 
         N = Integer.parseInt(br.readLine());
 
-        arr = new int[N + 1];
+        arr = new int[N];
 
         st = new StringTokenizer(br.readLine());
         for (int i = 0; i < N; i++) arr[i] = Integer.parseInt(st.nextToken());
-
-        dp = new int[N];
-
-        ans = Integer.MIN_VALUE;
 
         solve();
 
@@ -26,15 +24,21 @@ public class Main {
     }
 
     static void solve() {
+        int[] dp = new int[N];
+        dp[0] = arr[0];
 
-        for (int i = 0; i < N; i++) {
+        ans = dp[0];
+
+        for (int i = 1; i < N; i++) {
             dp[i] = arr[i];
 
-            for (int j = 0; j < i; j++) {
-                if (arr[i] > arr[j]) dp[i] = Math.max(dp[i], dp[j] + arr[i]);
-            }
-        }
+            for (int j = i - 1; j >= 0; j--) {
+                if (arr[i] <= arr[j]) continue;
 
-        for (int i : dp) if (ans < i) ans = i;
+                if (dp[i] < arr[i] + dp[j]) dp[i] = arr[i] + dp[j];
+            }
+
+            if (ans < dp[i]) ans = dp[i];
+        }
     }
 }
