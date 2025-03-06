@@ -1,15 +1,17 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.StringTokenizer;
 
 public class Main {
-    static int N, ans[];
+    static int N;
+    static int[] parent;
     static List<Integer> list[];
-    static boolean visited[];
-
+    static boolean[] visited;
     static StringBuilder sb = new StringBuilder();
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String args[]) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st;
 
@@ -21,14 +23,14 @@ public class Main {
 
         for (int i = 0; i < N - 1; i++) {
             st = new StringTokenizer(br.readLine());
-            int s = Integer.parseInt(st.nextToken());
-            int e = Integer.parseInt(st.nextToken());
+            int a = Integer.parseInt(st.nextToken());
+            int b = Integer.parseInt(st.nextToken());
 
-            list[s].add(e);
-            list[e].add(s);
+            list[a].add(b);
+            list[b].add(a);
         }
 
-        ans = new int[N + 1];
+        parent = new int[N + 1];
 
         visited = new boolean[N + 1];
 
@@ -38,23 +40,20 @@ public class Main {
     }
 
     static void solve() {
-        Queue<Integer> q = new ArrayDeque<>();
-        q.add(1);
+        visited[1] = true;
 
-        while (!q.isEmpty()) {
-            int cur = q.poll();
+        dfs(1);
 
-            if (visited[cur]) continue;
-            visited[cur] = true;
+        for (int i = 2; i <= N; i++) sb.append(parent[i]).append("\n");
+    }
 
-            for (int next : list[cur]) {
-                if (visited[next]) continue;
+    static void dfs(int cur) {
+        for (int next : list[cur]) {
+            if (visited[next]) continue;
+            visited[next] = true;
+            parent[next] = cur;
 
-                ans[next] = cur;
-                q.add(next);
-            }
+            dfs(next);
         }
-
-        for (int i = 2; i <= N; i++) sb.append(ans[i]+"\n");
     }
 }
