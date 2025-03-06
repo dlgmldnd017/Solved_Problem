@@ -1,11 +1,12 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.*;
+import java.util.StringTokenizer;
 
 public class Main {
-    static int L, N, K, station[], ans;
+    static int L, N, K, ans;
+    static int[] arr;
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String args[]) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st;
 
@@ -14,24 +15,29 @@ public class Main {
         N = Integer.parseInt(st.nextToken());
         K = Integer.parseInt(st.nextToken());
 
-        station = new int[N];
+        arr = new int[N + 2];
 
         st = new StringTokenizer(br.readLine());
-        for (int i = 0; i < N; i++) station[i] = Integer.parseInt(st.nextToken());
+        for (int i = 1; i <= N; i++) arr[i] = Integer.parseInt(st.nextToken());
+        arr[N + 1] = L;
 
-        if (K == 0) ans = L;
-        else solve();
+        solve();
 
         System.out.println(ans);
     }
 
     static void solve() {
+        if (K == 0) {
+            ans = L;
+            return;
+        }
+
         int left = 0, right = L;
 
         while (left <= right) {
             int mid = (left + right) / 2;
 
-            if (canGo(mid)) {
+            if (check(mid)) {
                 ans = mid;
                 right = mid - 1;
             } else {
@@ -40,22 +46,17 @@ public class Main {
         }
     }
 
-    static boolean canGo(int mid) {
-        int cnt = 0, lastPos = 0;
+    static boolean check(int mid) {
+        int i = 0, j = 1, cnt = 0;
 
-        for (int i = 0; i < N; i++) {
-            if (station[i] - lastPos > mid) {
-                if (i == 0) return false;
+        while (j != N + 2) {
+            int diff = arr[j] - arr[i];
 
+            if (diff > mid) {
+                if (j - i == 1) return false;
+                i = j - 1;
                 cnt++;
-                lastPos = station[i - 1];
-                if (station[i] - lastPos > mid) return false;
-            }
-        }
-
-        if (L - lastPos > mid) {
-            cnt++;
-            if (L - station[N - 1] > mid) return false;
+            } else j++;
         }
 
         return cnt <= K;
