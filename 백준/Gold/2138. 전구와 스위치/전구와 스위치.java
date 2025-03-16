@@ -1,14 +1,12 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.*;
 
 public class Main {
     static int N, ans;
-    static char original[], target[];
+    static char[] original, target;
 
     public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st;
 
         N = Integer.parseInt(br.readLine());
 
@@ -24,7 +22,7 @@ public class Main {
     }
 
     static int solve(boolean pressFirst) {
-        char ch[] = original.clone();
+        char[] ch = original.clone();
         int cnt = 0;
 
         if (pressFirst) {
