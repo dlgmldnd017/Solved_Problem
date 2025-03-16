@@ -3,8 +3,9 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 public class Main {
-    static int N, M, arr[][], wallCnt, ans;
-    static List<Node> list, virus;
+    static int N, M, arr[][], es, ans;
+    static List<Virus> list = new ArrayList<>();
+
     static int dy[] = {0, 0, -1, 1};
     static int dx[] = {-1, 1, 0, 0};
 
@@ -18,90 +19,87 @@ public class Main {
 
         arr = new int[N][N];
 
-        list = new ArrayList<>();
-
         for (int i = 0; i < N; i++) {
             st = new StringTokenizer(br.readLine());
             for (int j = 0; j < N; j++) {
                 arr[i][j] = Integer.parseInt(st.nextToken());
-                if (arr[i][j] == 0) wallCnt++;
-                else if (arr[i][j] == 2) list.add(new Node(i, j, 0));
+                if (arr[i][j] == 0) es++;
             }
         }
 
         ans = Integer.MAX_VALUE;
 
-        solve();
+        if (es == 0) ans = 0;
+        else solve(0, 0, 0);
 
-        System.out.println(ans == Integer.MAX_VALUE ? -1 : ans);
+        if (ans == Integer.MAX_VALUE) ans = -1;
+        System.out.println(ans);
     }
 
-    static void solve() {
-        if (wallCnt == 0) {
-            ans = 0;
+    static void solve(int y, int x, int cnt) {
+        if (cnt == M) {
+            check();
             return;
         }
 
-        virus = new ArrayList<>();
-
-        comb(0, 0);
-    }
-
-    static void comb(int depth, int idx) {
-        if (depth == M) {
-            check(wallCnt);
+        if (x == N) {
+            solve(y + 1, 0, cnt);
             return;
         }
 
-        for (int i = idx; i < list.size(); i++) {
-            virus.add(list.get(i));
-            comb(depth + 1, i + 1);
-            virus.remove(virus.size() - 1);
+        if (y == N) return;
+
+        if (arr[y][x] == 2) {
+            list.add(new Virus(y, x, 0));
+            solve(y, x + 1, cnt + 1);
+            list.remove(list.size() - 1);
         }
+
+        solve(y, x + 1, cnt);
     }
 
-    static void check(int cnt) {
-        Queue<Node> pq = new ArrayDeque<>();
+    static void check() {
+        Queue<Virus> q = new ArrayDeque<>();
 
         boolean visited[][] = new boolean[N][N];
 
-        for (Node n : virus) {
-            pq.add(new Node(n.y, n.x, n.t));
-            visited[n.y][n.x] = true;
+        for (Virus v : list) {
+            visited[v.y][v.x] = true;
+            q.add(new Virus(v.y, v.x, v.t));
         }
 
-        int max = 0;
+        int max = Integer.MIN_VALUE, cnt = 0;
 
-        while (!pq.isEmpty()) {
-            Node cur = pq.poll();
+        while (!q.isEmpty()) {
+            Virus v = q.poll();
 
-            if (arr[cur.y][cur.x] != 2 && max < cur.t) max = cur.t;
+            if (arr[v.y][v.x] != 2 && max < v.t) max = v.t;
 
             for (int k = 0; k < 4; k++) {
-                int ny = cur.y + dy[k];
-                int nx = cur.x + dx[k];
+                int ny = v.y + dy[k];
+                int nx = v.x + dx[k];
 
                 if (!inRange(ny, nx) || visited[ny][nx] || arr[ny][nx] == 1) continue;
 
-                pq.add(new Node(ny, nx, cur.t + 1));
-                visited[ny][nx] = true;
+                if (arr[ny][nx] == 0) cnt++;
 
-                if (arr[ny][nx] == 0) cnt--;
+                visited[ny][nx] = true;
+                q.add(new Virus(ny, nx, v.t + 1));
             }
         }
 
-        if (cnt == 0) ans = Math.min(ans, max);
+        if (max != Integer.MIN_VALUE && es - cnt == 0) ans = Math.min(ans, max);
     }
 
     static boolean inRange(int y, int x) {
-        return (0 <= y && y < N) && (0 <= x && x < N);
+        return (y >= 0 && y < N) && (x >= 0 && x < N);
     }
 }
 
-class Node {
+class Virus {
     int y, x, t;
 
-    Node(int y, int x, int t) {
+    Virus(int y, int x, int t) {
         this.y = y;
         this.x = x;
         this.t = t;
