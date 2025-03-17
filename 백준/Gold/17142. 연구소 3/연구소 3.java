@@ -3,13 +3,14 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 public class Main {
-    static int N, M, arr[][], es, ans;
-    static List<Virus> list = new ArrayList<>();
+    static int N, M, wallCnt, ans;
+    static int[][] arr;
+    static List<Node> list = new ArrayList<>();
 
-    static int dy[] = {0, 0, -1, 1};
-    static int dx[] = {-1, 1, 0, 0};
+    static int[] dy = {0, 0, -1, 1};
+    static int[] dx = {-1, 1, 0, 0};
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String args[]) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st;
 
@@ -23,83 +24,83 @@ public class Main {
             st = new StringTokenizer(br.readLine());
             for (int j = 0; j < N; j++) {
                 arr[i][j] = Integer.parseInt(st.nextToken());
-                if (arr[i][j] == 0) es++;
+
+                if (arr[i][j] == 0) wallCnt++;
             }
         }
 
         ans = Integer.MAX_VALUE;
 
-        if (es == 0) ans = 0;
-        else solve(0, 0, 0);
+        solve();
 
-        if (ans == Integer.MAX_VALUE) ans = -1;
-        System.out.println(ans);
+        System.out.println(ans == Integer.MAX_VALUE ? -1 : ans);
     }
 
-    static void solve(int y, int x, int cnt) {
-        if (cnt == M) {
+    static void solve() {
+        dfs(0, 0, 0);
+    }
+
+    static void dfs(int depth, int y, int x) {
+        if (depth == M) {
             check();
             return;
         }
 
         if (x == N) {
-            solve(y + 1, 0, cnt);
+            dfs(depth, y + 1, 0);
             return;
         }
 
         if (y == N) return;
 
         if (arr[y][x] == 2) {
-            list.add(new Virus(y, x, 0));
-            solve(y, x + 1, cnt + 1);
+            list.add(new Node(y, x, 0));
+            dfs(depth + 1, y, x + 1);
             list.remove(list.size() - 1);
         }
 
-        solve(y, x + 1, cnt);
+        dfs(depth, y, x + 1);
     }
 
     static void check() {
-        Queue<Virus> q = new ArrayDeque<>();
+        boolean[][] visited = new boolean[N][N];
 
-        boolean visited[][] = new boolean[N][N];
+        for (Node n : list) visited[n.y][n.x] = true;
 
-        for (Virus v : list) {
-            visited[v.y][v.x] = true;
-            q.add(new Virus(v.y, v.x, v.t));
-        }
+        Queue<Node> pq = new ArrayDeque<>(list);
 
-        int max = Integer.MIN_VALUE, cnt = 0;
+        int max = 0, cnt = 0;
 
-        while (!q.isEmpty()) {
-            Virus v = q.poll();
+        while (!pq.isEmpty()) {
+            Node cur = pq.poll();
 
-            if (arr[v.y][v.x] != 2 && max < v.t) max = v.t;
+            if (arr[cur.y][cur.x] == 0) cnt++;
+
+            if (arr[cur.y][cur.x] != 2 && max < cur.t) max = cur.t;
 
             for (int k = 0; k < 4; k++) {
-                int ny = v.y + dy[k];
-                int nx = v.x + dx[k];
+                int ny = cur.y + dy[k];
+                int nx = cur.x + dx[k];
 
                 if (!inRange(ny, nx) || visited[ny][nx] || arr[ny][nx] == 1) continue;
 
-                if (arr[ny][nx] == 0) cnt++;
-
                 visited[ny][nx] = true;
-                q.add(new Virus(ny, nx, v.t + 1));
+                pq.add(new Node(ny, nx, cur.t + 1));
             }
         }
 
-        if (max != Integer.MIN_VALUE && es - cnt == 0) ans = Math.min(ans, max);
+        if (wallCnt == cnt && ans > max) ans = max;
     }
 
     static boolean inRange(int y, int x) {
-        return (y >= 0 && y < N) && (x >= 0 && x < N);
+        return (0 <= y && y < N) && (0 <= x && x < N);
     }
 }
 
-class Virus {
+class Node {
     int y, x, t;
 
-    Virus(int y, int x, int t) {
+    Node(int y, int x, int t) {
         this.y = y;
         this.x = x;
         this.t = t;
