@@ -1,32 +1,31 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.*;
+import java.util.Arrays;
+import java.util.StringTokenizer;
 
 public class Main {
     static int L, C;
-    static String s[], mos[] = {"a", "e", "i", "o", "u"};
-    static List<String> list = new ArrayList<>();
-    static boolean visited[];
+    static char[] str;
+    static char[] code;
 
     static StringBuilder sb = new StringBuilder();
 
     public static void main(String[] args) throws Exception {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedReader sc = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st;
 
-        st = new StringTokenizer(br.readLine());
+        st = new StringTokenizer(sc.readLine());
         L = Integer.parseInt(st.nextToken());
         C = Integer.parseInt(st.nextToken());
 
-        s = new String[C];
+        code = new char[L];
 
-        String str = br.readLine();
+        str = new char[C];
 
-        s = str.split(" ");
+        st = new StringTokenizer(sc.readLine());
+        for (int i = 0; i < C; i++) str[i] = st.nextToken().charAt(0);
 
-        Arrays.sort(s);
-
-        visited = new boolean[C];
+        Arrays.sort(str);
 
         solve(0, 0);
 
@@ -35,29 +34,28 @@ public class Main {
 
     static void solve(int depth, int idx) {
         if (depth == L) {
-            int mo = 0, ja = 0;
-
-            for (String str : list) {
-                if (str.equals("a") || str.equals("e") || str.equals("i") || str.equals("o") || str.equals("u")) mo++;
-                else ja++;
-            }
-
-            if (mo < 1 || ja < 2) return;
-
-            for (String str : list) sb.append(str);
-            sb.append("\n");
-
+            if (isValid()) sb.append(code).append("\n");
             return;
         }
 
         for (int i = idx; i < C; i++) {
-            if (visited[i]) continue;
-
-            list.add(s[i]);
-            visited[i] = true;
-            solve(depth + 1, i);
-            visited[i] = false;
-            list.remove(list.size() - 1);
+            code[depth] = str[i];
+            solve(depth + 1, i + 1);
         }
+    }
+
+    static boolean isValid() {
+        int mo = 0;
+        int ja = 0;
+
+        for (char c : code) {
+            if (c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u') mo++;
+            else ja++;
+        }
+
+        if (mo >= 1 && ja >= 2) {
+            return true;
+        }
+        return false;
     }
 }
