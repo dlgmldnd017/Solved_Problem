@@ -1,72 +1,72 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.*;
+import java.util.StringTokenizer;
 
 public class Main {
     static int N, min, max;
-    static char arr[][];
+    static char[][] ch;
 
-    static int dy[] = {0, 1};
-    static int dx[] = {1, 0};
+    static int[] dy = {0, 1};
+    static int[] dx = {1, 0};
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String args[]) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st;
 
         N = Integer.parseInt(br.readLine());
 
-        arr = new char[N][N];
+        ch = new char[N][N];
 
         for (int i = 0; i < N; i++) {
             st = new StringTokenizer(br.readLine());
-            for (int j = 0; j < N; j++) arr[i][j] = st.nextToken().charAt(0);
+            for (int j = 0; j < N; j++) ch[i][j] = st.nextToken().charAt(0);
         }
 
-        max = Integer.MIN_VALUE;
-        min = Integer.MAX_VALUE;
-
-        solve(0, 0, arr[0][0] + "");
+        solve();
 
         System.out.println(max + " " + min);
     }
 
-    static void solve(int y, int x, String str) {
-        if (y == N - 1 && x == N - 1) {
-            int sum = getSum(str);
+    static void solve() {
+        max = Integer.MIN_VALUE;
+        min = Integer.MAX_VALUE;
+        dfs(0, 0, ch[0][0] - '0', ' ');
+    }
 
-            if (min > sum) min = sum;
-            if (max < sum) max = sum;
+    static void dfs(int y, int x, int currentValue, char lastOperator) {
+        if (y == N - 1 && x == N - 1) {
+            if (max < currentValue) max = currentValue;
+            if (min > currentValue) min = currentValue;
             return;
         }
 
-        if (inRange(y + 1, x)) solve(y + 1, x, str + arr[y + 1][x]);
-        if (inRange(y, x + 1)) solve(y, x + 1, str + arr[y][x + 1]);
-    }
+        for (int k = 0; k < 2; k++) {
+            int ny = y + dy[k];
+            int nx = x + dx[k];
 
-    static int getSum(String str) {
-        int sum = str.charAt(0) - '0';
+            if (!inRange(ny, nx)) continue;
 
-        for (int i = 1; i < str.length() - 1; i += 2) {
-            char op = str.charAt(i);
+            char next = ch[ny][nx];
 
-            switch (op) {
-                case '+':
-                    sum += (str.charAt(i + 1) - '0');
-                    break;
-
-                case '-':
-                    sum -= (str.charAt(i + 1) - '0');
-                    break;
-
-                case '*':
-                    sum *= (str.charAt(i + 1) - '0');
-                    break;
+            if (Character.isDigit(next)) {
+                int value = calc(currentValue, next - '0', lastOperator);
+                dfs(ny ,nx, value, lastOperator);
+            } else {
+                dfs(ny ,nx, currentValue, next);
             }
         }
-        return sum;
     }
 
     static boolean inRange(int y, int x) {
-        return (y >= 0 && y < N) && (x >= 0 && x < N);
+        return (0 <= y && y < N) && (0 <= x && x < N);
+    }
+
+    static int calc(int a, int b, char operator) {
+        switch (operator) {
+            case '+': return a + b;
+            case '-': return a - b;
+            case '*': return a * b;
+            default: return b;
+        }
     }
 }
