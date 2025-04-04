@@ -29,8 +29,8 @@ public class Main {
     static void solve(int depth) {
         if (depth == N - 1) {
             if (isZero()) {
-                for (int i = 1; i < N; i++) sb.append(i + "" + op[i - 1]);
-                sb.append(N + "\n");
+                for (int i = 1; i < N; i++) sb.append(i).append(op[i - 1]);
+                sb.append(N).append("\n");
             }
             return;
         }
