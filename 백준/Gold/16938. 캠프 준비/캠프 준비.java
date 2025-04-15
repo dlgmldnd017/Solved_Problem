@@ -5,7 +5,6 @@ import java.util.*;
 public class Main {
     static int N, L, R, X, ans;
     static int[] arr;
-    static List<Integer> list = new ArrayList<>();
 
     public static void main(String args[]) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -30,23 +29,17 @@ public class Main {
     static void solve() {
         Arrays.sort(arr);
 
-        dfs(0, 0);
+        dfs(0, 0, Integer.MAX_VALUE, Integer.MIN_VALUE, 0);
     }
 
-    static void dfs(int depth, int sum) {
+    static void dfs(int depth, int cnt, int min, int max, int sum) {
         if (depth == N) {
-            if (list.size() > 1 && L <= sum && sum <= R) {
-                int min = list.get(0), max = list.get(list.size() - 1);
-
-                if (max - min >= X) ans++;
-            }
+            if (cnt >= 2 && L <= sum && sum <= R && (max - min) >= X) ans++;
             return;
         }
 
-        list.add(arr[depth]);
-        dfs(depth + 1, sum + arr[depth]);
+        dfs(depth + 1, cnt + 1, Math.min(min, arr[depth]), Math.max(max, arr[depth]), sum + arr[depth]);
 
-        list.remove(list.size() - 1);
-        dfs(depth + 1, sum);
+        dfs(depth + 1, cnt, min, max, sum);
     }
 }
