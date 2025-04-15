@@ -3,11 +3,12 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 public class Main {
-    static int N, L, R, X, arr[], ans;
+    static int N, L, R, X, ans;
+    static int[] arr;
     static List<Integer> list = new ArrayList<>();
-    static boolean visited[];
+    static boolean[] visited;
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String args[]) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st;
 
@@ -22,34 +23,35 @@ public class Main {
         st = new StringTokenizer(br.readLine());
         for (int i = 0; i < N; i++) arr[i] = Integer.parseInt(st.nextToken());
 
-        Arrays.sort(arr);
-
-        visited = new boolean[N];
-
-        solve(0);
+        solve();
 
         System.out.println(ans);
     }
 
-    static void solve(int depth) {
+    static void solve() {
+        Arrays.sort(arr);
+
+        visited = new boolean[N];
+
+        dfs(0, 0);
+    }
+
+    static void dfs(int depth, int sum) {
         if (depth == N) {
-            if (list.size() <= 1) return;
+            if (list.size() > 1 && L <= sum && sum <= R) {
+                Collections.sort(list);
 
-            int sum = 0;
-            for (int i : list) sum += i;
+                int min = list.get(0), max = list.get(list.size() - 1);
 
-            if (L > sum || sum > R) return;
-
-            int diff = list.get(list.size() - 1) - list.get(0);
-
-            if (diff >= X) ans++;
+                if (max - min >= X) ans++;
+            }
             return;
         }
 
         list.add(arr[depth]);
-        solve(depth + 1);
+        dfs(depth + 1, sum + arr[depth]);
 
         list.remove(list.size() - 1);
-        solve(depth + 1);
+        dfs(depth + 1, sum);
     }
-} 
+}
