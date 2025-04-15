@@ -6,7 +6,6 @@ public class Main {
     static int N, L, R, X, ans;
     static int[] arr;
     static List<Integer> list = new ArrayList<>();
-    static boolean[] visited;
 
     public static void main(String args[]) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -31,16 +30,12 @@ public class Main {
     static void solve() {
         Arrays.sort(arr);
 
-        visited = new boolean[N];
-
         dfs(0, 0);
     }
 
     static void dfs(int depth, int sum) {
         if (depth == N) {
             if (list.size() > 1 && L <= sum && sum <= R) {
-                Collections.sort(list);
-
                 int min = list.get(0), max = list.get(list.size() - 1);
 
                 if (max - min >= X) ans++;
