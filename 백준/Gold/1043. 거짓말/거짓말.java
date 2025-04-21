@@ -19,12 +19,12 @@ public class Main {
         M = Integer.parseInt(st.nextToken());
 
         parent = new int[N + 1];
-        truth = new boolean[N + 1];
-        parties = new ArrayList[M];
 
-        for (int i = 1; i <= N; i++) {
-            parent[i] = i;
-        }
+        for (int i = 1; i <= N; i++) parent[i] = i;
+
+        truth = new boolean[N + 1];
+
+        parties = new ArrayList[M];
 
         st = new StringTokenizer(br.readLine());
         int cnt = Integer.parseInt(st.nextToken());
@@ -56,11 +56,23 @@ public class Main {
         System.out.println(ans);
     }
 
-    static void solve() {
-        for (int i = 1; i <= N; i++) {
-            if (truth[find(i)]) truth[i] = true;
-        }
+    static void union(int a, int b) {
+        int rootA = find(a);
 
+        int rootB = find(b);
+
+        if (rootA != rootB) {
+            if (truth[rootA] || truth[rootB]) truth[rootA] = truth[rootB] = true;
+            parent[rootB] = rootA;
+        }
+    }
+
+    static int find(int x) {
+        if (parent[x] == x) return x;
+        return parent[x] = find(parent[x]);
+    }
+
+    static void solve() {
         for (int i = 0; i < M; i++) {
             boolean canLie = true;
 
@@ -72,22 +84,6 @@ public class Main {
             }
 
             if (canLie) ans++;
-        }
-    }
-
-    static int find(int x) {
-        if (parent[x] == x) return x;
-        return parent[x] = find(parent[x]);
-    }
-
-    static void union(int a, int b) {
-        int rootA = find(a);
-
-        int rootB = find(b);
-
-        if (rootA != rootB) {
-            if (truth[rootA] || truth[rootB]) truth[rootA] = truth[rootB] = true;
-            parent[rootB] = rootA;
         }
     }
 }
