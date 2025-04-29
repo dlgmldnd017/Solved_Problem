@@ -1,6 +1,5 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.Stack;
 
 public class Main {
     static String str, target;
@@ -19,27 +18,23 @@ public class Main {
     }
 
     static void solve() {
-        Stack<Character> stack = new Stack<>();
-
         for (int i = 0; i < str.length(); i++) {
-            stack.push(str.charAt(i));
+            sb.append(str.charAt(i));
 
-            if (stack.size() >= target.length()) {
-                boolean check = true;
+            if (sb.length() >= target.length()) {
+                boolean flag = true;
 
                 for (int j = 0; j < target.length(); j++) {
-                    if (stack.get(stack.size() - target.length() + j) != target.charAt(j)) {
-                        check = false;
+                    if (sb.charAt(sb.length() - target.length() + j) != target.charAt(j)) {
+                        flag = false;
                         break;
                     }
                 }
 
-                if (!check) continue;
+                if (!flag) continue;
 
-                for (int j = 0; j < target.length(); j++) stack.pop();
+                sb.delete(sb.length() - target.length(), sb.length());
             }
         }
-
-        for (Character c : stack) sb.append(c);
     }
 }
