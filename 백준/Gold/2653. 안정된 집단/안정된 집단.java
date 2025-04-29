@@ -6,7 +6,6 @@ import java.util.StringTokenizer;
 
 public class Main {
     static int N, ans;
-    static boolean[] visited;
     static boolean[][] arr;
     static StringBuilder sb = new StringBuilder();
 
@@ -29,7 +28,7 @@ public class Main {
     }
 
     static void solve() {
-        visited = new boolean[N + 1];
+        boolean[] visited = new boolean[N + 1];
 
         for (int i = 1; i <= N; i++) {
             if (visited[i]) continue;
