@@ -3,6 +3,7 @@ import java.io.InputStreamReader;
 
 public class Main {
     static long[][] dp = new long[31][31];
+    static StringBuilder sb = new StringBuilder();
 
     public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -10,10 +11,12 @@ public class Main {
         while (true) {
             int N = Integer.parseInt(br.readLine());
 
-            if (N == 0) return;
+            if (N == 0) break;
 
-            System.out.println(dfs(N, 0));
+            sb.append(dfs(N, 0)).append("\n");
         }
+
+        System.out.println(sb);
     }
 
     static long dfs(int w, int h) {
@@ -25,7 +28,6 @@ public class Main {
         if (w > 0) res += dfs(w - 1, h + 1);
         if (h > 0) res += dfs(w, h - 1);
 
-        dp[w][h] = res;
-        return res;
+        return dp[w][h] = res;
     }
 }
