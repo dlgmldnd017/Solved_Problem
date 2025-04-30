@@ -33,6 +33,8 @@ public class Main {
     static void solve() {
         dis = (25 - K) / 2;
 
+        if ((25 - K) % 2 == 0) return;
+
         visited = new boolean[5][5];
 
         dfs(0, 0, 0, false);
