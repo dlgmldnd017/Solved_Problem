@@ -1,13 +1,12 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.PriorityQueue;
 import java.util.StringTokenizer;
 
 public class Main {
-    static int M, N, sum;
-    static List<Node> list[];
+    static int M, N, total;
+    static int[] parent;
+    static PriorityQueue<Node> pq;
     static StringBuilder sb = new StringBuilder();
 
     public static void main(String args[]) throws Exception {
@@ -21,11 +20,9 @@ public class Main {
 
             if (M == 0 && N == 0) break;
 
-            list = new ArrayList[M];
+            total = 0;
 
-            for (int i = 0; i < M; i++) list[i] = new ArrayList<>();
-
-            sum = 0;
+            pq = new PriorityQueue<>();
 
             for (int i = 0; i < N; i++) {
                 st = new StringTokenizer(br.readLine());
@@ -33,10 +30,9 @@ public class Main {
                 int y = Integer.parseInt(st.nextToken());
                 int z = Integer.parseInt(st.nextToken());
 
-                list[x].add(new Node(y, z));
-                list[y].add(new Node(x, z));
+                total += z;
 
-                sum += z;
+                pq.add(new Node(x, y, z));
             }
 
             solve();
@@ -46,41 +42,53 @@ public class Main {
     }
 
     static void solve() {
-        int total = 0;
+        parent = new int[M + 1];
 
-        boolean[] visited = new boolean[M];
+        for (int i = 1; i <= M; i++) parent[i] = i;
 
-        PriorityQueue<Node> pq = new PriorityQueue<>();
-        pq.add(new Node(0, 0));
+        int sum = 0, cnt = 0;
 
         while (!pq.isEmpty()) {
             Node cur = pq.poll();
 
-            if (visited[cur.e]) continue;
-            visited[cur.e] = true;
+            if (union(cur.y, cur.x)) {
+                sum += cur.z;
 
-            total += cur.w;
-
-            for (Node next : list[cur.e]) {
-                if (visited[next.e]) continue;
-
-                pq.add(new Node(next.e, next.w));
+                if (cnt == M - 1) break;
             }
         }
-        
-        sb.append(sum - total).append("\n");
+
+        sb.append(total - sum).append("\n");
+    }
+
+    static int find(int x) {
+        if (x == parent[x]) return x;
+        return parent[x] = find(parent[x]);
+    }
+
+    static boolean union(int x, int y) {
+        x = find(x);
+        y = find(y);
+
+        if (x == y) return false;
+
+        if (x < y) parent[y] = x;
+        else parent[x] = y;
+
+        return true;
     }
 }
 
 class Node implements Comparable<Node> {
-    int e, w;
+    int x, y, z;
 
-    Node(int e, int w) {
-        this.e = e;
-        this.w = w;
+    Node(int x, int y, int z) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
     }
 
     public int compareTo(Node n) {
-        return this.w - n.w;
+        return this.z - n.z;
     }
 }
