@@ -18,60 +18,33 @@ public class Main {
             solve();
         }
 
-
         System.out.println(sb);
     }
 
     static void solve() {
-        if (ch.length % 2 == 0) {
-            int i = 0, j = ch.length - 1;
+        int left = 0, right = ch.length - 1;
 
-            while (i < j) {
-                if (ch[i] != ch[j]) {
-                    if (check(i, j)) sb.append("1\n");
-                    else sb.append("2\n");
-                    return;
-                }
-                i++;
-                j--;
+        while (left < right) {
+            if (ch[left] != ch[right]) {
+                if (check(left + 1, right) || check(left, right - 1)) sb.append("1\n");
+                else sb.append("2\n");
+
+                return;
             }
 
-            sb.append("0\n");
-        } else {
-            int i = 0, j = ch.length - 1;
-
-            while (i != j) {
-                if (ch[i] != ch[j]) {
-                    if (check(i, j)) sb.append("1\n");
-                    else sb.append("2\n");
-                    return;
-                }
-                i++;
-                j--;
-            }
-
-            sb.append("0\n");
+            left++;
+            right--;
         }
+
+        sb.append("0\n");
     }
 
-    static boolean check(int i, int j) {
-        int a = i + 1, b = j;
+    static boolean check(int left, int right) {
+        while(left < right) {
+            if (ch[left] != ch[right]) return false;
 
-        while (a < b) {
-            if (ch[a] != ch[b]) break;
-            a++;
-            b--;
-        }
-
-        if (a >= b) return true;
-
-        a = i;
-        b = j - 1;
-
-        while (a < b) {
-            if (ch[a] != ch[b]) return false;
-            a++;
-            b--;
+            left++;
+            right--;
         }
 
         return true;
