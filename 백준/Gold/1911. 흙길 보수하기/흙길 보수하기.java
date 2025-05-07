@@ -1,25 +1,28 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.StringTokenizer;
 
-class Node implements Comparable<Node> {
-    int s, e;
+class Pool implements Comparable<Pool> {
+    int start, end;
 
-    Node(int s, int e) {
-        this.s = s;
-        this.e = e;
+    Pool(int start, int end) {
+        this.start = start;
+        this.end = end;
     }
 
-    public int compareTo(Node n) {
-        return this.s - n.s;
+    public int compareTo(Pool p) {
+        return this.start - p.start;
     }
 }
 
 public class Main {
     static int N, L, ans;
-    static List<Node> list = new ArrayList<>();
+    static List<Pool> list = new ArrayList<>();
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String args[]) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st;
 
@@ -29,10 +32,10 @@ public class Main {
 
         for (int i = 0; i < N; i++) {
             st = new StringTokenizer(br.readLine());
-            int s = Integer.parseInt(st.nextToken());
-            int e = Integer.parseInt(st.nextToken()) - 1;
+            int start = Integer.parseInt(st.nextToken());
+            int end = Integer.parseInt(st.nextToken());
 
-            list.add(new Node(s, e));
+            list.add(new Pool(start, end));
         }
 
         Collections.sort(list);
@@ -45,15 +48,24 @@ public class Main {
     static void solve() {
         int prev = -1;
 
-        for (Node cur : list) {
-            if (cur.s < prev) cur.s = prev;
+        for (Pool p : list) {
+            int start = p.start;
+            int end = p.end;
 
-            while (cur.s <= cur.e) {
-                cur.s += L;
-                ans++;
+            if (start < prev) {
+                if (prev >= end) continue;
+                start = prev;
             }
 
-            prev = cur.s;
+            int diff = end - start;
+
+            if (diff % L == 0) {
+                ans += diff / L;
+                prev = end;
+            } else {
+                ans += diff / L + 1;
+                prev = L * (diff / L) + L + start;
+            }
         }
     }
 }
