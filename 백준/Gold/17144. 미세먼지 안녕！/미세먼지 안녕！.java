@@ -1,170 +1,200 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.*;
+import java.util.StringTokenizer;
 
 public class Main {
-    static int R, C, T, arr[][], ans;
-    static List<Dust> dusts = new ArrayList<>();
-    static List<Dust> airs = new ArrayList<>();
+    static int R, C, T;
+    static int r[], c[];
+    static int map[][], tmp[][];
 
-    static int dy[] = {0, 0, -1, 1};
-    static int dx[] = {-1, 1, 0, 0};
+    static int dy[] = {-1, 0, 1, 0};
+    static int dx[] = {0, 1, 0, -1};
 
     public static void main(String[] args) throws Exception {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedReader sc = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st;
 
-        st = new StringTokenizer(br.readLine());
+        st = new StringTokenizer(sc.readLine());
         R = Integer.parseInt(st.nextToken());
         C = Integer.parseInt(st.nextToken());
         T = Integer.parseInt(st.nextToken());
 
-        arr = new int[R][C];
+        r = new int[2];
+        c = new int[2];
+        map = new int[R][C];
 
-        int flag = 1;
-
+        int idx = 0;
         for (int i = 0; i < R; i++) {
-            st = new StringTokenizer(br.readLine());
+            st = new StringTokenizer(sc.readLine());
 
             for (int j = 0; j < C; j++) {
-                arr[i][j] = Integer.parseInt(st.nextToken());
+                map[i][j] = Integer.parseInt(st.nextToken());
 
-                if (arr[i][j] == -1) {
-                    airs.add(new Dust(i, j, flag));
-                    flag = -1;
-                } else if (arr[i][j] != 0) dusts.add(new Dust(i, j, arr[i][j]));
+                if (map[i][j] == -1) {
+                    r[idx] = i;
+                    c[idx] = j;
+                    idx++;
+                }
             }
         }
 
         solve();
+        System.out.println(countDust());
+    }
 
-        System.out.println(ans);
+    static int countDust() {
+        int sum = 0;
+
+        for (int i[] : map) {
+            for (int j : i) {
+                if (j == 0 || j == -1) continue;
+
+                sum += j;
+            }
+        }
+
+        return sum;
     }
 
     static void solve() {
-        for (int t = 0; t < T; t++) {
-            spreadDusts();
+        for (int t = 1; t <= T; t++) {
+            tmp = new int[R][C];
+            spreadDust();
 
-            useAirCleaner();
-
-            if (t + 1 != T) init();
-        }
-
-        for (int i[] : arr) {
-            for (int j : i) {
-                if (j == -1) continue;
-
-                ans += j;
-            }
+            tmp = new int[R][C];
+            excuteAirCleaner();
         }
     }
 
-    static void spreadDusts() {
-        int tmp[][] = new int[R][C];
+    static void spreadDust() {
+        for (int i = 0; i < R; i++) {
+            for (int j = 0; j < C; j++) {
+                if (map[i][j] == 0) continue;
 
-        for (Dust d : dusts) {
-            int sum = 0;
+                int sum = 0;
+                
+                for (int k = 0; k < 4; k++) {
+                    int ny = i + dy[k];
+                    int nx = j + dx[k];
 
-            for (int k = 0; k < 4; k++) {
-                int ny = dy[k] + d.y;
-                int nx = dx[k] + d.x;
+                    if (!inRange(ny, nx) || map[ny][nx] == -1) continue;
 
-                if (!inRange(ny, nx) || arr[ny][nx] == -1) continue;
+                    sum += map[i][j] / 5;
 
-                sum += arr[d.y][d.x] / 5;
-                tmp[ny][nx] += arr[d.y][d.x] / 5;
+                    tmp[ny][nx] += map[i][j] / 5;
+                }
+
+                map[i][j] -= sum;
             }
-
-            arr[d.y][d.x] -= sum;
         }
 
         for (int i = 0; i < R; i++) {
             for (int j = 0; j < C; j++) {
                 if (tmp[i][j] == 0) continue;
-
-                arr[i][j] += tmp[i][j];
+                map[i][j] += tmp[i][j];
             }
         }
     }
+    
+    static void excuteAirCleaner() {
+        int r1 = r[0], c1 = c[0];
+        int printX = C - 1, printY = r1, t = 1;
 
-    static void useAirCleaner() {
-        for (Dust a : airs) {
-            if (a.cnt == 1) {
-                if (a.y == 0) continue;
-                arr[a.y - 1][0] = 0;
+        for (int k = 0; k < 2; k++) {
 
-                for (int i = a.y - 1; i > 0; i--) {
-                    int tmp = arr[i][0];
-                    arr[i][0] = arr[i - 1][0];
-                    arr[i - 1][0] = tmp;
-                }
+            for (int i = 0; i < printX; i++) {
+                int dust = map[r1][c1];
+                c1 += t;
 
-                for (int i = 0; i < C - 1; i++) {
-                    int tmp = arr[0][i];
-                    arr[0][i] = arr[0][i + 1];
-                    arr[0][i + 1] = tmp;
-                }
+                if (dust == -1 || dust == 0) continue;
 
-                for (int i = 0; i < a.y; i++) {
-                    int tmp = arr[i][C - 1];
-                    arr[i][C - 1] = arr[i + 1][C - 1];
-                    arr[i + 1][C - 1] = tmp;
-                }
-
-            } else {
-                if (a.y == R - 1) continue;
-                arr[a.y + 1][0] = 0;
-
-                for (int i = a.y + 1; i < R - 1; i++) {
-                    int tmp = arr[i][0];
-                    arr[i][0] = arr[i + 1][0];
-                    arr[i + 1][0] = tmp;
-                }
-
-                for (int i = 0; i < C - 1; i++) {
-                    int tmp = arr[R - 1][i];
-                    arr[R - 1][i] = arr[R - 1][i + 1];
-                    arr[R - 1][i + 1] = tmp;
-                }
-
-                for (int i = R - 1; i > a.y; i--) {
-                    int tmp = arr[i][C - 1];
-                    arr[i][C - 1] = arr[i - 1][C - 1];
-                    arr[i - 1][C - 1] = tmp;
-                }
+                tmp[r1][c1] = dust;
             }
 
-            for (int i = C - 1; i > 1; i--) {
-                int tmp = arr[a.y][i];
-                arr[a.y][i] = arr[a.y][i - 1];
-                arr[a.y][i - 1] = tmp;
+            t *= -1;
+
+            for (int i = 0; i < printY; i++) {
+                int dust = map[r1][c1];
+                r1 += t;
+
+                if (dust == 0) continue;
+
+                if (map[r1][c1] != -1) tmp[r1][c1] = dust;
             }
         }
+
+        int r2 = r[1], c2 = c[1];
+        printY = R - r2;
+        printX = C - 1;
+        t = 1;
+
+        if (r2 != R - 1) {
+            for (int k = 0; k < 2; k++) {
+                for (int i = 0; i < printX; i++) {
+                    int dust = map[r2][c2];
+                    c2 += t;
+
+                    if (dust == -1 || dust == 0) continue;
+
+                    tmp[r2][c2] = dust;
+                }
+
+                for (int i = 0; i < printY - 1; i++) {
+                    int dust = map[r2][c2];
+                    r2 += t;
+
+                    if (dust == 0) continue;
+
+                    if (map[r2][c2] != -1) tmp[r2][c2] = dust;
+                }
+
+                t *= -1;
+            }
+        }
+        copy();
     }
 
-    static void init() {
-        dusts = new ArrayList<>();
+    static void copy() {
+        int r1 = r[0], c1 = c[0];
+        int printX = C - 1, printY = r1, t = 1;
 
-        for (int i = 0; i < R; i++) {
-            for (int j = 0; j < C; j++) {
-                if (arr[i][j] == -1 || arr[i][j] == 0) continue;
+        for (int k = 0; k < 2; k++) {
+            for (int i = 0; i < printX; i++) {
+                if (map[r1][c1] != -1) map[r1][c1] = tmp[r1][c1];
+                c1 += t;
+            }
 
-                dusts.add(new Dust(i, j, arr[i][j]));
+            t *= -1;
+
+            for (int i = 0; i < printY; i++) {
+                if (map[r1][c1] != -1) map[r1][c1] = tmp[r1][c1];
+                r1 += t;
+            }
+        }
+
+        int r2 = r[1], c2 = c[1];
+        printY = R - r2;
+        printX = C - 1;
+        t = 1;
+
+        if (r2 != R - 1) {
+            for (int k = 0; k < 2; k++) {
+                for (int i = 0; i < printX; i++) {
+                    if (map[r2][c2] != -1) map[r2][c2] = tmp[r2][c2];
+                    c2 += t;
+                }
+
+                for (int i = 0; i < printY - 1; i++) {
+                    if (map[r2][c2] != -1) map[r2][c2] = tmp[r2][c2];
+                    r2 += t;
+                }
+
+                t *= -1;
             }
         }
     }
 
     static boolean inRange(int y, int x) {
         return (y >= 0 && y < R) && (x >= 0 && x < C);
-    }
-}
-
-class Dust {
-    int y, x, cnt;
-
-    Dust(int y, int x, int cnt) {
-        this.y = y;
-        this.x = x;
-        this.cnt = cnt;
     }
 }
