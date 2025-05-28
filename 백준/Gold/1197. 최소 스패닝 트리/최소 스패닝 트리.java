@@ -1,84 +1,69 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.PriorityQueue;
-import java.util.StringTokenizer;
-
-class Graph implements Comparable<Graph>{
-	int idx, d;
-	
-	public Graph(int idx, int d) {
-		super();
-		this.idx = idx;
-		this.d = d;
-	}
-
-	@Override
-	public int compareTo(Graph o) {
-		return d-o.d;
-	}
-}
+import java.util.*;
 
 public class Main {
-	static int N, M, ans;
-	static int dist[];
-	
-	static List<Graph> list[];
+    static class Edge implements Comparable<Edge> {
+        int from, to, weight;
 
-	public static void main(String[] args) throws Exception {
-		BufferedReader sc = new BufferedReader(new InputStreamReader(System.in));
-		StringTokenizer st;
+        Edge(int from, int to, int weight) {
+            this.from = from;
+            this.to = to;
+            this.weight = weight;
+        }
 
-		st = new StringTokenizer(sc.readLine());
-		N = Integer.parseInt(st.nextToken());
-		M = Integer.parseInt(st.nextToken());
-		
-		dist = new int[N];
-		list = new ArrayList[N];
-		
-		for(int i=0; i<N; i++) {
-			dist[i] = Integer.MAX_VALUE;
-			list[i] = new ArrayList<Graph>();
-		}
-		dist[0]=0;
-		
-		for(int i=0; i<M; i++) {
-			st = new StringTokenizer(sc.readLine());
-			int y = Integer.parseInt(st.nextToken())-1;
-			int x = Integer.parseInt(st.nextToken())-1;
-			int d = Integer.parseInt(st.nextToken());
-			
-			list[y].add(new Graph(x, d));
-			list[x].add(new Graph(y, d));
-		}
+        public int compareTo(Edge other) {
+            return this.weight - other.weight;
+        }
+    }
 
-		solve();
-		for(int i=1; i<N; i++) {
-			ans += dist[i];
-		}
-		System.out.println(ans);
-	}
+    static int[] parent;
 
-	static void solve() {
-		PriorityQueue<Graph> pq = new PriorityQueue<Graph>();
-		pq.add(new Graph(0, 0));
-		
-		boolean visited[] = new boolean[N];
-		
-		while(!pq.isEmpty()) {
-			Graph cur = pq.poll();
-			
-			if(visited[cur.idx]) continue;
-			visited[cur.idx]=true;
-			
-			for(Graph g : list[cur.idx]) {
-				if(visited[g.idx] || dist[g.idx]<g.d) continue;
-				
-				dist[g.idx] = g.d;
-				pq.add(new Graph(g.idx, dist[g.idx]));
-			}
-		}
-	}
+    public static void main(String[] args) throws Exception {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st = new StringTokenizer(br.readLine());
+
+        int V = Integer.parseInt(st.nextToken());
+        int E = Integer.parseInt(st.nextToken());
+
+        Edge[] edges = new Edge[E];
+
+        for (int i = 0; i < E; i++) {
+            st = new StringTokenizer(br.readLine());
+            int from = Integer.parseInt(st.nextToken());
+            int to = Integer.parseInt(st.nextToken());
+            int weight = Integer.parseInt(st.nextToken());
+            edges[i] = new Edge(from, to, weight);
+        }
+
+        Arrays.sort(edges);
+        parent = new int[V + 1];
+        for (int i = 1; i <= V; i++) parent[i] = i;
+
+        int totalWeight = 0;
+        int count = 0;
+
+        for (Edge edge : edges) {
+            if (union(edge.from, edge.to)) {
+                totalWeight += edge.weight;
+                count++;
+                if (count == V - 1) break;
+            }
+        }
+
+        System.out.println(totalWeight);
+    }
+
+    static int find(int x) {
+        if (parent[x] != x) parent[x] = find(parent[x]);
+        return parent[x];
+    }
+
+    static boolean union(int a, int b) {
+        int rootA = find(a);
+        int rootB = find(b);
+        if (rootA == rootB) return false;
+        parent[rootB] = rootA;
+        return true;
+    }
 }
