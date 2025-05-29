@@ -4,9 +4,8 @@ import java.util.*;
 
 public class Main {
     static int N, M, ans;
-    static int[] arr;
-    static List<Node>[] list;
-    static List<Integer> cost = new ArrayList<>();
+    static int[] parents;
+    static PriorityQueue<Node> pq = new PriorityQueue<>();
 
     public static void main(String args[]) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -16,22 +15,17 @@ public class Main {
         N = Integer.parseInt(st.nextToken());
         M = Integer.parseInt(st.nextToken());
 
-        arr = new int[N + 1];
-        list = new ArrayList[N + 1];
+        parents = new int[N + 1];
 
-        for (int i = 1; i <= N; i++) {
-            arr[i] = Integer.MAX_VALUE;
-            list[i] = new ArrayList<>();
-        }
+        for (int i = 1; i <= N; i++) parents[i] = i;
 
         for (int i = 0; i < M; i++) {
             st = new StringTokenizer(br.readLine());
-            int y = Integer.parseInt(st.nextToken());
-            int x = Integer.parseInt(st.nextToken());
-            int c = Integer.parseInt(st.nextToken());
+            int u = Integer.parseInt(st.nextToken());
+            int v = Integer.parseInt(st.nextToken());
+            int w = Integer.parseInt(st.nextToken());
 
-            list[y].add(new Node(x, c));
-            list[x].add(new Node(y, c));
+            pq.offer(new Node(u, v, w));
         }
 
         solve();
@@ -40,44 +34,47 @@ public class Main {
     }
 
     static void solve() {
-        PriorityQueue<Node> pq = new PriorityQueue<>();
-        pq.offer(new Node(1, 0));
+        int selectedEdgeCount = 0;
 
-        boolean visited[] = new boolean[N + 1];
-
-        arr[1] = 0;
-
-        while (!pq.isEmpty()) {
+        while (selectedEdgeCount < N - 2) {
             Node cur = pq.poll();
 
-            if (visited[cur.e]) continue;
-            visited[cur.e] = true;
-
-            cost.add(cur.c);
-
-            for (Node n : list[cur.e]) {
-                if (visited[n.e] || arr[n.e] < n.c) continue;
-
-                arr[n.e] = n.c;
-                pq.offer(new Node(n.e, n.c));
+            if (union(cur.u, cur.v, parents)) {
+                ans += cur.w;
+                selectedEdgeCount++;
             }
         }
+    }
 
-        Collections.sort(cost);
+    static int find(int x, int[] p) {
+        if (p[x] == x) return x;
 
-        for (int i = 1; i < cost.size() - 1; i++) ans += cost.get(i);
+        return p[x] = find(p[x], p);
+    }
+
+    static boolean union(int a, int b, int[] parents) {
+        int rootA = find(a, parents);
+        int rootB = find(b, parents);
+
+        if (rootA != rootB) {
+            parents[rootB] = rootA;
+            return true;
+        }
+
+        return false;
     }
 }
 
 class Node implements Comparable<Node> {
-    int e, c;
+    int u, v, w;
 
-    Node(int e, int c) {
-        this.e = e;
-        this.c = c;
+    Node(int u, int v, int w) {
+        this.u = u;
+        this.v = v;
+        this.w = w;
     }
 
     public int compareTo(Node n) {
-        return this.c - n.c;
+        return this.w - n.w;
     }
 }
