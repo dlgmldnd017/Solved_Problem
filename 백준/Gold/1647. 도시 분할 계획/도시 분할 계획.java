@@ -41,7 +41,7 @@ public class Main {
 
     static void solve() {
         PriorityQueue<Node> pq = new PriorityQueue<>();
-        pq.add(new Node(1, 0));
+        pq.offer(new Node(1, 0));
 
         boolean visited[] = new boolean[N + 1];
 
@@ -59,7 +59,7 @@ public class Main {
                 if (visited[n.e] || arr[n.e] < n.c) continue;
 
                 arr[n.e] = n.c;
-                pq.add(new Node(n.e, n.c));
+                pq.offer(new Node(n.e, n.c));
             }
         }
 
