@@ -3,29 +3,34 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 public class Main {
-    static int N, M, ans;
-    static List<Node> list[];
+    static int V, E;
+    static int[] arr;
+    static long ans;
+    static List<Node>[] list;
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String args[]) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st;
 
-        N = Integer.parseInt(br.readLine());
+        V = Integer.parseInt(br.readLine());
+        E = Integer.parseInt(br.readLine());
 
-        M = Integer.parseInt(br.readLine());
+        arr = new int[V + 1];
+        list = new ArrayList[V + 1];
 
-        list = new ArrayList[N + 1];
+        for (int i = 1; i <= V; i++) {
+            arr[i] = Integer.MAX_VALUE;
+            list[i] = new ArrayList<>();
+        }
 
-        for (int i = 1; i <= N; i++) list[i] = new ArrayList<>();
-
-        for (int i = 0; i < M; i++) {
+        for (int i = 0; i < E; i++) {
             st = new StringTokenizer(br.readLine());
-            int a = Integer.parseInt(st.nextToken());
-            int b = Integer.parseInt(st.nextToken());
+            int y = Integer.parseInt(st.nextToken());
+            int x = Integer.parseInt(st.nextToken());
             int c = Integer.parseInt(st.nextToken());
 
-            list[a].add(new Node(b, c));
-            list[b].add(new Node(a, c));
+            list[y].add(new Node(x, c));
+            list[x].add(new Node(y, c));
         }
 
         solve();
@@ -35,36 +40,39 @@ public class Main {
 
     static void solve() {
         PriorityQueue<Node> pq = new PriorityQueue<>();
-        pq.add(new Node(1, 0));
+        pq.offer(new Node(1, 0));
 
-        boolean visited[] = new boolean[N + 1];
+        boolean[] visited = new boolean[V + 1];
+
+        arr[1] = 0;
 
         while (!pq.isEmpty()) {
             Node cur = pq.poll();
 
-            if (visited[cur.end]) continue;
-            visited[cur.end] = true;
+            if (visited[cur.e]) continue;
+            visited[cur.e] = true;
 
-            ans += cur.cost;
+            ans += cur.c;
 
-            for (Node next : list[cur.end]) {
-                if (visited[next.end]) continue;
+            for (Node next : list[cur.e]) {
+                if (visited[next.e] || arr[next.e] < next.c) continue;
 
-                pq.add(new Node(next.end, next.cost));
+                arr[next.e] = next.c;
+                pq.add(new Node(next.e, next.c));
             }
         }
     }
 }
 
 class Node implements Comparable<Node> {
-    int end, cost;
+    int e, c;
 
-    Node(int end, int cost) {
-        this.end = end;
-        this.cost = cost;
+    Node(int e, int c) {
+        this.e = e;
+        this.c = c;
     }
 
     public int compareTo(Node n) {
-        return this.cost - n.cost;
+        return this.c - n.c;
     }
 }
