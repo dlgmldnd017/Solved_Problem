@@ -1,10 +1,12 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.Arrays;
+import java.util.PriorityQueue;
+import java.util.Queue;
 import java.util.StringTokenizer;
 
 public class Main {
     static int N;
+    static int[] arr;
     static int[][] cost;
     static long ans;
 
@@ -14,11 +16,15 @@ public class Main {
 
         N = Integer.parseInt(br.readLine());
 
+        arr = new int[N];
+
         cost = new int[N][N];
 
         for (int i = 0; i < N; i++) {
+            arr[i] = Integer.MAX_VALUE;
+
             st = new StringTokenizer(br.readLine());
-            for (int j = 0; j < N; j++) cost[i][j] = Integer.parseInt(st.nextToken());
+            for (int j = 0; j < i; j++) cost[j][i] = cost[i][j] = Integer.parseInt(st.nextToken());
         }
 
         solve();
@@ -27,30 +33,42 @@ public class Main {
     }
 
     static void solve() {
+        Queue<Node> pq = new PriorityQueue<>();
+        pq.offer(new Node(0, 0));
+
         boolean visited[] = new boolean[N];
 
-        int[] arr = new int[N];
-        Arrays.fill(arr, Integer.MAX_VALUE);
         arr[0] = 0;
 
-        for (int i = 0; i < N; i++) {
-            int min = Integer.MAX_VALUE;
+        while (!pq.isEmpty()) {
+            Node cur = pq.poll();
 
-            int idx = 1;
+            if (visited[cur.e]) continue;
+            visited[cur.e] = true;
 
-            for (int j = 0; j < N; j++) {
-                if (!visited[j] && min > arr[j]) {
-                    min = arr[j];
-                    idx = j;
-                }
-            }
+            ans += arr[cur.e];
 
-            visited[idx] = true;
-            ans += min;
+            for (int next = 0; next < N; next++) {
+                int nextCost = cost[cur.e][next];
 
-            for (int j = 0; j < N; j++) {
-                if (!visited[j] && cost[idx][j] < arr[j]) arr[j] = cost[idx][j];
+                if (nextCost == 0 || nextCost >= arr[next]) continue;
+
+                arr[next] = nextCost;
+                pq.add(new Node(next, nextCost));
             }
         }
+    }
+}
+
+class Node implements Comparable<Node> {
+    int e, c;
+
+    Node(int e, int c) {
+        this.e = e;
+        this.c = c;
+    }
+
+    public int compareTo(Node n) {
+        return this.c - n.c;
     }
 }
