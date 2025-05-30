@@ -1,10 +1,11 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.StringTokenizer;
+import java.util.*;
 
 public class Main {
-    static int K, dis, ans;
-    static boolean[][] map, visited;
+    static int K, ans;
+    static int[][] map = new int[5][5];
+    static boolean[][] visited = new boolean[5][5];
 
     static int[] dy = {0, 0, -1, 1};
     static int[] dx = {-1, 1, 0, 0};
@@ -15,14 +16,12 @@ public class Main {
 
         K = Integer.parseInt(br.readLine());
 
-        map = new boolean[5][5];
-
         for (int i = 0; i < K; i++) {
             st = new StringTokenizer(br.readLine());
             int y = Integer.parseInt(st.nextToken()) - 1;
             int x = Integer.parseInt(st.nextToken()) - 1;
 
-            map[y][x] = true;
+            map[y][x] = 1;
         }
 
         solve();
@@ -31,20 +30,23 @@ public class Main {
     }
 
     static void solve() {
-        dis = (25 - K) / 2;
+        if (K % 2 == 1) return;
 
-        if ((25 - K) % 2 == 0) return;
-
-        visited = new boolean[5][5];
-
-        dfs(0, 0, 0, false);
+        dfs(0, 0, 1, false);
     }
 
-    static void dfs(int y, int x, int cnt, boolean flag) {
-        if (dis == cnt) {
-            if (!flag) dfs(y, x, 0, true);
-            else if (y == 4 && x == 4) ans++;
-            return;
+    static void dfs(int y, int x, int depth, boolean isHalf) {
+        int cnt = depth;
+        boolean flag = isHalf;
+
+        if (depth == (25 - K) / 2) {
+            if (isHalf) {
+                if (y == 4 && x == 4) ans++;
+                return;
+            } else {
+                cnt = -1;
+                flag = true;
+            }
         }
 
         visited[y][x] = true;
@@ -53,7 +55,7 @@ public class Main {
             int ny = y + dy[k];
             int nx = x + dx[k];
 
-            if (!inRange(ny, nx) || visited[ny][nx] || map[ny][nx]) continue;
+            if (!inRange(ny, nx) || visited[ny][nx] || map[ny][nx] == 1) continue;
 
             dfs(ny, nx, cnt + 1, flag);
         }
