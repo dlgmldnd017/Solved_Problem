@@ -1,9 +1,9 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.*;
+import java.util.StringTokenizer;
 
 public class Main {
-    static int K, distance, ans;
+    static int K, dis, ans;
     static boolean[][] map, visited;
 
     static int[] dy = {0, 0, -1, 1};
@@ -13,9 +13,9 @@ public class Main {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st;
 
-        map = new boolean[5][5];
-
         K = Integer.parseInt(br.readLine());
+
+        map = new boolean[5][5];
 
         for (int i = 0; i < K; i++) {
             st = new StringTokenizer(br.readLine());
@@ -31,19 +31,19 @@ public class Main {
     }
 
     static void solve() {
-        if (K % 2 == 1) return;
+        dis = (25 - K) / 2;
 
-        distance = (25 - K) / 2;
+        if ((25 - K) % 2 == 0) return;
 
         visited = new boolean[5][5];
 
-        dfs(0, 0, 1, false);
+        dfs(0, 0, 0, false);
     }
 
-    static void dfs(int y, int x, int depth, boolean isHalf) {
-        if (depth == distance) {
-            if (!isHalf) dfs(y, x, -1, true);
-            else if(y == 4 && x == 4) ans++;
+    static void dfs(int y, int x, int cnt, boolean flag) {
+        if (dis == cnt) {
+            if (!flag) dfs(y, x, 0, true);
+            else if (y == 4 && x == 4) ans++;
             return;
         }
 
@@ -55,7 +55,7 @@ public class Main {
 
             if (!inRange(ny, nx) || visited[ny][nx] || map[ny][nx]) continue;
 
-            dfs(ny, nx, depth + 1, isHalf);
+            dfs(ny, nx, cnt + 1, flag);
         }
 
         visited[y][x] = false;
