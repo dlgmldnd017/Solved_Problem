@@ -3,9 +3,8 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 public class Main {
-    static int K, ans;
-    static int[][] map = new int[5][5];
-    static boolean[][] visited = new boolean[5][5];
+    static int K, distance, ans;
+    static boolean[][] map, visited;
 
     static int[] dy = {0, 0, -1, 1};
     static int[] dx = {-1, 1, 0, 0};
@@ -14,6 +13,8 @@ public class Main {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st;
 
+        map = new boolean[5][5];
+
         K = Integer.parseInt(br.readLine());
 
         for (int i = 0; i < K; i++) {
@@ -21,7 +22,7 @@ public class Main {
             int y = Integer.parseInt(st.nextToken()) - 1;
             int x = Integer.parseInt(st.nextToken()) - 1;
 
-            map[y][x] = 1;
+            map[y][x] = true;
         }
 
         solve();
@@ -32,21 +33,18 @@ public class Main {
     static void solve() {
         if (K % 2 == 1) return;
 
+        distance = (25 - K) / 2;
+
+        visited = new boolean[5][5];
+
         dfs(0, 0, 1, false);
     }
 
     static void dfs(int y, int x, int depth, boolean isHalf) {
-        int cnt = depth;
-        boolean flag = isHalf;
-
-        if (depth == (25 - K) / 2) {
-            if (isHalf) {
-                if (y == 4 && x == 4) ans++;
-                return;
-            } else {
-                cnt = -1;
-                flag = true;
-            }
+        if (depth == distance) {
+            if (!isHalf) dfs(y, x, -1, true);
+            else if(y == 4 && x == 4) ans++;
+            return;
         }
 
         visited[y][x] = true;
@@ -55,9 +53,9 @@ public class Main {
             int ny = y + dy[k];
             int nx = x + dx[k];
 
-            if (!inRange(ny, nx) || visited[ny][nx] || map[ny][nx] == 1) continue;
+            if (!inRange(ny, nx) || visited[ny][nx] || map[ny][nx]) continue;
 
-            dfs(ny, nx, cnt + 1, flag);
+            dfs(ny, nx, depth + 1, isHalf);
         }
 
         visited[y][x] = false;
