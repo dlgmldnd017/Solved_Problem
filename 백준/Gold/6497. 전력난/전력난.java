@@ -5,7 +5,7 @@ import java.util.*;
 public class Main {
     static int M, N, ans;
     static int[] parents;
-    static PriorityQueue<Node> pq = new PriorityQueue<>();
+    static PriorityQueue<Node> pq;
     static StringBuilder sb = new StringBuilder();
 
     public static void main(String args[]) throws Exception {
@@ -25,6 +25,8 @@ public class Main {
             parents = new int[M];
 
             for (int i = 1; i < M; i++) parents[i] = i;
+
+            pq = new PriorityQueue<>();
 
             for (int i = 0; i < N; i++) {
                 st = new StringTokenizer(br.readLine());
@@ -49,8 +51,9 @@ public class Main {
         while (!pq.isEmpty()) {
             Node cur = pq.poll();
 
-            if (union(cur.y, cur.x)) {
+            if (union(cur.x, cur.y)) {
                 sum += cur.z;
+                cnt++;
 
                 if (cnt == M - 1) break;
             }
@@ -64,16 +67,16 @@ public class Main {
         return parents[x] = find(parents[x]);
     }
 
-    static boolean union(int x, int y) {
-        x = find(x);
-        y = find(y);
+    static boolean union(int a, int b) {
+        int rootA = find(a);
+        int rootB = find(b);
 
-        if (x == y) return false;
+        if (rootA != rootB) {
+            parents[rootA] = rootB;
+            return true;
+        }
 
-        if (x < y) parents[y] = x;
-        else parents[x] = y;
-
-        return true;
+        return false;
     }
 }
 
