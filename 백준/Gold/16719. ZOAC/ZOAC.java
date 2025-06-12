@@ -13,21 +13,17 @@ public class Main {
 
         visited = new boolean[input.length()];
 
-        solve();
+        solve(0, input.length() - 1);
 
         System.out.println(sb);
     }
 
-    static void solve() {
-        recur(0, input.length() - 1);
-    }
-
-    static void recur(int start, int end) {
+    static void solve(int start, int end) {
         if (start > end) return;
 
         int mid = start;
 
-        for (int i = start; i <= end; i++) {
+        for (int i = start + 1; i <= end; i++) {
             if (input.charAt(i) < input.charAt(mid)) mid = i;
         }
 
@@ -39,7 +35,7 @@ public class Main {
 
         sb.append("\n");
 
-        recur(mid + 1, end);
-        recur(start, mid - 1);
+        solve(mid + 1, end);
+        solve(start, mid - 1);
     }
 }
