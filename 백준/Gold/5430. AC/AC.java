@@ -1,23 +1,21 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.StringTokenizer;
+import java.util.ArrayDeque;
+import java.util.Deque;
 
 public class Main {
     static int n;
     static String p;
-    static List<Integer> list;
+    static Deque<Integer> q;
     static StringBuilder sb = new StringBuilder();
 
     public static void main(String args[]) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st;
 
         int T = Integer.parseInt(br.readLine());
 
         for (int t = 0; t < T; t++) {
-            list = new ArrayList<>();
+            q = new ArrayDeque<>();
 
             p = br.readLine();
 
@@ -27,7 +25,7 @@ public class Main {
 
             if (n != 0) {
                 String[] arr = input.split(",");
-                for (String str : arr) list.add(Integer.parseInt(str));
+                for (String str : arr) q.offer(Integer.parseInt(str));
             }
 
             solve();
@@ -42,22 +40,22 @@ public class Main {
         for (int i = 0; i < p.length(); i++) {
             if (p.charAt(i) == 'R') isReversed = !isReversed;
             else {
-                if (list.isEmpty()) {
+                if (q.isEmpty()) {
                     sb.append("error").append("\n");
                     return;
                 }
 
-                if (isReversed) list.remove(list.size() - 1);
-                else list.remove(0);
+                if (isReversed) q.pollLast();
+                else q.poll();
             }
         }
 
         sb.append("[");
 
         if (isReversed) {
-            for (int i = list.size() - 1; i >= 0; i--) sb.append(list.get(i)).append(",");
+            while (!q.isEmpty()) sb.append(q.pollLast()).append(",");
         } else {
-            for (int i : list) sb.append(i).append(",");
+            while (!q.isEmpty()) sb.append(q.poll()).append(",");
         }
 
         if (sb.charAt(sb.length() - 1) != '[') sb.deleteCharAt(sb.length() - 1);
