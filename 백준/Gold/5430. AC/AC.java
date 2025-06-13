@@ -1,12 +1,13 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.ArrayDeque;
-import java.util.Deque;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
 
 public class Main {
-    static int N;
-    static Deque<Integer> dq;
+    static int n;
+    static String p;
+    static List<Integer> list;
     static StringBuilder sb = new StringBuilder();
 
     public static void main(String args[]) throws Exception {
@@ -15,60 +16,51 @@ public class Main {
 
         int T = Integer.parseInt(br.readLine());
 
-        for (int t = 1; t <= T; t++) {
-            String command = br.readLine();
+        for (int t = 0; t < T; t++) {
+            list = new ArrayList<>();
 
-            N = Integer.parseInt(br.readLine());
+            p = br.readLine();
 
-            String number = br.readLine().replaceAll("\\[", "").replaceAll("\\]", "");
+            n = Integer.parseInt(br.readLine());
 
-            dq = new ArrayDeque<>();
+            String input = br.readLine().replaceAll("\\[", "").replaceAll("]", "");
 
-            if (!number.isEmpty()) {
-                String[] numbers = number.split(",");
-                for (String s : numbers) dq.addLast(Integer.parseInt(s));
+            if (n != 0) {
+                String[] arr = input.split(",");
+                for (String str : arr) list.add(Integer.parseInt(str));
             }
 
-            solve(command);
+            solve();
         }
 
         System.out.println(sb);
     }
 
-    static void solve(String command) {
+    static void solve() {
         boolean isReversed = false;
 
-        for (int i = 0; i < command.length(); i++) {
-            char c = command.charAt(i);
-
-            if (c == 'R') isReversed = !isReversed;
+        for (int i = 0; i < p.length(); i++) {
+            if (p.charAt(i) == 'R') isReversed = !isReversed;
             else {
-                if (dq.isEmpty()) {
+                if (list.isEmpty()) {
                     sb.append("error").append("\n");
                     return;
                 }
 
-                if (isReversed) dq.removeLast();
-                else dq.removeFirst();
+                if (isReversed) list.remove(list.size() - 1);
+                else list.remove(0);
             }
         }
 
         sb.append("[");
 
         if (isReversed) {
-            while (!dq.isEmpty()) {
-                sb.append(dq.removeLast());
-                sb.append(",");
-            }
+            for (int i = list.size() - 1; i >= 0; i--) sb.append(list.get(i)).append(",");
         } else {
-            while (!dq.isEmpty()) {
-                sb.append(dq.removeFirst());
-                sb.append(",");
-            }
+            for (int i : list) sb.append(i).append(",");
         }
 
         if (sb.charAt(sb.length() - 1) != '[') sb.deleteCharAt(sb.length() - 1);
-        
         sb.append("]").append("\n");
     }
 }
