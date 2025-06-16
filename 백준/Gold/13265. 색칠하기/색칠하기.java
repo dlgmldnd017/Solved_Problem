@@ -29,7 +29,11 @@ public class Main {
                 int u = Integer.parseInt(st.nextToken());
                 int v = Integer.parseInt(st.nextToken());
 
-                if (find(u) == find(v)) flag = false;
+                if (find(u) == find(v)) {
+                    flag = false;
+                    for (int j = i + 1; j < m; j++) st = new StringTokenizer(br.readLine());
+                    break;
+                }
 
                 union(u, v + n);
                 union(v, u + n);
