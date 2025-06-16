@@ -1,11 +1,10 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.*;
+import java.util.StringTokenizer;
 
 public class Main {
-    static int N, M;
-    static int[] color;
-    static List<Integer> list[];
+    static int n, m;
+    static int[] p;
     static StringBuilder sb = new StringBuilder();
 
     public static void main(String args[]) throws Exception {
@@ -14,62 +13,43 @@ public class Main {
 
         int T = Integer.parseInt(br.readLine());
 
-        for (int t = 1; t <= T; t++) {
+        while (T-- > 0) {
             st = new StringTokenizer(br.readLine());
-            N = Integer.parseInt(st.nextToken());
-            M = Integer.parseInt(st.nextToken());
+            n = Integer.parseInt(st.nextToken());
+            m = Integer.parseInt(st.nextToken());
 
-            list = new ArrayList[N + 1];
+            p = new int[n * 2 + 1];
 
-            for (int i = 1; i <= N; i++) list[i] = new ArrayList<>();
+            for (int i = 1; i < n * 2 + 1; i++) p[i] = i;
 
-            for (int i = 0; i < M; i++) {
+            boolean flag = true;
+
+            for (int i = 0; i < m; i++) {
                 st = new StringTokenizer(br.readLine());
-                int a = Integer.parseInt(st.nextToken());
-                int b = Integer.parseInt(st.nextToken());
+                int u = Integer.parseInt(st.nextToken());
+                int v = Integer.parseInt(st.nextToken());
 
-                list[a].add(b);
-                list[b].add(a);
+                if (find(u) == find(v)) flag = false;
+
+                union(u, v + n);
+                union(v, u + n);
             }
 
-            color = new int[N + 1];
-
-            solve();
+            sb.append(flag ? "possible" : "impossible").append("\n");
         }
 
         System.out.println(sb);
     }
 
-    static void solve() {
-        for (int i = 1; i <= N; i++) {
-            if (color[i] == 0) {
-                if (!bfs(i)) {
-                    sb.append("impossible").append("\n");
-                    return;
-                }
-            }
-        }
+    static void union(int a, int b) {
+        int rootA = find(a);
+        int rootB = find(b);
 
-        sb.append("possible").append("\n");
+        if (rootA != rootB) p[rootB] = rootA;
     }
 
-    static boolean bfs(int start) {
-        Queue<Integer> q = new ArrayDeque<>();
-        q.add(start);
-
-        color[start] = 1;
-
-        while (!q.isEmpty()) {
-            int cur = q.poll();
-
-            for (int next : list[cur]) {
-                if (color[next] == 0) {
-                    color[next] = 3 - color[cur];
-                    q.add(next);
-                } else if (color[cur] == color[next]) return false;
-            }
-        }
-
-        return true;
+    static int find(int x) {
+        if (x == p[x]) return x;
+        return p[x] = find(p[x]);
     }
 }
