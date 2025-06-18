@@ -8,7 +8,6 @@ public class Main {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
         S = new StringBuilder(br.readLine());
-
         T = new StringBuilder(br.readLine());
 
         solve();
@@ -17,20 +16,26 @@ public class Main {
     }
 
     static void solve() {
-        dfs(T.toString());
+        dfs(false, T);
     }
 
-    static void dfs(String str) {
-        if (str.length() == S.length()) {
-            if (str.equals(S.toString())) {
+    static void dfs(boolean isReversed, StringBuilder sb) {
+        if (S.length() == sb.length()) {
+            if (isReversed) sb.reverse();
+
+            if (S.toString().equals(sb.toString())) {
                 System.out.println(1);
                 System.exit(0);
             }
             return;
         }
 
-        if (str.endsWith("A")) dfs(str.substring(0, str.length() - 1));
-
-        if (str.charAt(0) == 'B') dfs(new StringBuilder(str.substring(1)).reverse().toString());
+        if (isReversed) {
+            if (sb.charAt(sb.length() - 1) == 'B') dfs(false, new StringBuilder(sb.substring(0, sb.length() - 1)));
+            if (sb.charAt(0) == 'A') dfs(true, new StringBuilder(sb.substring(1)));
+        } else {
+            if (sb.charAt(0) == 'B') dfs(true, new StringBuilder(sb.substring(1)));
+            if (sb.charAt(sb.length() - 1) == 'A') dfs(false, new StringBuilder(sb.substring(0, sb.length() - 1)));
+        }
     }
 }
