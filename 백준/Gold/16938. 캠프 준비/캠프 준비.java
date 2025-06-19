@@ -1,14 +1,11 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.StringTokenizer;
 
 public class Main {
     static int N, L, R, X, ans;
     static int[] arr;
-    static List<Integer> list = new ArrayList<>();
 
     public static void main(String args[]) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -31,23 +28,23 @@ public class Main {
     }
 
     static void solve() {
+        if (N == 1) return;
+
         Arrays.sort(arr);
 
-        dfs(0, 0);
+        dfs(0, 0, Integer.MAX_VALUE, Integer.MIN_VALUE, 0);
     }
 
-    static void dfs(int depth, int sum) {
+    static void dfs(int depth, int size, int min, int max, int sum) {
         if (sum > R) return;
 
         if (depth == N) {
-            if (L <= sum && list.get(list.size() - 1) - list.get(0) >= X) ans++;
+            if (size >= 2 && L <= sum && max - min >= X) ans++;
             return;
         }
 
-        list.add(arr[depth]);
-        dfs(depth + 1, arr[depth] + sum);
-        list.remove(list.size() - 1);
+        dfs(depth + 1, size + 1, Math.min(min, arr[depth]), Math.max(max, arr[depth]), arr[depth] + sum);
 
-        dfs(depth + 1, sum);
+        dfs(depth + 1, size, min, max, sum);
     }
 }
