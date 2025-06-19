@@ -1,12 +1,10 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.Stack;
-import java.util.StringTokenizer;
+import java.util.*;
 
 public class Main {
     static int N;
-    static int[] arr, result;
-
+    static int[] arr;
     static StringBuilder sb = new StringBuilder();
 
     public static void main(String args[]) throws Exception {
@@ -26,13 +24,12 @@ public class Main {
     }
 
     static void solve() {
-        result = new int[N];
+        Stack<Integer> st = new Stack<>();
 
-        Stack<Integer> st = new Stack();
+        int[] result = new int[N];
 
         for (int i = 0; i < N; i++) {
             while (!st.isEmpty() && arr[st.peek()] < arr[i]) result[st.pop()] = arr[i];
-
             st.push(i);
         }
 
