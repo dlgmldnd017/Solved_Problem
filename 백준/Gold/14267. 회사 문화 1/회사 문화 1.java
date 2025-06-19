@@ -5,10 +5,9 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 public class Main {
-    static int N, M;
+    static int n, m;
     static int[] p, q;
     static List<Integer>[] tree;
-
     static StringBuilder sb = new StringBuilder();
 
     public static void main(String args[]) throws Exception {
@@ -16,25 +15,26 @@ public class Main {
         StringTokenizer st;
 
         st = new StringTokenizer(br.readLine());
-        N = Integer.parseInt(st.nextToken());
-        M = Integer.parseInt(st.nextToken());
+        n = Integer.parseInt(st.nextToken());
+        m = Integer.parseInt(st.nextToken());
 
-        tree = new ArrayList[N + 1];
-        for (int i = 1; i <= N; i++) tree[i] = new ArrayList<>();
+        tree = new ArrayList[n + 1];
 
-        p = new int[N + 1];
+        for (int i = 1; i <= n; i++) tree[i] = new ArrayList<>();
+
+        p = new int[n + 1];
 
         st = new StringTokenizer(br.readLine());
         p[1] = Integer.parseInt(st.nextToken());
 
-        for (int i = 2; i <= N; i++) {
+        for (int i = 2; i <= n; i++) {
             p[i] = Integer.parseInt(st.nextToken());
             tree[p[i]].add(i);
         }
 
-        q = new int[N + 1];
+        q = new int[n + 1];
 
-        for (int i = 0; i < M; i++) {
+        for (int i = 0; i < m; i++) {
             st = new StringTokenizer(br.readLine());
             int idx = Integer.parseInt(st.nextToken());
             int w = Integer.parseInt(st.nextToken());
@@ -49,7 +49,7 @@ public class Main {
     static void solve() {
         dfs(1);
 
-        for (int i = 1; i <= N; i++) sb.append(q[i]).append(" ");
+        for (int i = 1; i <= n; i++) sb.append(q[i]).append(" ");
     }
 
     static void dfs(int cur) {
