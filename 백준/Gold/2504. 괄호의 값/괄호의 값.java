@@ -4,55 +4,49 @@ import java.util.Stack;
 
 public class Main {
     static int ans;
+    static String input;
 
     public static void main(String args[]) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-        String input = br.readLine();
+        input = br.readLine();
 
-        solve(input);
+        solve();
 
         System.out.println(ans);
     }
 
-    static void solve(String input) {
-        Stack<Object> stack = new Stack<>();
+    static void solve() {
+        Stack<Object> st = new Stack<>();
 
         for (int i = 0; i < input.length(); i++) {
             char ch = input.charAt(i);
 
-            if (ch == '(' || ch == '[') stack.push(ch);
+            if (ch == '(' || ch == '[') st.push(ch);
             else {
-                int temp = 0;
+                int sum = 0;
 
-                while (!stack.isEmpty()) {
-                    Object top = stack.pop();
+                while (!st.isEmpty()) {
+                    Object top = st.pop();
 
-                    if (top instanceof Integer) {
-                        temp += (Integer) top;
-                    } else if (ch == ')' && top.equals('(')) {
-                        stack.push(temp == 0 ? 2 : 2 * temp);
+                    if (top instanceof Integer) sum += (Integer) top;
+                    else if (ch == ')' && top.equals('(')) {
+                        st.push(sum == 0 ? 2 : sum * 2);
                         break;
                     } else if (ch == ']' && top.equals('[')) {
-                        stack.push(temp == 0 ? 3 : 3 * temp);
+                        st.push(sum == 0 ? 3 : sum * 3);
                         break;
-                    } else {
-                        ans = 0;
-                        return;
-                    }
+                    } else return;
                 }
 
-                if (stack.isEmpty() && (ch == ')' || ch == ']')) {
-                    ans = 0;
-                    return;
-                }
+                if (st.isEmpty() && (ch == ')' || ch == ']')) return;
             }
         }
 
-        while (!stack.isEmpty()) {
-            Object o = stack.pop();
-            
-            if (o instanceof Integer) ans += (Integer) o;
+        while (!st.isEmpty()) {
+            Object top = st.pop();
+
+            if (top instanceof Integer) ans += (Integer) top;
             else {
                 ans = 0;
                 return;
