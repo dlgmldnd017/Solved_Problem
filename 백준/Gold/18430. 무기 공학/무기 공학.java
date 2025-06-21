@@ -6,7 +6,6 @@ public class Main {
     static int N, M, ans;
     static int[][] arr;
     static boolean[][] visited;
-    static int[][] dirs = {{1, 1}, {1, -1}, {-1, 1}, {-1, -1},};
 
     public static void main(String args[]) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -50,17 +49,36 @@ public class Main {
         if (!visited[y][x]) {
             visited[y][x] = true;
 
-            for (int i = 0; i < 4; i++) {
+            if (inRange(y + 1, x - 1) && !visited[y + 1][x] && !visited[y][x - 1]) {
+                visited[y + 1][x] = true;
+                visited[y][x - 1] = true;
+                dfs(y, x + 1, sum + arr[y][x] * 2 + arr[y + 1][x] + arr[y][x - 1]);
+                visited[y + 1][x] = false;
+                visited[y][x - 1] = false;
+            }
 
-                if (!inRange(y + dirs[i][0], x + dirs[i][1]) || visited[y + dirs[i][0]][x] || visited[y][x + dirs[i][1]]) continue;
+            if (inRange(y - 1, x - 1) && !visited[y - 1][x] && !visited[y][x - 1]) {
+                visited[y - 1][x] = true;
+                visited[y][x - 1] = true;
+                dfs(y, x + 1, sum + arr[y][x] * 2 + arr[y - 1][x] + arr[y][x - 1]);
+                visited[y - 1][x] = false;
+                visited[y][x - 1] = false;
+            }
 
-                visited[y + dirs[i][0]][x] = true;
-                visited[y][x + dirs[i][1]] = true;
+            if (inRange(y - 1, x + 1) && !visited[y - 1][x] && !visited[y][x + 1]) {
+                visited[y - 1][x] = true;
+                visited[y][x + 1] = true;
+                dfs(y, x + 1, sum + arr[y][x] * 2 + arr[y - 1][x] + arr[y][x + 1]);
+                visited[y - 1][x] = false;
+                visited[y][x + 1] = false;
+            }
 
-                dfs(y, x + 1, sum + arr[y][x] * 2 + arr[y + dirs[i][0]][x] + arr[y][x + dirs[i][1]]);
-
-                visited[y + dirs[i][0]][x] = false;
-                visited[y][x + dirs[i][1]] = false;
+            if (inRange(y + 1, x + 1) && !visited[y + 1][x] && !visited[y][x + 1]) {
+                visited[y + 1][x] = true;
+                visited[y][x + 1] = true;
+                dfs(y, x + 1, sum + arr[y][x] * 2 + arr[y + 1][x] + arr[y][x + 1]);
+                visited[y + 1][x] = false;
+                visited[y][x + 1] = false;
             }
 
             visited[y][x] = false;
