@@ -23,24 +23,24 @@ public class Main {
     }
 
     static void solve() {
-        // 오른쪽 방향
-        int[] dp1 = new int[N];
-        ans = dp1[0] = arr[0];
-        
+        int[] left = new int[N];
+        ans = left[0] = arr[0];
+
         for (int i = 1; i < N; i++) {
-            dp1[i] = Math.max(dp1[i - 1] + arr[i], arr[i]);
-            ans = Math.max(ans, dp1[i]);
+            left[i] = Math.max(left[i - 1] + arr[i], arr[i]);
+
+            // 카데인 알고리즘
+            ans = Math.max(ans, left[i]);
         }
 
-        // 왼쪽 방향
-        int[] dp2 = new int[N];
-        dp2[N - 1] = arr[N - 1];
+        int[] right = new int[N];
+        right[N - 1] = arr[N - 1];
 
-        for (int i = N - 2; i >= 0; i--) dp2[i] = Math.max(dp2[i + 1] + arr[i], arr[i]);
+        for (int i = N - 2; i >= 0; i--) right[i] = Math.max(right[i + 1] + arr[i], arr[i]);
 
         // 하나의 수 제거
         for (int i = 1; i < N - 1; i++) {
-            int tmp = dp1[i - 1] + dp2[i + 1];
+            int tmp = left[i - 1] + right[i + 1];
 
             ans = Math.max(ans, tmp);
         }
