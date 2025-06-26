@@ -26,7 +26,7 @@ public class Main {
     }
 
     static void solve() {
-        Collections.sort(list, (a, b) -> a.s - b.s);
+        Collections.sort(list);
 
         PriorityQueue<Integer> pq = new PriorityQueue<>();
 
@@ -42,11 +42,15 @@ public class Main {
     }
 }
 
-class Node {
+class Node implements Comparable<Node> {
     int s, e;
 
     Node(int s, int e) {
         this.s = s;
         this.e = e;
+    }
+
+    public int compareTo(Node n) {
+        return this.s - n.s;
     }
 }
