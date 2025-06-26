@@ -17,17 +17,14 @@ public class Solution {
 
             arr = new int[100][100];
 
-            for (int i = 0; i < 100; i++) {
-                st = new StringTokenizer(br.readLine());
-                for (int j = 0; j < 100; j++) arr[i][j] = Integer.parseInt(st.nextToken());
-            }
-
             int x = -1;
 
             for (int i = 0; i < 100; i++) {
-                if (arr[99][i] == 2) {
-                    x = i;
-                    break;
+                st = new StringTokenizer(br.readLine());
+                for (int j = 0; j < 100; j++) {
+                    arr[i][j] = Integer.parseInt(st.nextToken());
+
+                    if (arr[i][j] == 2) x = j;
                 }
             }
 
