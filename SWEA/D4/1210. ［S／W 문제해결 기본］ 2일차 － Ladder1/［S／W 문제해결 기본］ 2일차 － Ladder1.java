@@ -1,90 +1,68 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.LinkedList;
-import java.util.Queue;
 import java.util.StringTokenizer;
 
-class Node{
-	int y, x;
-
-	public Node(int y, int x) {
-		this.y = y;
-		this.x = x;
-	}
-}
-
 public class Solution {
-	static int N=100, ans;
-	static int map[][];
-	
-	static int dy[] = {0, 0, -1};
-	static int dx[] = {-1, 1, 0};
-	
-	static StringBuilder sb = new StringBuilder();
+    static int T;
+    static int[] dx = {-1, 1, 0};
+    static int[][] arr;
+    static StringBuilder sb = new StringBuilder();
 
-	public static void main(String[] args) throws Exception {
-		BufferedReader sc = new BufferedReader(new InputStreamReader(System.in));
-		StringTokenizer st;
+    public static void main(String args[]) throws Exception {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st;
 
-		int test_case = 10;
-		for (int T = 1; T <= test_case; T++) {
-			String str = sc.readLine();
+        for (int t = 0; t < 10; t++) {
+            T = Integer.parseInt(br.readLine());
 
-			map = new int[N][N];
-			
-			int R=0, C=0;
-			for(int i=0; i<N; i++) {
-				st = new StringTokenizer(sc.readLine());
-				
-				for(int j=0; j<N; j++) {
-					map[i][j] = Integer.parseInt(st.nextToken());
-					
-					if(map[i][j]==2) {
-						R=i; C=j;
-					}
-				}
-			}
+            arr = new int[100][100];
 
-			solve(R, C);
-			sb.append("#" + T + " " + ans + "\n");
-		}
+            for (int i = 0; i < 100; i++) {
+                st = new StringTokenizer(br.readLine());
+                for (int j = 0; j < 100; j++) arr[i][j] = Integer.parseInt(st.nextToken());
+            }
 
-		System.out.println(sb);
-	}
+            int x = -1;
 
-	static void solve(int y, int x) {
-		Queue<Node> q = new LinkedList<>();
-		q.add(new Node(y, x));
-		
-		boolean visited[][] = new boolean[N][N];
-		visited[y][x] = true;
-		
-		while(!q.isEmpty()) {
-			Node cur = q.poll();
-			y = cur.y;
-			x = cur.x;
-			
-			if(y==0) {
-				ans = x;
-				return;
-			}
-			
-			for(int k=0; k<3; k++) {
-				int ny = y+dy[k];
-				int nx = x+dx[k];
-				
-				if(!inRange(ny, nx) || map[ny][nx]==0) continue;
-				
-				if(!visited[ny][nx]) {
-					q.add(new Node(ny,nx));
-					visited[ny][nx]=true;
-					break;
-				}
-			}
-		}
-	}
-	
-	static boolean inRange(int y, int x) {
-		return (y<N&&y>=0) && (x<N&&x>=0);
-	}
+            for (int i = 0; i < 100; i++) {
+                if (arr[99][i] == 2) {
+                    x = i;
+                    break;
+                }
+            }
+
+            solve(98, x);
+        }
+
+        System.out.println(sb);
+    }
+
+    static void solve(int y, int x) {
+        while (true) {
+            // 양방향 확인
+            for (int k = 0; k < 2; k++) {
+                int nx = dx[k] + x;
+
+                if (!inRange(nx) || arr[y][nx] != 1) continue;
+
+                do {
+                    nx += dx[k];
+                } while (inRange(nx) && arr[y][nx] != 0);
+
+                x = nx - dx[k];
+                break;
+            }
+
+            y -= 1;
+
+            if (y == 0) {
+                sb.append("#").append(T).append(" ").append(x).append("\n");
+                return;
+            }
+        }
+    }
+
+    static boolean inRange(int x) {
+        return (0 <= x && x < 100);
+    }
 }
