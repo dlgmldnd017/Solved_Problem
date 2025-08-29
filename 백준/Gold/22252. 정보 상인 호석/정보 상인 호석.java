@@ -24,28 +24,18 @@ public class Main {
                 list.add(new PriorityQueue<>());
             }
 
-            int pos = -1;
-            switch (command) {
-                case 1:
-                    int k = Integer.parseInt(st.nextToken());
+            int k = Integer.parseInt(st.nextToken());
+            int pos = map.get(name);
 
-                    pos = map.get(name);
-                    for (int i = 0; i < k; i++) {
-                        list.get(pos).offer(-Integer.parseInt(st.nextToken()));
-                    }
-
-                    break;
-
-                case 2:
-                    int b = Integer.parseInt(st.nextToken());
-                    pos = map.get(name);
-
-                    PriorityQueue<Integer> pq = list.get(pos);
-                    while (!pq.isEmpty() && b-- > 0) {
-                        ans += (-pq.poll());
-                    }
-
-                    break;
+            if (command == 1) {
+                for (int i = 0; i < k; i++) {
+                    list.get(pos).offer(-Integer.parseInt(st.nextToken()));
+                }
+            } else {
+                PriorityQueue<Integer> pq = list.get(pos);
+                while (!pq.isEmpty() && k-- > 0) {
+                    ans += (-pq.poll());
+                }
             }
         }
 
