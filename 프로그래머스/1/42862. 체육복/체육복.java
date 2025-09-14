@@ -2,36 +2,27 @@ import java.util.*;
 
 class Solution {
     public int solution(int n, int[] lost, int[] reserve) {
+        int[] stu = new int[n + 1];
+        Arrays.fill(stu, 1);
+        
+        for (int i : lost) stu[i]--;
+        for (int i : reserve) stu[i]++;
+        
         int answer = 0;
         
-        TreeSet<Integer> set = new TreeSet<>();
-        
-        for (int i : reserve) set.add(i);
-        
-        List<Integer> list = new ArrayList<>();
-        
-        for (int i : lost) {
-            if (set.contains(i)) set.remove(i);
-            else list.add(i);
-        }
-        
-        Collections.sort(list);
-        
-        int cnt = 0;
-        
-        for (int i : list) {
-            if (set.contains(i - 1)) {
-                set.remove(i - 1);
-                cnt++;
-            } else if (set.contains(i + 1)) {
-                set.remove(i + 1);
-                cnt++;
+        for (int i = 1; i <= n; i++) {
+            if (stu[i] == 0) {
+                if (i != 1 && stu[i - 1] == 2) {
+                    stu[i]++;
+                    stu[i - 1]--;
+                } else if (i != n && stu[i + 1] == 2) {
+                    stu[i]++;
+                    stu[i + 1]--;
+                }
             }
             
-            if (set.size() == 0) break;
+            if (stu[i] >= 1) answer++;
         }
-        
-        answer = n - list.size() + cnt;
         
         return answer;
     }
