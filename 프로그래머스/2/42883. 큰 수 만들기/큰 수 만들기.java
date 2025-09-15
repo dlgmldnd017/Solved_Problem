@@ -1,23 +1,22 @@
 class Solution {
     public String solution(String number, int k) {
-        StringBuilder sb = new StringBuilder();
-        
-        int start = 0, max;
-        for (int i = 0; i < number.length() - k; i++) {
-            max = 0;
+        int len = number.length();
+        char[] ch = new char[len];
+        int top = -1;
+
+        for (int i = 0; i < len; i++) {
+            char c = number.charAt(i);
             
-            for (int j = start; j <= i + k; j++) {
-                int target = number.charAt(j) - '0';
-                
-                if(max < target) {
-                    max = target;
-                    start = j + 1;
-                }
+            while (k > 0 && top >= 0 && ch[top] < c) {
+                top--;
+                k--;
             }
             
-            sb.append(max+"");
+            ch[++top] = c;
         }
-        
-        return sb.toString();
+
+        if (k > 0) top -= k;
+
+        return new String(ch, 0, top + 1);
     }
 }
