@@ -1,26 +1,24 @@
-import java.util.*;
+import java.util.Arrays;
 
 class Solution {
     public int solution(int[] people, int limit) {
-        int answer = 0;
-        
         Arrays.sort(people);
-        
-        int low = 0, high = people.length-1;
-        
-        while(low <= high) {
-            int sum = people[low] + people[high];
-            
-            if(sum <= limit) {
-                low++;
-                high--;
+
+        int answer = 0;
+
+        int i = 0, j = people.length - 1;
+
+        while (i <= j) {
+            if (people[i] + people[j] <= limit) {
+                i++;
+                j--;
             } else {
-                high--;
+                j--;
             }
-            
+
             answer++;
         }
-        
+
         return answer;
     }
 }
