@@ -1,55 +1,57 @@
 import java.util.*;
 
-class Node implements Comparable<Node> {
-    int end, cost;
-    
-    Node(int end, int cost) {
-        this.end = end;
-        this.cost = cost;
-    }
-    
-    public int compareTo(Node n) {
-        return this.cost - n.cost;
-    }
-}
-
+// N = 10,000
+// E = 4,950
 class Solution {
     public int solution(int n, int[][] costs) {
-        int answer = 0;
+        List<Node>[] list = new ArrayList[n];
+        for (int i = 0; i < n; i++) list[i] = new ArrayList<>();
         
-        List<Node> list[] = new ArrayList[n];
-        
-        for(int i = 0; i < n; i++) list[i] = new ArrayList<>();
-        
-        for(int i = 0; i < costs.length; i++) {
-            int start = costs[i][0];
-            int end = costs[i][1];
-            int cost = costs[i][2];
+        for (int i = 0; i < costs.length; i++) {
+            int u = costs[i][0];
+            int v = costs[i][1];
             
-            list[start].add(new Node(end, cost));   
-            list[end].add(new Node(start, cost));   
+            list[u].add(new Node(v, costs[i][2]));
+            list[v].add(new Node(u, costs[i][2]));
         }
         
         PriorityQueue<Node> pq = new PriorityQueue<>();
         pq.add(new Node(0, 0));
         
-        boolean visited[] = new boolean[n];
+        boolean[] visited = new boolean[n];
         
-        while(!pq.isEmpty()) {
+        int answer = 0, cnt = 0;
+        
+        while (!pq.isEmpty()) {
             Node cur = pq.poll();
             
-            if(visited[cur.end]) continue;
-            visited[cur.end] = true;
+            if (visited[cur.e]) continue;
+            visited[cur.e] = true;
             
-            answer += cur.cost;
+            answer += cur.c;
             
-            for(Node next : list[cur.end]) {
-                if(visited[next.end]) continue;
+            if (++cnt == n) break;
+            
+            for (Node next : list[cur.e]) {
+                if (visited[next.e]) continue;
                 
-                pq.add(new Node(next.end, next.cost));
+                pq.add(new Node(next.e, next.c));
             }
         }
         
         return answer;
+    }
+    
+    static class Node implements Comparable<Node> {
+        int e, c;
+        
+        Node(int e, int c) {
+            this.e = e;
+            this.c = c;
+        }
+        
+        public int compareTo(Node n) {
+            return this.c - n.c;
+        }
     }
 }
