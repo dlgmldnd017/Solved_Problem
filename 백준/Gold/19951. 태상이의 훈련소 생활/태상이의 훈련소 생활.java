@@ -1,12 +1,14 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.*;
+import java.util.StringTokenizer;
 
 public class Main {
-    static int N, M, H[], prefixH[];
+    static int N, M;
+    static int[] H, arr;
+
     static StringBuilder sb = new StringBuilder();
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String args[]) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st;
 
@@ -17,18 +19,19 @@ public class Main {
         H = new int[N + 1];
 
         st = new StringTokenizer(br.readLine());
-        for (int i = 1; i <= N; i++) H[i] = Integer.parseInt(st.nextToken());
+        for (int i = 1; i <= N; i++) {
+            H[i] = Integer.parseInt(st.nextToken());
+        }
 
-        prefixH = new int[N + 2];
-
+        arr = new int[N + 2];
         for (int i = 0; i < M; i++) {
             st = new StringTokenizer(br.readLine());
             int a = Integer.parseInt(st.nextToken());
             int b = Integer.parseInt(st.nextToken());
             int k = Integer.parseInt(st.nextToken());
 
-            prefixH[a] = prefixH[a] + k;
-            prefixH[b + 1] = prefixH[b + 1] - k;
+            arr[a] += k;
+            arr[b + 1] += -k;
         }
 
         solve();
@@ -37,10 +40,12 @@ public class Main {
     }
 
     static void solve() {
-        for (int i = 1; i <= N; i++) prefixH[i] = prefixH[i - 1] + prefixH[i];
+        int cnt = 0;
 
-        for (int i = 1; i <= N; i++) H[i] += prefixH[i];
-
-        for (int i = 1; i <= N; i++) sb.append(H[i] + " ");
+        for (int i = 1; i <= N; i++) {
+            cnt += arr[i];
+            H[i] += cnt;
+            sb.append(H[i]).append(" ");
+        }
     }
 }
