@@ -4,9 +4,9 @@ import java.util.*;
 
 public class Main {
     static int N, E, v1, v2, ans;
-    static List<Node> list[];
+    static List<Node>[] list;
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String args[]) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st;
 
@@ -16,84 +16,89 @@ public class Main {
 
         list = new ArrayList[N + 1];
 
-        for (int i = 1; i <= N; i++) list[i] = new ArrayList<>();
+        for (int i = 1; i <= N; i++) {
+            list[i] = new ArrayList<>();
+        }
 
         for (int i = 0; i < E; i++) {
             st = new StringTokenizer(br.readLine());
-            int a = Integer.parseInt(st.nextToken());
-            int b = Integer.parseInt(st.nextToken());
-            int w = Integer.parseInt(st.nextToken());
+            int u = Integer.parseInt(st.nextToken());
+            int v = Integer.parseInt(st.nextToken());
+            int c = Integer.parseInt(st.nextToken());
 
-            list[a].add(new Node(b, w));
-            list[b].add(new Node(a, w));
+            list[u].add(new Node(v, c));
+            list[v].add(new Node(u, c));
         }
 
         st = new StringTokenizer(br.readLine());
         v1 = Integer.parseInt(st.nextToken());
         v2 = Integer.parseInt(st.nextToken());
 
-        if (E == 0) ans = -1;
-        else solve();
+        solve();
 
         System.out.println(ans);
     }
 
     static void solve() {
-        int a1 = bfs(1, v1);
-        int b1 = bfs(v1, v2);
-        int c1 = bfs(v2, N);
+        int min = Integer.MAX_VALUE;
 
-        if (a1 == Integer.MAX_VALUE || b1 == Integer.MAX_VALUE || c1 == Integer.MAX_VALUE) {
+        if (!bfs(1, v1) || !bfs(v1, v2) || !bfs(v2, N)) {
             ans = -1;
             return;
-        } else {
-            ans = a1 + b1 + c1;
         }
 
-        int a2 = bfs(1, v2);
-        int b2 = bfs(v2, v1);
-        int c2 = bfs(v1, N);
+        min = ans;
 
-        if (ans > a2 + b2 + c2) ans = a2 + b2 + c2;
+        ans = 0;
+
+        if (!bfs(1, v2) || !bfs(v2, v1) || !bfs(v1, N)) {
+            return;
+        }
+
+        if (min < ans) ans = min;
     }
 
-    static int bfs(int start, int end) {
-        int dist[] = new int[N + 1];
+    static boolean bfs(int start, int end) {
+        int[] dist = new int[N + 1];
         Arrays.fill(dist, Integer.MAX_VALUE);
-
         dist[start] = 0;
 
         PriorityQueue<Node> pq = new PriorityQueue<>();
         pq.add(new Node(start, 0));
 
-        boolean visited[] = new boolean[N + 1];
-
         while (!pq.isEmpty()) {
             Node cur = pq.poll();
 
-            if (visited[cur.e]) continue;
-            visited[cur.e] = true;
+            if (dist[cur.e] < cur.c) continue;
+
+            if (cur.e == end) {
+                ans += cur.c;
+                return true;
+            }
 
             for (Node next : list[cur.e]) {
-                if (visited[next.e] || dist[next.e] <= dist[cur.e] + next.w) continue;
+                int cost = next.c + cur.c;
 
-                dist[next.e] = dist[cur.e] + next.w;
-                pq.add(new Node(next.e, dist[next.e]));
+                if (dist[next.e] < cost) continue;
+
+                dist[next.e] = cost;
+                pq.add(new Node(next.e, cost));
             }
         }
-        return dist[end];
-    }
-}
 
-class Node implements Comparable<Node> {
-    int e, w;
-
-    Node(int e, int w) {
-        this.e = e;
-        this.w = w;
+        return false;
     }
 
-    public int compareTo(Node n) {
-        return this.w - n.w;
+    static class Node implements Comparable<Node> {
+        int e, c;
+
+        Node(int e, int c) {
+            this.e = e;
+            this.c = c;
+        }
+
+        public int compareTo(Node n) {
+            return this.c - n.c;
+        }
     }
 }
