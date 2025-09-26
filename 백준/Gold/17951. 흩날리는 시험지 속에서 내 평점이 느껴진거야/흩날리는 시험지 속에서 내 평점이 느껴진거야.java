@@ -1,12 +1,12 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.*;
+import java.util.StringTokenizer;
 
 public class Main {
     static int N, K, ans;
     static int[] arr;
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String args[]) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st;
 
@@ -16,42 +16,43 @@ public class Main {
 
         arr = new int[N];
 
-        int right = 0;
-
         st = new StringTokenizer(br.readLine());
         for (int i = 0; i < N; i++) {
             arr[i] = Integer.parseInt(st.nextToken());
-            right += arr[i];
         }
 
-        solve(0, right);
+        solve();
 
         System.out.println(ans);
     }
 
-    static void solve(int left, int right) {
-        while (left <= right) {
-            int mid = (left + right) / 2;
+    static void solve() {
+        int l = 0, r = 2_000_000;
 
-            if (canDivide(mid)) {
+        while (l <= r) {
+            int mid = (l + r) >>> 1;
+
+            if (K >= check(mid)) {
                 ans = mid;
-                left = mid + 1;
-            } else right = mid - 1;
+                r = mid - 1;
+            } else {
+                l = mid + 1;
+            }
         }
     }
 
-    static boolean canDivide(int minScore) {
-        int count = 0, sum = 0;
+    static int check(int mid) {
+        int cnt = 1, sum = 0;
 
-        for (int score : arr) {
-            sum += score;
+        for (int i = 0; i < N; i++) {
+            sum += arr[i];
 
-            if (sum >= minScore) {
-                count++;
+            if (sum > mid) {
                 sum = 0;
+                cnt++;
             }
         }
 
-        return count >= K;
+        return cnt;
     }
 }
