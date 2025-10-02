@@ -14,14 +14,13 @@ public class Main {
         N = Integer.parseInt(br.readLine());
 
         time = new int[N + 1];
-
         indegree = new int[N + 1];
-
         dp = new int[N + 1];
 
         list = new ArrayList[N + 1];
-
-        for (int i = 1; i <= N; i++) list[i] = new ArrayList<>();
+        for (int i = 1; i <= N; i++) {
+            list[i] = new ArrayList<>();
+        }
 
         for (int i = 1; i <= N; i++) {
             st = new StringTokenizer(br.readLine());
@@ -56,7 +55,6 @@ public class Main {
                 dp[next] = Math.max(dp[next], dp[cur] + time[next]);
 
                 if (indegree[next] == 0) q.add(next);
-
             }
         }
 
