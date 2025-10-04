@@ -1,39 +1,44 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.*;
+import java.util.StringTokenizer;
 
 public class Main {
-    static int N, M, map[][], dp[][], ans;
+    static int M, N, ans;
+    static int[][] arr, dp;
+
     static int[] dy = {0, 0, -1, 1};
     static int[] dx = {-1, 1, 0, 0};
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String args[]) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st;
 
         st = new StringTokenizer(br.readLine());
-        N = Integer.parseInt(st.nextToken());
         M = Integer.parseInt(st.nextToken());
+        N = Integer.parseInt(st.nextToken());
 
-        map = new int[N][M];
+        arr = new int[M + 1][N + 1];
+        dp = new int[M + 1][N + 1];
 
-        dp = new int[N][M];
-
-        for (int i = 0; i < N; i++) {
+        for (int i = 1; i <= M; i++) {
             st = new StringTokenizer(br.readLine());
-            for (int j = 0; j < M; j++) {
-                map[i][j] = Integer.parseInt(st.nextToken());
+            for (int j = 1; j <= N; j++) {
+                arr[i][j] = Integer.parseInt(st.nextToken());
                 dp[i][j] = -1;
             }
         }
 
-        ans = solve(0, 0);
+        solve();
 
         System.out.println(ans);
     }
 
-    static int solve(int y, int x) {
-        if (y == N - 1 && x == M - 1) return 1;
+    static void solve() {
+        ans = dfs(1, 1);
+    }
+
+    static int dfs(int y, int x) {
+        if (y == M && x == N) return 1;
 
         if (dp[y][x] != -1) return dp[y][x];
 
@@ -43,15 +48,15 @@ public class Main {
             int ny = y + dy[k];
             int nx = x + dx[k];
 
-            if (!inRange(ny, nx) || map[y][x] <= map[ny][nx]) continue;
+            if (!inRange(ny, nx) || arr[y][x] <= arr[ny][nx]) continue;
 
-            dp[y][x] += solve(ny, nx);
+            dp[y][x] += dfs(ny, nx);
         }
 
         return dp[y][x];
     }
 
     static boolean inRange(int y, int x) {
-        return (y >= 0 && y < N) && (x >= 0 && x < M);
+        return (1 <= y && y <= M) && (1 <= x && x <= N);
     }
 }
