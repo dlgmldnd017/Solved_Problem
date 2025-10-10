@@ -1,13 +1,15 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.StringTokenizer;
 
 public class Main {
     static int N, K, ans;
-    static List<Integer> belt = new ArrayList<>();
-    static List<Integer> robot = new ArrayList<>();
+    static int[] map;
+    static List<Integer> A;
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String args[]) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st;
 
@@ -15,12 +17,15 @@ public class Main {
         N = Integer.parseInt(st.nextToken());
         K = Integer.parseInt(st.nextToken());
 
+        map = new int[N + 1];
+
+        A = new ArrayList<>();
+        A.add(0);
+
         st = new StringTokenizer(br.readLine());
-        for (int i = 0; i < 2 * N; i++) belt.add(Integer.parseInt(st.nextToken()));
-
-        ans = 1;
-
-        for (int i = 0; i < N; i++) robot.add(0);
+        for (int i = 0; i < N << 1; i++) {
+            A.add(Integer.parseInt(st.nextToken()));
+        }
 
         solve();
 
@@ -29,54 +34,61 @@ public class Main {
 
     static void solve() {
         while (true) {
+            ans++;
+
             rotate();
 
             moveRobot();
 
-            if (belt.get(0) != 0) {
-                robot.set(0, 1);
-                belt.set(0, belt.get(0) - 1);
-            }
+            loadRobot();
 
-            if (check()) return;
-
-            ans++;
+            if (!check()) return;
         }
     }
 
     static void rotate() {
-        int tmp = belt.get(belt.size() - 1);
-        belt.remove(belt.size() - 1);
-        belt.add(0, tmp);
+        A.add(1, A.remove(N << 1));
 
-        robot.remove(robot.size() - 1);
-        robot.add(0, 0);
 
-        if (robot.get(N - 1) == 1) robot.set(N - 1, 0);
+        for (int i = N - 1; i >= 1; i--) {
+            if (map[i] == 0) continue;
+
+            map[i + 1] = 1;
+            map[i] = 0;
+        }
     }
 
     static void moveRobot() {
-        for (int i = robot.size() - 2; i >= 0; i--) {
-            if (robot.get(i) == 0) continue;
-            else {
-                if (robot.get(i + 1) == 1 || belt.get(i + 1) == 0) continue;
+        map[N] = 0;
 
-                robot.set(i, 0);
-                robot.set(i + 1, 1);
-                belt.set(i + 1, belt.get(i + 1) - 1);
-            }
+        for (int i = N - 1; i >= 1; i--) {
+            if (map[i] == 0 || map[i + 1] == 1 || A.get(i + 1) == 0) continue;
+
+            int durability = A.get(i + 1);
+            A.set(i + 1, durability - 1);
+
+            map[i] = 0;
+            map[i + 1] = 1;
         }
+    }
+
+    static void loadRobot() {
+        if (map[1] == 1) return;
+
+        int durability = A.get(1);
+        if (durability == 0) return;
+
+        A.set(1, durability - 1);
+        map[1] = 1;
     }
 
     static boolean check() {
         int cnt = 0;
 
-        for (int i : belt) {
-            if (i == 0) cnt++;
-
-            if (cnt >= K) return true;
+        for (int i = 1; i <= N << 1; i++) {
+            if (A.get(i) == 0) cnt++;
         }
 
-        return false;
+        return cnt < K;
     }
 }
