@@ -1,27 +1,30 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.*;
+import java.util.StringTokenizer;
 
 public class Main {
-    static int N, cards[], max, cnt[];
+    static int N, max;
+    static int[] cnt, card;
+
     static StringBuilder sb = new StringBuilder();
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String args[]) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st;
 
         N = Integer.parseInt(br.readLine());
 
-        cards = new int[N];
-
+        card = new int[N];
         st = new StringTokenizer(br.readLine());
         for (int i = 0; i < N; i++) {
-            cards[i] = Integer.parseInt(st.nextToken());
-            if (max < cards[i]) max = cards[i];
+            card[i] = Integer.parseInt(st.nextToken());
+
+            if (max < card[i]) max = card[i];
         }
 
-        cnt = new int[max + 1];
-        for (int card : cards) cnt[card]++;
+        cnt = new int[1_000_001];
+
+        for (int i : card) cnt[i]++;
 
         solve();
 
@@ -29,19 +32,21 @@ public class Main {
     }
 
     static void solve() {
-        int score[] = new int[max + 1];
+        int[] score = new int[1_000_001];
 
         for (int i = 1; i <= max; i++) {
-            if (cnt[i] <= 0) continue;
+            if (cnt[i] == 0) continue;
 
             for (int j = i * 2; j <= max; j += i) {
-                if (cnt[j] <= 0) continue;
+                if (cnt[j] == 0) continue;
 
-                score[i] += 1;
-                score[j] -= 1;
+                score[i]++;
+                score[j]--;
             }
         }
 
-        for (int card : cards) sb.append(score[card] + " ");
+        for (int i : card) {
+            sb.append(score[i]).append(" ");
+        }
     }
 }
