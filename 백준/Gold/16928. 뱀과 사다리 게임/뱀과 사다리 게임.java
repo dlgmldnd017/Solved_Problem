@@ -4,10 +4,9 @@ import java.util.*;
 
 public class Main {
     static int N, M, ans;
-    static Map<Integer, Integer> ladder = new HashMap<>();
-    static Map<Integer, Integer> snake = new HashMap<>();
+    static Map<Integer, Integer> leadder, snake;
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String args[]) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st;
 
@@ -15,14 +14,16 @@ public class Main {
         N = Integer.parseInt(st.nextToken());
         M = Integer.parseInt(st.nextToken());
 
+        leadder = new HashMap<>();
         for (int i = 0; i < N; i++) {
             st = new StringTokenizer(br.readLine());
             int x = Integer.parseInt(st.nextToken());
             int y = Integer.parseInt(st.nextToken());
 
-            ladder.put(x, y);
+            leadder.put(x, y);
         }
 
+        snake = new HashMap<>();
         for (int i = 0; i < M; i++) {
             st = new StringTokenizer(br.readLine());
             int u = Integer.parseInt(st.nextToken());
@@ -37,47 +38,47 @@ public class Main {
     }
 
     static void solve() {
-        PriorityQueue<Node> pq = new PriorityQueue<>();
-        pq.add(new Node(1, 1));
+        Queue<Node> q = new ArrayDeque<>();
+        q.add(new Node(1, 0));
 
-        boolean visited[] = new boolean[101];
+        boolean[] visited = new boolean[101];
+        visited[1] = true;
 
-        while (!pq.isEmpty()) {
-            Node cur = pq.poll();
+        while (!q.isEmpty()) {
+            Node cur = q.poll();
 
-            if (visited[cur.pos]) continue;
-            visited[cur.pos] = true;
+            if (cur.pos == 100) {
+                ans = cur.cnt;
+                return;
+            }
 
             for (int k = 1; k <= 6; k++) {
                 int nextPos = cur.pos + k;
 
-                if (nextPos == 100) {
-                    ans = cur.cnt;
-                    return;
+                if (nextPos > 100 || visited[nextPos]) continue;
+
+                if (leadder.containsKey(nextPos)) {
+                    int jumpPos = leadder.get(nextPos);
+                    visited[jumpPos] = true;
+                    q.add(new Node(jumpPos, cur.cnt + 1));
+                } else if (snake.containsKey(nextPos)) {
+                    int jumpPos = snake.get(nextPos);
+                    visited[jumpPos] = true;
+                    q.add(new Node(jumpPos, cur.cnt + 1));
+                } else {
+                    visited[nextPos] = true;
+                    q.add(new Node(nextPos, cur.cnt + 1));
                 }
-
-                if (nextPos >= 101 || visited[nextPos]) continue;
-
-                if (ladder.containsKey(nextPos)) nextPos = ladder.get(nextPos);
-                else if (snake.containsKey(nextPos)) nextPos= snake.get(nextPos);
-
-                if (visited[nextPos]) continue;
-
-                pq.add(new Node(nextPos, cur.cnt + 1));
             }
         }
     }
-}
 
-class Node implements Comparable<Node> {
-    int pos, cnt;
+    static class Node {
+        int pos, cnt;
 
-    Node(int pos, int cnt) {
-        this.pos = pos;
-        this.cnt = cnt;
-    }
-
-    public int compareTo(Node n) {
-        return this.cnt - n.cnt;
+        Node(int pos, int cnt) {
+            this.pos = pos;
+            this.cnt = cnt;
+        }
     }
 }
