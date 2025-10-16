@@ -1,14 +1,14 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.*;
+import java.util.StringTokenizer;
 
 public class Main {
     static int N, M, K;
-    static int[][] prefixJ, prefixO, prefixI;
-    static char[][] map;
+    static int[][] jungle, ocean, ice;
+
     static StringBuilder sb = new StringBuilder();
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String args[]) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st;
 
@@ -18,46 +18,51 @@ public class Main {
 
         K = Integer.parseInt(br.readLine());
 
-        prefixJ = new int[N + 1][M + 1];
-        prefixO = new int[N + 1][M + 1];
-        prefixI = new int[N + 1][M + 1];
+        jungle = new int[N + 1][M + 1];
+        ocean = new int[N + 1][M + 1];
+        ice = new int[N + 1][M + 1];
 
-        map = new char[N + 1][M + 1];
-
-        for (int i = 1; i < N + 1; i++) {
+        for (int i = 1; i <= N; i++) {
             String input = br.readLine();
 
-            for (int j = 1; j < M + 1; j++) {
-                map[i][j] = input.charAt(j - 1);
+            for (int j = 1; j <= M; j++) {
+                char c = input.charAt(j - 1);
 
-                prefixJ[i][j] = prefixJ[i - 1][j] + prefixJ[i][j - 1] - prefixJ[i - 1][j - 1];
-                prefixO[i][j] = prefixO[i - 1][j] + prefixO[i][j - 1] - prefixO[i - 1][j - 1];
-                prefixI[i][j] = prefixI[i - 1][j] + prefixI[i][j - 1] - prefixI[i - 1][j - 1];
+                switch (c) {
+                    case 'J':
+                        jungle[i][j] = jungle[i - 1][j] + jungle[i][j - 1] - jungle[i - 1][j - 1] + 1;
+                        ocean[i][j] = ocean[i - 1][j] + ocean[i][j - 1] - ocean[i - 1][j - 1];
+                        ice[i][j] = ice[i - 1][j] + ice[i][j - 1] - ice[i - 1][j - 1];
+                        break;
 
-                if (map[i][j] == 'J') prefixJ[i][j]++;
-                else if (map[i][j] == 'O') prefixO[i][j]++;
-                else prefixI[i][j]++;
+                    case 'O':
+                        ocean[i][j] = ocean[i - 1][j] + ocean[i][j - 1] - ocean[i - 1][j - 1] + 1;
+                        jungle[i][j] = jungle[i - 1][j] + jungle[i][j - 1] - jungle[i - 1][j - 1];
+                        ice[i][j] = ice[i - 1][j] + ice[i][j - 1] - ice[i - 1][j - 1];
+                        break;
+
+                    default:
+                        ice[i][j] = ice[i - 1][j] + ice[i][j - 1] - ice[i - 1][j - 1] + 1;
+                        jungle[i][j] = jungle[i - 1][j] + jungle[i][j - 1] - jungle[i - 1][j - 1];
+                        ocean[i][j] = ocean[i - 1][j] + ocean[i][j - 1] - ocean[i - 1][j - 1];
+                }
             }
         }
 
         for (int i = 0; i < K; i++) {
             st = new StringTokenizer(br.readLine());
-            int y1 = Integer.parseInt(st.nextToken());
-            int x1 = Integer.parseInt(st.nextToken());
-            int y2 = Integer.parseInt(st.nextToken());
-            int x2 = Integer.parseInt(st.nextToken());
+            int a = Integer.parseInt(st.nextToken());
+            int b = Integer.parseInt(st.nextToken());
+            int c = Integer.parseInt(st.nextToken());
+            int d = Integer.parseInt(st.nextToken());
 
-            int cntJ = getSum(prefixJ, y1, x1, y2, x2);
-            int cntO = getSum(prefixO, y1, x1, y2, x2);
-            int cntI = getSum(prefixI, y1, x1, y2, x2);
+            int J = jungle[c][d] - jungle[a - 1][d] - jungle[c][b - 1] + jungle[a - 1][b - 1];
+            int O = ocean[c][d] - ocean[a - 1][d] - ocean[c][b - 1] + ocean[a - 1][b - 1];
+            int I = ice[c][d] - ice[a - 1][d] - ice[c][b - 1] + ice[a - 1][b - 1];
 
-            sb.append(cntJ).append(" ").append(cntO).append(" ").append(cntI).append("\n");
+            sb.append(J).append(" ").append(O).append(" ").append(I).append("\n");
         }
 
         System.out.println(sb);
-    }
-
-    static int getSum(int[][] prefixSum, int y1, int x1, int y2, int x2) {
-        return prefixSum[y2][x2] - prefixSum[y2][x1 - 1] - prefixSum[y1 - 1][x2] + prefixSum[y1 - 1][x1 - 1];
     }
 }
