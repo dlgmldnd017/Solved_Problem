@@ -3,8 +3,10 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 public class Main {
+    static final int INF = 10_000_000;
+
     static int N, E, v1, v2, ans;
-    static List<Node>[] list;
+    static List<Node> list[];
 
     public static void main(String args[]) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -15,19 +17,17 @@ public class Main {
         E = Integer.parseInt(st.nextToken());
 
         list = new ArrayList[N + 1];
-
         for (int i = 1; i <= N; i++) {
             list[i] = new ArrayList<>();
         }
 
         for (int i = 0; i < E; i++) {
             st = new StringTokenizer(br.readLine());
-            int u = Integer.parseInt(st.nextToken());
-            int v = Integer.parseInt(st.nextToken());
+            int a = Integer.parseInt(st.nextToken());
+            int b = Integer.parseInt(st.nextToken());
             int c = Integer.parseInt(st.nextToken());
-
-            list[u].add(new Node(v, c));
-            list[v].add(new Node(u, c));
+            list[a].add(new Node(b, c));
+            list[b].add(new Node(a, c));
         }
 
         st = new StringTokenizer(br.readLine());
@@ -40,27 +40,20 @@ public class Main {
     }
 
     static void solve() {
-        int min = Integer.MAX_VALUE;
+        int[] dist1 = Dijkstra(1);
+        int[] dist2 = Dijkstra(v1);
+        int[] dist3 = Dijkstra(N);
 
-        if (!bfs(1, v1) || !bfs(v1, v2) || !bfs(v2, N)) {
-            ans = -1;
-            return;
-        }
+        int noc1 = dist1[v1] + dist2[v2] + dist3[v2];
+        int noc2 = dist1[v2] + dist2[v2] + dist3[v1];
 
-        min = ans;
-
-        ans = 0;
-
-        if (!bfs(1, v2) || !bfs(v2, v1) || !bfs(v1, N)) {
-            return;
-        }
-
-        if (min < ans) ans = min;
+        if (noc1 >= INF && noc2 >= INF) ans = -1;
+        else ans = Math.min(noc1, noc2);
     }
 
-    static boolean bfs(int start, int end) {
+    static int[] Dijkstra(int start) {
         int[] dist = new int[N + 1];
-        Arrays.fill(dist, Integer.MAX_VALUE);
+        Arrays.fill(dist, INF);
         dist[start] = 0;
 
         PriorityQueue<Node> pq = new PriorityQueue<>();
@@ -69,36 +62,31 @@ public class Main {
         while (!pq.isEmpty()) {
             Node cur = pq.poll();
 
-            if (dist[cur.e] < cur.c) continue;
-
-            if (cur.e == end) {
-                ans += cur.c;
-                return true;
-            }
+            if (dist[cur.e] < cur.w) continue;
 
             for (Node next : list[cur.e]) {
-                int cost = next.c + cur.c;
-
-                if (dist[next.e] < cost) continue;
+                int cost = dist[cur.e] + next.w;
+                if (dist[next.e] <= cost) continue;
 
                 dist[next.e] = cost;
                 pq.add(new Node(next.e, cost));
             }
         }
 
-        return false;
+        return dist;
     }
 
     static class Node implements Comparable<Node> {
-        int e, c;
+        int e, w;
 
-        Node(int e, int c) {
+        Node(int e, int w) {
             this.e = e;
-            this.c = c;
+            this.w = w;
         }
 
-        public int compareTo(Node n) {
-            return this.c - n.c;
+        @Override
+        public int compareTo(Node o) {
+            return this.w - o.w;
         }
     }
 }
